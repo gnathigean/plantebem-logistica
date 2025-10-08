@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Plantebem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            /* Usaremos flexbox para organizar o conteúdo */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff; /* Altera a cor do texto para ser legível sobre o vídeo */
+            position: relative; /* Necessário para posicionar o vídeo de fundo */
+            overflow: hidden; /* Evita barras de rolagem por causa do vídeo */
+        }
+        
+        /* Estilos do vídeo de fundo (mantidos) */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Coloca o vídeo atrás de todo o conteúdo */
+            overflow: hidden;
+            background-color: #000; /* Cor de fundo caso o vídeo não carregue */
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Ajustes no layout para o conteúdo ficar visível (mantidos) */
+        .logo-container,
+        .menu-container {
+            z-index: 1; /* Garante que esses elementos fiquem na frente do vídeo */
+            position: relative;
+        }
+
+        .logo-container {
+            text-align: center;
+            padding-top: 50px;
+            padding-bottom: 20px;
+            width: 100%;
+        }
+
+        .logo-img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .menu-container {
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.9); /* Fundo semi-transparente para o menu */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding-bottom: 20px; /* Adicionado padding para o novo conteúdo */
+        }
+
+        .menu-header {
+            background-color: rgba(51, 51, 51, 0.9); /* Fundo semi-transparente para o cabeçalho do menu */
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .menu-list {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-list-item a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-list-item a:hover {
+            background-color: #0084ff;
+            color: #fff; /* Garante que o texto fique branco ao passar o mouse */
+        }
+
+        .menu-list-item:last-child a {
+            border-bottom: none;
+        }
+
+        /* --- Estilos para o novo seletor e botão --- */
+
+        .loja-selecao-container {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+
+        .loja-selecao-container label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #seletor-loja {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            color: #333;
+        }
+
+        #botao-loja-container {
+            text-align: center;
+            height: 40px; /* Mantém o espaço para evitar "salto" no layout */
+        }
+
+        .btn-loja {
+            /* Estilo do botão que será revelado */
+            display: none; /* Inicialmente oculto pelo JavaScript */
+            padding: 10px 20px;
+            background-color: #28a745; /* Cor verde para o botão */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-loja:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="/videos/Temos uma novidade para vocês! Renovamos o nosso visual! 😉Mas a nossa essência permanece firme-.mp4" type="video/mp4">
+            Seu navegador não suporta a tag de vídeo.
+        </video>
+    </div>
+
+    <div class="logo-container">
+        <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+    </div>
+
+    <div class="menu-container">
+        <div class="menu-header">Menu Principal</div>
+        <ul class="menu-list">
+            <li class="menu-list-item"><a href="menu.html">Início</a></li>
+            <li class="menu-list-item"><a href="catalogo.html">Catalogo</a></li>
+            <li class="menu-list-item"><a href="pesquisa.html">Detalhes de Recebimentos</a></li>
+             <li class="menu-list-item"><a href="rastreiodeprodutos.html">Mapa de Produtos</a></li>
+          
+        </ul>
+
+        <div class="loja-selecao-container">
+            <label for="seletor-loja">Recebimento de Mercadorias:</label>
+            <select id="seletor-loja" onchange="exibirBotaoDaLoja()">
+                <option value="">-- Selecione uma Loja --</option>
+                <option value="juazeiro" data-url="pagina_juazeiro.html">Loja Juazeiro</option>
+                <option value="petrolina" data-url="recebimento_petrolina.html">Loja Petrolina</option>
+                <option value="salvador" data-url="pagina_salvador.html">Loja Salvador</option>
+            </select>
+        </div>
+
+        <div id="botao-loja-container">
+            </div>
+
+    </div>
+
+    <script>
+        // Função JavaScript para exibir o botão da loja selecionada
+        function exibirBotaoDaLoja() {
+            const seletor = document.getElementById('seletor-loja');
+            const container = document.getElementById('botao-loja-container');
+            
+            // Limpa o container do botão (remove o botão anterior, se houver)
+            container.innerHTML = ''; 
+
+            const valorSelecionado = seletor.value;
+
+            if (valorSelecionado) {
+                // Obtém a URL da página da loja a partir do atributo 'data-url' da opção
+                const opcaoSelecionada = seletor.options[seletor.selectedIndex];
+                const urlDaLoja = opcaoSelecionada.getAttribute('data-url');
+                const nomeDaLoja = opcaoSelecionada.textContent;
+
+                // Cria o elemento do botão (link)
+                const botao = document.createElement('a');
+                botao.setAttribute('href', urlDaLoja);
+                botao.setAttribute('class', 'btn-loja');
+                // O display: none do CSS será sobrescrito ao adicionar o botão
+                botao.style.display = 'inline-block'; 
+                botao.textContent = `Acessar ${nomeDaLoja}`;
+
+                // Adiciona o botão ao container
+                container.appendChild(botao);
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PESQUISA DETALHADA DE RECEBIMENTO</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        text-align: center;
+        margin: 0;
+        position: relative;
+    }
+
+    /* ==================================== */
+    /* ESTILOS PARA OS BOTÕES DE NAVEGAÇÃO FIXOS */
+    /* ==================================== */
+    .nav-button {
+        display: inline-block; /* Garante que os botões se comportem corretamente lado a lado */
+        position: fixed;
+        top: 20px;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        z-index: 1000;
+        transition: background-color 0.3s;
+    }
+
+    #logout-button {
+        right: 20px;
+        background-color: #e74c3c; /* Vermelho para Sair */
+    }
+
+    #logout-button:hover {
+        background-color: #c0392b;
+    }
+
+    #menu-button {
+        /* Posição calculada: 20px da borda direita + largura aproximada do Sair (~60px) + 20px de espaçamento */
+        right: 120px; 
+        background-color: #5c6770; /* Cinza para Menu */
+    }
+
+    #menu-button:hover {
+        background-color: #49545c;
+    }
+    /* ==================================== */
+
+    .container {
+        width: 95%;
+        max-width: 5200px; 
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        /* Aumentado para dar espaço suficiente para os botões e a logo no topo */
+        margin-top: 80px; 
+    }
+
+    /* Novo estilo para a logo */
+    .logo-pesquisa {
+        max-width: 250px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    #loading {
+        margin: 20px;
+        font-style: italic;
+        color: #666;
+    }
+
+    .search-container {
+        margin-bottom: 20px;
+    }
+
+    #searchInput {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    
+    #dataTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    #dataTable th, #dataTable td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    #dataTable th {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    #dataTable tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    @media (max-width: 768px) {
+        /* Ajuste fino da margem do container em telas pequenas */
+        .container {
+            margin-top: 80px;
+        }
+
+        /* Ajuste do botão Menu para melhor responsividade em telas menores */
+        #menu-button {
+            right: 110px; /* Mantém um bom espaçamento */
+        }
+        
+        /* Estilos de responsividade da tabela */
+        #dataTable thead {
+            display: none;
+        }
+
+        #dataTable, #dataTable tbody, #dataTable tr, #dataTable td {
+            display: block;
+            width: 100%;
+        }
+
+        #dataTable tr {
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #dataTable td {
+            text-align: center;
+            position: relative;
+            padding-left: 0;
+            border-bottom: 1px solid #ddd;
+            border-left: none;
+            border-right: none;
+        }
+
+        #dataTable td::before {
+            content: attr(data-label) ": ";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<a id="menu-button" class="nav-button" href="recebimento_petrolina.html">← Voltar para Recebimento</a>
+<a id="logout-button" class="nav-button" href="login.html">Sair</a>
+
+<div class="container">
+<img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-pesquisa">
+
+<h1>Detalhes de Recebimentos</h1>
+
+<div class="search-container">
+<input type="text" id="searchInput" placeholder="DIGITE AQUI, NOME DO PRODUTO, LOTE, VALIDADE ...">
+</div>
+
+<p id="loading">Carregando dados...</p>
+
+<table id="dataTable">
+<thead>
+<tr></tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+
+<script>
+const appsScriptURL = 'https://script.google.com/macros/s/AKfycbxipm0iS6I2_Gbinj4iZoXv5ggCWP7jDQqs0a19ytNl7Mpuy1Q84uJUoGVpC4NEQZ84HQ/exec';
+
+const loadingMessage = document.getElementById('loading');
+const searchInput = document.getElementById('searchInput');
+const tableHead = document.querySelector('#dataTable thead tr');
+const tableBody = document.querySelector('#dataTable tbody');
+
+let fullData = [];
+
+function formatarDataBrasileira(dataString) {
+const data = new Date(dataString);
+if (isNaN(data.getTime())) {
+return dataString;
+}
+
+const dia = String(data.getDate()).padStart(2, '0');
+const mes = String(data.getMonth() + 1).padStart(2, '0');
+const ano = data.getFullYear();
+
+return `${dia}/${mes}/${ano}`;
+}
+
+function renderTable(dataToRender) {
+tableBody.innerHTML = '';
+tableHead.innerHTML = '';
+
+if (dataToRender.length > 0) {
+const headers = Object.keys(dataToRender[0]);
+
+headers.forEach(headerText => {
+const th = document.createElement('th');
+th.textContent = headerText;
+tableHead.appendChild(th);
+});
+
+dataToRender.forEach(rowData => {
+const tr = document.createElement('tr');
+headers.forEach(header => {
+const td = document.createElement('td');
+let valor = rowData[header];
+
+// Verifica se o valor é uma string e contém uma vírgula
+if (typeof valor === 'string' && valor.includes(',')) {
+const links = valor.split(',').map(link => link.trim());
+links.forEach(link => {
+ if (link) { // Evita criar links vazios
+const a = document.createElement('a');
+a.href = link;
+a.textContent = 'Ver Imagem';
+a.target = '_blank';
+a.style.marginRight = '5px'; // Adiciona um pequeno espaço entre os links
+td.appendChild(a);
+ }
+});
+} else {
+try {
+// Tenta criar um URL para verificar se é um link único
+new URL(valor);
+
+const a = document.createElement('a');
+a.href = valor;
+a.textContent = 'Ver Imagem';
+a.target = '_blank';
+
+td.appendChild(a);
+
+} catch (e) {
+if (header.toLowerCase().includes('data') || header.toLowerCase().includes('validade') || header.toLowerCase().includes('fabricação')) {
+valor = formatarDataBrasileira(valor);
+}
+
+td.textContent = valor;
+}
+}
+
+td.setAttribute('data-label', header);
+tr.appendChild(td);
+});
+tableBody.appendChild(tr);
+});
+}
+}
+
+// Listeners de navegação para os botões fixos
+    document.getElementById('menu-button').addEventListener('click', function(e) {
+        // Redireciona para a página principal/menu
+        // (O href já faz isso, este listener é apenas para lógica futura de deslogar)
+    });
+    
+document.getElementById('logout-button').addEventListener('click', function(e) {
+// Lógica de deslogar pode ser adicionada aqui.
+});
+
+fetch(appsScriptURL)
+.then(response => {
+if (!response.ok) {
+throw new Error('Erro de rede: ' + response.statusText);
+}
+return response.json();
+})
+.then(data => {
+loadingMessage.style.display = 'none';
+fullData = data;
+renderTable(fullData);
+})
+.catch(error => {
+loadingMessage.textContent = 'Erro ao carregar os dados. Verifique o URL do script.';
+console.error('Erro:', error);
+});
+
+searchInput.addEventListener('input', function() {
+const searchTerm = this.value.toLowerCase();
+
+const filteredData = fullData.filter(row => {
+return Object.values(row).some(value => {
+let searchValue = String(value).toLowerCase();
+return searchValue.includes(searchTerm);
+});
+});
+
+renderTable(filteredData);
+});
+</script>
+
+</body>
+</html>

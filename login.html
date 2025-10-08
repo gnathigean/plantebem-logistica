@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de Acesso</title>
+    
+    <style>
+        /* Estilos do vídeo de fundo */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Estilos para o conteúdo */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            color: #333;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0a95ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #087fce;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="/videos/Plantebem  Agricultor - Plantebem Pró-Agroalimentos (720p, h264, youtube).mp4" type="video/mp4">
+            Seu navegador não suporta a tag de vídeo.
+        </video>
+    </div>
+
+    <div class="container">
+        <h1 id="form-title">Login</h1>
+        <form id="auth-form">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" id="auth-button">Entrar</button>
+        </form>
+        <div id="message" class="message"></div> 
+    </div>
+    
+    <script type="module">
+        // Importa as funções modulares necessárias do Firebase v9
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+        
+        // ⚠️ 1. VERIFIQUE SUAS CREDENCIAIS AQUI ⚠️
+        const firebaseConfig = {
+            apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+            authDomain: "login-com-dados.firebaseapp.com",
+            projectId: "login-com-dados",
+            storageBucket: "login-com-dados.firebasestorage.app",
+            messagingSenderId: "75556023458",
+            appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+            measurementId: "G-W9LRT99579"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const form = document.getElementById('auth-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const messageDiv = document.getElementById('message');
+
+        // A URL para onde o usuário será redirecionado após o login
+        const redirectUrl = 'menu.html'; 
+
+        // Função para exibir mensagens
+        function showMessage(text, type) {
+            messageDiv.innerText = text;
+            messageDiv.className = `message ${type}`;
+        }
+        
+        // Função para traduzir códigos de erro comuns do Firebase
+        function translateFirebaseError(errorCode) {
+            switch (errorCode) {
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                    return 'Credenciais inválidas. Verifique seu e-mail e senha.';
+                case 'auth/invalid-email':
+                    return 'O formato do e-mail é inválido.';
+                case 'auth/too-many-requests':
+                    return 'Acesso bloqueado temporariamente por muitas tentativas falhas.';
+                default:
+                    return 'Ocorreu um erro desconhecido. Tente novamente.';
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            showMessage('Aguarde...', 'message'); // Feedback visual
+            
+            try {
+                // Tenta fazer o login
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                // Redireciona após o login bem-sucedido
+                showMessage('Login bem-sucedido! Redirecionando...', 'success');
+                window.location.href = redirectUrl;
+
+            } catch (error) {
+                const translatedMessage = translateFirebaseError(error.code);
+                showMessage(`Erro ao fazer login: ${translatedMessage}`, 'error');
+                console.error("Erro detalhado do Firebase:", error);
+            }
+        });
+    </script>
+</body>
+</html>

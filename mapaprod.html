@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formulário Google Sheets - Edição</title>
+    <meta charset="UTF-8">
+    <style>
+        .hidden { display: none; }
+        /* Estilos Gerais do Corpo */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Contêiner principal do formulário */
+        #searchBlock, #formBlock {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        hr {
+            width: 100%;
+            max-width: 600px;
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+        /* Estilos para a busca (flexível) */
+        #searchBlock {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        #searchBlock h2 {
+            flex-basis: 100%; /* Ocupa a linha inteira */
+            margin-top: 0;
+        }
+
+        #searchId {
+            flex-grow: 1; /* Ocupa o máximo de espaço possível */
+        }
+
+        /* Estilos do Formulário */
+        #submissionForm {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Estilos para inputs, textarea e o novo SELECT */
+        input[type="text"], 
+        input[type="email"], 
+        textarea,
+        select { /* Estilo unificado para select */
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box; 
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, 
+        input[type="email"]:focus, 
+        textarea:focus,
+        select:focus { /* Estilo unificado para select */
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* Estilo para o campo de data (apenas leitura) */
+        input[readonly] {
+            background-color: #f9f9f9;
+            color: #888;
+        }
+
+        /* Estilo do Botão */
+        #submitButton, #searchBlock button {
+            background-color: #28a745; /* Cor verde padrão para Salvar Novo */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 25px;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        #searchBlock button {
+            background-color: #6c757d; /* Cor cinza para a busca */
+            flex-shrink: 0; /* Não encolhe */
+            margin-top: 0;
+            min-width: 100px;
+        }
+
+        #submitButton:hover, #searchBlock button:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        
+        #searchBlock button:hover {
+            background-color: #5a6268;
+        }
+
+        /* Estilos para a Mensagem de Resposta */
+        #responseMessage {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        /* Media Query para telas menores (responsividade) */
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+            #searchBlock, #formBlock {
+                padding: 20px;
+            }
+            #searchBlock {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #searchId, #searchBlock button {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="searchBlock">
+        <h2>1. Buscar para Editar</h2>
+        <input type="text" id="searchId" placeholder="ID do registro para editar">
+        <button onclick="searchRecord()">Buscar</button>
+    </div>
+
+    <hr>
+
+    <div id="formBlock">
+        <h2>2. Novo Registro / Edição</h2>
+        
+        <form id="submissionForm">
+            <input type="hidden" id="recordId" name="ID" value="">
+            
+            <label for="timestamp">Data de Criação/Edição:</label>
+            <input type="text" id="data" name="Data" readonly><br><br>
+            
+            <label for="nome">Produto:</label>
+            <input type="text" id="nome" name="Produto" required><br><br>
+            
+            <label for="lote">Lote:</label>
+            <input type="text" id="lote" name="Lote" required><br><br>
+
+            <label for="rua">Rua:</label>
+            <select id="rua" name="Rua" required>
+                <option value="" disabled selected>Selecione a Rua</option>
+                <option value="Rua A">Rua A</option>
+                <option value="Rua B">Rua B</option>
+                <option value="Rua C">Rua C</option>
+                <option value="Rua D">Rua D</option>
+            </select><br><br>
+
+            <label for="vão">Vão:</label>
+            <select id="vão" name="Vão" required>
+                <option value="" disabled selected>Selecione o Vão</option>
+                <option value="V1">Vão 1</option>
+                <option value="V2">Vão 2</option>
+                <option value="V3">Vão 3</option>
+            </select><br><br>
+
+            <label for="nivel">Nivel:</label>
+            <select id="nivel" name="Nivel" required>
+                <option value="" disabled selected>Selecione o Nível</option>
+                <option value="Nivel 1">Nível 1</option>
+                <option value="Nivel 2">Nível 2</option>
+                <option value="Nivel 3">Nível 3</option>
+                <option value="Nivel 4">Nível 4</option>
+            </select><br><br>
+            
+            <label for="pallet">Pallet:</label>
+            <input type="text" id="pallet" name="Pallet" required><br><br>
+            
+            <button type="submit" id="submitButton">Salvar Novo Registro</button>
+            
+            <p id="responseMessage" style="margin-top: 15px; font-weight: bold;"></p>
+        </form>
+    </div>
+
+    <script>
+        // *** IMPORTANTE: SUBSTITUA ESTE URL pelo URL do seu Web App ***
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby1_w2kGi8R3dLSJZDD84N1SuFbcuYmPDGtIo1XrECJNCSew7ztSByELhcidqwD4s5eGQ/exec'; 
+        
+        const form = document.getElementById('submissionForm');
+        const responseMessage = document.getElementById('responseMessage');
+        const submitButton = document.getElementById('submitButton');
+
+        // Campos do Formulário
+        const inputID = document.getElementById('recordId');
+        const inputData = document.getElementById('Data');
+        const inputNome = document.getElementById('nome');
+        const inputlote = document.getElementById('lote');
+        // Referências aos novos campos SELECT
+        const selectRua = document.getElementById('rua');
+        const selectVao = document.getElementById('vão');
+        const selectNivel = document.getElementById('nivel');
+        const inputpallet = document.getElementById('pallet');
+        const inputSearchId = document.getElementById('searchId');
+
+
+        // --- FUNÇÃO DE BUSCA (doGet no Apps Script) ---
+        function searchRecord() {
+            const idToSearch = inputSearchId.value.trim();
+            if (!idToSearch) {
+                alert("Por favor, insira o ID do registro para editar.");
+                return;
+            }
+
+            responseMessage.textContent = 'Buscando registro...';
+            responseMessage.style.color = 'orange';
+
+            // Usamos GET para buscar dados
+            fetch(`${WEB_APP_URL}?id=${idToSearch}`, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    // Preenche o formulário com os dados encontrados
+                    const record = data.record;
+                    
+                    inputID.value = record.ID;
+                    inputData.value = record['Data de Cadastro']; // Corrigi o nome da coluna de volta para 'Data de Cadastro'
+                    inputNome.value = record.Produto;
+                    inputlote.value = record.Lote;
+                    
+                    // Preenchendo os campos SELECT com o valor do registro
+                    selectRua.value = record.Rua; 
+                    selectVao.value = record.Vão;
+                    selectNivel.value = record.Nivel;
+                    
+                    inputpallet.value = record.Pallet;
+                    
+                    submitButton.textContent = 'Atualizar Registro (ID: ' + record.ID + ')';
+                    submitButton.style.backgroundColor = 'blue';
+                    responseMessage.textContent = `Registro encontrado na linha ${data.rowNumber}. Você pode editar agora.`;
+                    responseMessage.style.color = 'green';
+                    
+                } else {
+                    responseMessage.textContent = `Erro: ${data.message}`;
+                    responseMessage.style.color = 'red';
+                    resetFormForNewEntry();
+                }
+            })
+            .catch(error => {
+                console.error('Erro de busca:', error);
+                responseMessage.textContent = 'Erro na comunicação. Verifique o console.';
+                responseMessage.style.color = 'red';
+            });
+        }
+        
+        // Função para limpar o formulário para uma nova inserção
+        function resetFormForNewEntry() {
+            form.reset();
+            inputID.value = ''; // O MAIS IMPORTANTE: remove o ID para que seja uma NOVA inserção
+            submitButton.textContent = 'Salvar Novo Registro';
+            submitButton.style.backgroundColor = '#28a745';
+        }
+
+
+        // --- FUNÇÃO DE SUBMISSÃO (doPost no Apps Script) ---
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const action = inputID.value ? 'Atualizando' : 'Inserindo';
+            responseMessage.textContent = `${action} dados...`;
+            responseMessage.style.color = 'orange';
+
+            const formData = new FormData(form);
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: formData 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    if (data.action === 'updated') {
+                        responseMessage.textContent = `Sucesso! Registro ID ${inputID.value} atualizado na linha ${data.row}.`;
+                    } else if (data.action === 'inserted') {
+                        responseMessage.textContent = `Sucesso! Novo registro salvo na linha ${data.row}.`;
+                    }
+                    responseMessage.style.color = 'green';
+                    
+                    // Reseta o formulário para Nova Inserção
+                    resetFormForNewEntry(); 
+                    
+                } else {
+                    responseMessage.textContent = `Erro ao processar. Ação: ${data.action} | Mensagem: ${data.message}`;
+                    responseMessage.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                responseMessage.textContent = 'Erro na comunicação. Verifique o console.';
+                responseMessage.style.color = 'red';
+            });
+        });
+
+        // Inicializa o formulário no modo de Nova Inserção
+        resetFormForNewEntry();
+// --- NOVO: LÓGICA DE CARREGAMENTO AUTOMÁTICO NA PÁGINA DE EDIÇÃO (mapaprod.html) ---
+
+// Lê os parâmetros da URL
+const urlParams = new URLSearchParams(window.location.search);
+const autoLoadId = urlParams.get('id');
+
+if (autoLoadId) {
+    // Preenche a barra de busca e executa a função de busca
+    inputSearchId.value = autoLoadId;
+    searchRecord();
+} else {
+    // Se não tiver ID na URL, reseta para novo registro
+    resetFormForNewEntry();
+}
+
+    </script>
+
+</body>
+</html>

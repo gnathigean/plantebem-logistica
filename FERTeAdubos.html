@@ -1,0 +1,3728 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de Produtos</title>
+
+<style>
+    /* Estilos gerais para a visualização na tela */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Estilos para o menu lateral */
+    .menu-lateral {
+        width: 250px;
+        background-color: white; 
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        color: white;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+        overflow-y: auto;
+    }
+
+    .menu-lateral h2 {
+        margin-top: 0;
+        color: #0a95ff;
+    }
+
+    .menu-lateral ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .menu-lateral ul li {
+        margin-bottom: 10px;
+    }
+
+    .menu-lateral ul li a {
+        color: #333;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .menu-lateral ul li a:hover {
+        background-color: rgba(29, 131, 210, 0.7);
+        color: white;
+    }
+
+    /* Estilos para o conteúdo principal */
+    .conteudo-principal {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 20px 20px 40px;
+        position: relative;
+    }
+
+    /* Estilos para o logo/imagem de topo (Centralizada) */
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .logo-container img {
+        max-width: 150px;
+        height: auto;
+    }
+
+    /* Estilos para o botão de voltar */
+    #back-to-menu-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: #555;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        z-index: 5;
+    }
+
+    #back-to-menu-btn:hover {
+        background-color: #777;
+    }
+    
+    /* Estilos para o container de filtros */
+    .filtros-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    .filtro-group {
+        flex: 1;
+    }
+
+    .filtro-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+        font-size: 0.9em;
+    }
+    
+    .filtros-container select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+    }
+
+    .barra-pesquisa {
+        display: flex;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    .barra-pesquisa input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    .barra-pesquisa button {
+        padding: 10px 15px;
+        margin-left: 10px;
+        background-color: #0a95ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    .barra-pesquisa button:hover {
+        background-color: #087fce;
+    }
+
+    .catalogo {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .produto-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .produto-card img.produto-imagem {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .produto-card .qr-code {
+        width: 80px;
+        height: 80px;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    .produto-card h3 {
+        margin: 0 0 5px;
+        color: #333;
+    }
+
+    /* ESTILO PARA O FORNECEDOR */
+    .produto-card .fornecedor {
+        font-size: 0.9em;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .produto-card .preco {
+        font-size: 1.2em;
+        color: #0a95ff;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    /* Paginação */
+    #paginacao {
+        margin-top: 20px;
+        display: flex;
+        gap: 5px;
+    }
+
+    #paginacao button {
+        background-color: #0a95ff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #paginacao button:hover {
+        background-color: #087fce;
+    }
+    
+    #paginacao button.ativo {
+        background-color: #0561a0;
+        font-weight: bold;
+    }
+    /* Estilo para as elipses (...) */
+    #paginacao span {
+        padding: 10px 5px;
+        color: #555;
+    }
+
+    /* Removendo transições e sombras para impressão */
+    .produto-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Estilos específicos para a impressão (PDF) */
+    @media print {
+        body {
+            background-color: #fff;
+            padding: 0;
+            margin: 0;
+            display: block;
+        }
+
+        h1, .barra-pesquisa, #paginacao, .menu-lateral, #back-to-menu-btn, .logo-container, .filtros-container {
+            display: none;
+        }
+
+        .conteudo-principal {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .catalogo {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 5px;
+            width: 210mm;
+            max-width: none;
+            padding: 5mm;
+            box-sizing: border-box;
+        }
+
+        .produto-card {
+            width: 90mm;
+            height: 130mm;
+            box-shadow: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin: 0;
+            margin-right: 5mm;
+            margin-bottom: 5mm;
+            float: left;
+            page-break-inside: avoid;
+        }
+
+        .produto-card:nth-child(2n) {
+            margin-right: 0;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="menu-lateral">
+    <h2>Categorias</h2>
+    <ul>
+        <li><a href="catalogo.html">DEFENSIVOS</a></li>
+        <li><a href="FERTeAdubos.html">FERTILIZANTES & ADUBOS</a></li>
+        <li><a href="#">SEMENTES</a></li>
+        <li><a href="#">FERRAMENTAS</a></li>
+    </ul>
+</div>
+
+<div class="conteudo-principal">
+    <a href="menu.html" id="back-to-menu-btn">← Voltar ao Catálogo</a>
+
+    <div class="logo-container">
+        <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa">
+    </div>
+    <h1 style="text-align: center;">Catálogo de Produtos</h1>
+
+    <div class="filtros-container">
+        <div class="filtro-group">
+            <label for="filtroFornecedor">Fornecedor:</label>
+            <select id="filtroFornecedor">
+                <option value="">Todos</option>
+                </select>
+        </div>
+        <div class="filtro-group">
+            <label for="filtroUnidade">Unidade:</label>
+            <select id="filtroUnidade">
+                <option value="">Todas</option>
+                <option value="1 L">1 L</option>
+                <option value="5 L">5 L</option>
+                <option value="20 L">20 L</option>
+                <option value="1 KG">1 KG</option>
+                <option value="3 KG">3 KG</option>
+                <option value="5 KG">5 KG</option>
+                <option value="6 KG">6 KG</option>
+                <option value="25 KG">25 KG</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="barra-pesquisa">
+        <input type="text" id="searchInput" placeholder="Buscar por nome ou código...">
+        <button id="searchButton">Pesquisar</button>
+    </div>
+
+<div class="catalogo">
+</div>
+
+<div id="paginacao"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // CORRIGIDO: Removido o array aninhado. Agora é um array direto de objetos.
+    const produtos = [
+    {
+        imagem: "https://i.ibb.co/hJBBsnPL/acidoborico.png",
+        nome: "ACIDO BORICO 00-00-03 OF - 25KG",
+        codigo: "0011241",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/hJBBsnPL/acidoborico.png",
+        nome: "ACIDO BORICO 17 % - 25 KG HERINGER",
+        codigo: "0012789",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://i.ibb.co/VWyZ30zY/acidoborico.png",
+        nome: "ADUBO 06-24-12 OF - 25 KG",
+        codigo: "0011938",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/wN0BmDzC/acidoborico.png",
+        nome: "ADUBO 20-00-20 - OF - 25 KG",
+        codigo: "0012195",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/jZPm273H/aeon-1l.png",
+        nome: "AEON - 1 L",
+        codigo: "0013688",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/yc59W54r/aeon-5l.png",
+        nome: "AEON - 5 L",
+        codigo: "0013689",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/tpmnqq6y/20l.png",
+        nome: "AGER BORO - 1 L",
+        codigo: "0012048",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/bg8BStQ7/20l.png",
+        nome: "AGER BORO - 20 L",
+        codigo: "0001692",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/bgr4Zrvj/1.png",
+        nome: "AGER BORO - 5 L",
+        codigo: "0000434",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/bMfVsYPg/2.png",
+        nome: "AGER CALCIO - 1 L",
+        codigo: "0008343",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/HTp7MRWs/3.png",
+        nome: "AGER CALCIO - 20 L",
+        codigo: "0001694",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://i.ibb.co/BRL3stm/4.png",
+        nome: "AGER CALCIO - 5 L",
+        codigo: "0007486",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER CALCIO - 50 L",
+        codigo: "0001695",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER FERRO - 20 L",
+        codigo: "0003848",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER MAGNESIO - 20 L",
+        codigo: "0001698",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER MAGNESIO - 5 L",
+        codigo: "0004541",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER MANGANES - 20 L",
+        codigo: "0007427",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER MANGANES - 5 L",
+        codigo: "0007428",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGER ZINCO - 20 L",
+        codigo: "0012572",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGREX (ESPALHANTE ADESIVO) - 1 L",
+        codigo: "0005358",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGREX (ESPALHANTE ADESIVO) - 20 L",
+        codigo: "0005360",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGREX (ESPALHANTE ADESIVO) - 5 L",
+        codigo: "0005359",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGROLEAF CAB 10-0,5 - 10 L",
+        codigo: "0011644",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGROLEAF CAB 10-0,5 - 20 L",
+        codigo: "0011595",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AGROWET- 1 L",
+        codigo: "0010127",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AJIFOL - 1 L",
+        codigo: "0003603",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COMERCIAL AGROPIRES PRODUTOS AGROPECUARIOS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ALGAMARE - 1 L",
+        codigo: "0003847",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ALGAMARE - 20 L",
+        codigo: "0007487",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ALGAMARE - 5 L",
+        codigo: "0003965",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ALGAMIN - 1 L",
+        codigo: "0011445",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "PROVERDE FERTILIZANTES IND. E COM. LTDA - ME"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ALGAREN BZN - 1 L",
+        codigo: "0010466",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ATON AZ PLUS - 20 L",
+        codigo: "0000098",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ATON MO - 1 L",
+        codigo: "0000100",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BARRIER - 20 L",
+        codigo: "0013240",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BARRIER - 5 L",
+        codigo: "0013107",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BAYFOLAN COBRE - 1 L",
+        codigo: "0012652",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BAYER S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BAYFOLAN COBRE - 5 L",
+        codigo: "0010320",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BAYER S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO 20 - 1L",
+        codigo: "0009974",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO 20 - 5L",
+        codigo: "0010112",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO HUMATE 30 - 5L",
+        codigo: "0013039",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO MB - 1 L",
+        codigo: "0010234",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGERMANY INDUSTRIA E COMERCIO LTDA - ME"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO NEM - 1 L",
+        codigo: "0010237",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGERMANY INDUSTRIA E COMERCIO LTDA - ME"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO PREMIUM A-KB - 1 L",
+        codigo: "0010235",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGERMANY INDUSTRIA E COMERCIO LTDA - ME"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIO TRICHOMAIS",
+        codigo: "0010236",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGERMANY INDUSTRIA E COMERCIO LTDA - ME"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOCALDA - 5L",
+        codigo: "0010853",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOTROP SOLUCOES BIOLOGICAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOCEL - 1 L",
+        codigo: "0013112",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOCROP 10 - 1 KG",
+        codigo: "0011041",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOCROP 10 - 100 G",
+        codigo: "0004473",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOELICITOR COBRE - 5 L",
+        codigo: "0012223",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOGAIN GRANMOL - 20 L",
+        codigo: "0013183",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOGAIN GRANMOL - 5 L",
+        codigo: "0013390",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOGAIN HUMICO - 20 L",
+        codigo: "0012724",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOGAIN NPK - 5 L",
+        codigo: "0013397",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOGROW MOL - 20 L",
+        codigo: "0011222",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMAX FROKUM - 20 L",
+        codigo: "0013113",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMAX MAGNUM - 20 L",
+        codigo: "0013114",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMAX SOLUM - 20 L",
+        codigo: "0013115",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMEX PLUS - 5 L",
+        codigo: "0010115",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMEX PLUS - 1L",
+        codigo: "0012482",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMEX STARTER - 1L",
+        codigo: "0012201",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOMOL - 1L",
+        codigo: "0009287",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL COBRE 13 HGA - 1 KG",
+        codigo: "0013380",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL COBRE 13 HGA - 5 KG",
+        codigo: "0013988",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL FERRO 12 HGA - 25 KG",
+        codigo: "0013554",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL FERRO 12 HGA - 5 KG",
+        codigo: "0013381",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL MAGNESIO 6 HGA - 1 KG",
+        codigo: "0013378",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL MANGANES 13 HGA - 1 KG",
+        codigo: "0013376",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL MANGANES 13 HGA - 25 KG",
+        codigo: "0013555",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL MANGANES 13 HGA - 5 KG",
+        codigo: "0013377",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL ZINCO 15 HGA - 1 KG",
+        codigo: "0013373",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEL ZINCO 15 HGA - 5 KG",
+        codigo: "0013374",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOQUEST - 5 L",
+        codigo: "0011828",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DEFENSIVE - INDUSTRIA, COMERCIO & REPRESENTACAO COMERCIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIORADICANTE - 1 L",
+        codigo: "0010849",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOROOT - 1 L",
+        codigo: "0011426",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOROOT - 20 L",
+        codigo: "0011428",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOROOT - 5 L",
+        codigo: "0011427",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOSTIM FERRO - 20 L",
+        codigo: "0012448",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOSTIM MAGNESIO - 20 L",
+        codigo: "0012442",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BIOTARICA - 5 L",
+        codigo: "0013961",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BORAMIN CA - 1 L",
+        codigo: "0002782",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BORAMIN CA - 20 L",
+        codigo: "0000107",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BORAMIN CA - 5 L",
+        codigo: "0000108",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BORO FLAME - 5 KG",
+        codigo: "0011792",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BORO K - 25 KG",
+        codigo: "0011638",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BRANDT MANNI PLEX B-MOLY - 1 L",
+        codigo: "0011922",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BRANDT SOLUCOES EM AGRICULTURA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BRANDT MANNI PLEX B-MOLY - 5 L",
+        codigo: "0011923",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BRANDT SOLUCOES EM AGRICULTURA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BRANDT MANNI PLEX CALCIO - 20 L",
+        codigo: "0011925",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BRANDT SOLUCOES EM AGRICULTURA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BRANDT MANNI PLEX CALCIO - 5 L",
+        codigo: "0011924",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BRANDT SOLUCOES EM AGRICULTURA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "BUDBREAKER - 5 L",
+        codigo: "0011955",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CAL3 - 1 L",
+        codigo: "0011639",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CALBORON - 5 KG",
+        codigo: "0010484",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CALMAX GOLD - 5L",
+        codigo: "0010116",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CALMAX ULTRA - 5 L",
+        codigo: "0010604",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CITOCROP - 1 L",
+        codigo: "0011422",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CITOCROP - 5 L",
+        codigo: "0011284",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CITOGROWER 2% - 1 L",
+        codigo: "0010858",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CITOGROWER 2% - 20 L",
+        codigo: "0010995",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CLORETO DE CALCIO CHEMICAL - 25 KG",
+        codigo: "0013210",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CHEMICAL INDUSTRIA E COMERCIO DE PRODUTOS AGROINDUSTRIAIS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CLORETO DE CALCIO HERINGER - 25 KG",
+        codigo: "0012325",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CLORETO DE CALCIO MANUCHAR 25 KG",
+        codigo: "0012688",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MANUCHAR AGRO COMERCIO E IMPORTACAO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CLORETO DE CALCIO OF - 25 KG",
+        codigo: "0012471",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CLORETO DE POTASSIO HERINGER - 25 KG",
+        codigo: "0011662",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CLORETO POTASSIO BRANCO OF - 25 KG",
+        codigo: "0011238",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COMO P10 - 20 L",
+        codigo: "0013748",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "STOLLER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COMO PLATINUM - 20 L",
+        codigo: "0013884",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "STOLLER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CONCENTRA - 5 L",
+        codigo: "0012481",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CONDICIONADOR DE SOLO LUPATEC - 20 KG",
+        codigo: "0012299",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GIRARDI AMBIENTAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COSMO K - 1 KG",
+        codigo: "0013108",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COSMO K - 10 KG",
+        codigo: "0013331",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COSMOCAL - 20 L",
+        codigo: "0013106",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COSMOFERT NP PLUS BB - 20 L",
+        codigo: "0013105",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COSMOFERT POSTASSIO SC - 20 KG",
+        codigo: "0013266",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "COSMOMAG - 5 L",
+        codigo: "0013156",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CROP+ - 5 L",
+        codigo: "0010760",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CROPSAL - 20 L",
+        codigo: "0013052",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CROPSAL - 5 L",
+        codigo: "0013051",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CUPRUS 150 - 1 L",
+        codigo: "0008344",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CUPRUS 150 - 20L",
+        codigo: "0011554",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "CYPRIUM - 10 L",
+        codigo: "0014083",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "DELFAN PLUS - 1 L",
+        codigo: "0002783",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "DELFAN PLUS - 20 L",
+        codigo: "0010723",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "DELFAN PLUS - 5 L",
+        codigo: "0010722",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ECORMON - 20 L",
+        codigo: "0010991",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ECORMON - 5 L",
+        codigo: "0010859",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "EFFIK ONE - 1 L",
+        codigo: "0012726",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "EXPERTGROW - 1 L",
+        codigo: "0011043",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ADAMA BRASIL S/A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FAINAL K - 5 L",
+        codigo: "0000139",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FAINAL K NEUTRO - 20 L",
+        codigo: "0011970",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FAINAL K NEUTRO - 5 L",
+        codigo: "0012007",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FB PLUS - 1 L",
+        codigo: "0011333",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SMARTTEC AGROBUSINESS E CONSULTORIA - EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FEOMEX EDTA - 1KG",
+        codigo: "0011834",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT 06-24-12 EUROCHEN - 50KG",
+        codigo: "0012534",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT 20-00-20 - FERTINE - 50 KG",
+        codigo: "0000430",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT 20-00-20 - HERINGER - 50 KG",
+        codigo: "0011535",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT MAP-GRANULADO 10-50-00 - EUROCHEM - 50KG",
+        codigo: "0012546",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES TOCANTINS S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT SULFATO DE AMONIO - CIBRAFERTIL - 50 KG",
+        codigo: "0012658",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CIBRAFERTIL COMPANHIA BRASILEIRA DE FERTILIZANTES"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT SUPERFOSFATO SIMPLES HERINGER - 50 KG",
+        codigo: "0012787",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT UREIA PRILL - 50 KG",
+        codigo: "0012314",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTIPAR FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. 06-24-12+6%CA+6%S FERTINE - 50 KG",
+        codigo: "0000428",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. CLORETO DE POTASSIO FERTINE - 25 KG",
+        codigo: "0011289",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTINOR FERTILIZANTES LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. FERTIPAR 10-10-10+5%CA+13%S - 50 KG",
+        codigo: "0000429",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. FOSFATO MONOAMONICO (KRISTA MAP) - 25 KG",
+        codigo: "0002579",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MAGNESIO ULTRA HEPTAHIDRATADO - 25 KG",
+        codigo: "0011542",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MULTITECNICA INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MAGNESIO YARATERA KRISTA - 25 KG",
+        codigo: "0012311",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S/A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MAP GRANULADO 12-52-00 OF - 25 KG",
+        codigo: "0013703",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MIN. SIMPLES 50% K20 SOP GI - 25 KG",
+        codigo: "0012752",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SULFABRAS SULFATOS DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MINER. COMPLEXO YARAMILA 16-16-16 - 50 KG",
+        codigo: "0003882",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MINERAL MISTO NPK 06-24-12 HERINGER - 25 KG",
+        codigo: "0011660",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MINERAL MISTO NPK 06-24-12 HERINGER - 50 KG",
+        codigo: "0012996",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MINERAL MISTO NPK 10-10-10 HERINGER - 50 KG",
+        codigo: "0006916",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MINERAL MISTO NPK 15-07-32 HERINGER - 50KG",
+        codigo: "0013201",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. MINERAL MISTO YARAVITA PHOSAMCO BIO - 5 L",
+        codigo: "0011330",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERT. SULFATO DE POTASSIO DRIPSOL K + SE- 25 KG",
+        codigo: "0010050",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "VITAS BRASIL AGROIND IMPORT E EXPORT LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE 06-24-12 FERTIPAR - 50 KG",
+        codigo: "0011258",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTIPAR FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE 09-00-24 NKALCIO - 50 KG",
+        codigo: "0005299",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE 12-00-12 NKALCIO - 50 KG",
+        codigo: "0005352",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE MINERAL MISTO YARAVITA CALTRAC - 1 L",
+        codigo: "0011323",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE MINERAL MISTO YARAVITA CALTRAC - 10 L",
+        codigo: "0011312",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE MINERAL MISTO YARAVITA MANCOZIN - 1 L",
+        codigo: "0011328",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE MINERAL MISTO YARAVITA MANCOZIN - 5L",
+        codigo: "0011314",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE ORGANOMINERAL CLASSE BIOTRAC - 5 L",
+        codigo: "0011321",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE SULFATO DE AMONIO FERTINE - 50 KG",
+        codigo: "0012064",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE SULFATO DE AMONIO HERINGER - 25 KG",
+        codigo: "0011580",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE SULFATO DE POTASSIO FERTINE - 25 KG",
+        codigo: "0012066",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE SULFATO DE POTASSIO HERINGER",
+        codigo: "0012267",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A. EM RECUPERACAO JUDICIAL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE SUPERFOSFATO SIMPLES HERINGER - 25 KG",
+        codigo: "0011665",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FERTILIZANTE YARAVITA BORTRAC - 1 L",
+        codigo: "0011332",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FLAVOMAX - 1 L",
+        codigo: "0013652",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FLAVOMAX - 5 L",
+        codigo: "0013651",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FOLHAMAX - 1 L",
+        codigo: "0013936",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FOLHAMAX - 5 L",
+        codigo: "0013937",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FORTGREEN COTTON - 20 KG",
+        codigo: "0013036",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FORTGREEN FG PRODUCAO - 10 KG",
+        codigo: "0012039",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FORTGREEN MOBILE - 5 L",
+        codigo: "0012038",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FORTGREEN RSOLVE - 12 X 1 L",
+        codigo: "0012743",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FORTGREEN SULPER - 5 L",
+        codigo: "0012040",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FORTGREEN XCELLENCE - 10 KG",
+        codigo: "0012674",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FOSFACEL - 1 KG",
+        codigo: "0013155",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FRUTALIV - 1 L",
+        codigo: "0011089",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FRUTALIV - 5 L",
+        codigo: "0011090",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FRUTAMAX - 1L",
+        codigo: "0013938",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "FRUTAMAX - 5 L",
+        codigo: "0013939",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GARD-S - 1L",
+        codigo: "0010778",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GARD-S - 5L",
+        codigo: "0010552",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLABRANEEN - 4 X 5 L",
+        codigo: "0012745",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA ESPECIALIDADES COMERCIO E EXPORTACAO DE INSUMOS"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN BIO - 1 L",
+        codigo: "0010383",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN BIO - 20 L",
+        codigo: "0000441",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN COMO - 1 L",
+        codigo: "0000444",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN DOBLE - 20 L",
+        codigo: "0000446",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN DOBLE - 5 L",
+        codigo: "0000447",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN EXTRA - 1 L",
+        codigo: "0000471",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN EXTRA - 20 L",
+        codigo: "0000151",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN EXTRA - 5 L",
+        codigo: "0000449",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN FLORADA - 1 L",
+        codigo: "0008345",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN FLORADA - 20 L",
+        codigo: "0005567",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN FLORADA - 5 L",
+        codigo: "0008951",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN K LIBRE - 1 L",
+        codigo: "0005591",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN K LIBRE - 20 L",
+        codigo: "0000451",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN K LIBRE - 5 L",
+        codigo: "0000450",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN MANGANES - 20 L",
+        codigo: "0000453",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GLUTAMIN MANGANES - 5 L",
+        codigo: "0000454",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GRAN N30 - 20 L",
+        codigo: "0014092",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREEN 10 - 4 KG",
+        codigo: "0013253",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREENUP ASSESSORIA, IMPORTACAO E AGRICULTURA SUSTENTAVEL LTD"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREX CAB - 50 L",
+        codigo: "0006323",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREX CITRUS PERA RIO - 20 L",
+        codigo: "0001758",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREX SIL-K - 20 L",
+        codigo: "0000455",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREX STAR - 20 L",
+        codigo: "0000458",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREX STAR - 5 L",
+        codigo: "0010837",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "GREX STAR - 50 L",
+        codigo: "0009711",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "H-85 - 10 KG",
+        codigo: "0013111",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA BONUS NPK 13-02-44 - 25 KG",
+        codigo: "0009768",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA CAL GG 15-5-0-0 - 25 KG",
+        codigo: "0009769",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA CAL ABSOLUTE 0-0-0-42 - 25 KG",
+        codigo: "0013993",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA MAG 11-00-00 + 9.6 MG - 25 KG",
+        codigo: "0011033",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA MAP 12-61-00 - 25 KG",
+        codigo: "0009919",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA MKP 00-52-34 - 25 KG",
+        codigo: "0009920",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA NPK 18-04-18 - 20 KG",
+        codigo: "0012461",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA PROTEK 00-56-37 - 10 KG",
+        codigo: "0009772",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HAIFA SOP 0-O-51 - 25 KG",
+        codigo: "0010612",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HARVEST MORE - 25 KG",
+        codigo: "0013737",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "STOLLER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HIGH N - 20 L",
+        codigo: "0010386",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HI-LIGHT - 20 L",
+        codigo: "0011778",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HORTIPLUS ATIVADOR - 1 L",
+        codigo: "0001762",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HORTIPLUS ATIVADOR - 20 L",
+        codigo: "0009893",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HORTIPLUS ATIVADOR - 5 L",
+        codigo: "0000459",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HUMITEC NG - 20 L",
+        codigo: "0012801",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HUMITEC WG - 1 KG",
+        codigo: "0003336",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HUMITEC WG - 5 KG",
+        codigo: "0002785",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "HYDRODIS - 1 L",
+        codigo: "0007481",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA ACCERPLUS - 1 L",
+        codigo: "0013723",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA ALGAE BORUM - 1 L",
+        codigo: "0013096",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA AMINO 75 - 1 KG",
+        codigo: "0013400",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA ECO OSMOBETAN - 1 L",
+        codigo: "0013399",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA ECO STIMULUS - 5KG",
+        codigo: "0012987",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA K-62 PLUS - 5 L",
+        codigo: "0011802",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA PHYTO ECO REPPELL - 1L",
+        codigo: "0012988",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INCENTIA SAR-EST - 5L",
+        codigo: "0012990",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "INTERCEPT - 5L",
+        codigo: "0011130",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "K 50 - 5L",
+        codigo: "0010117",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KAIROS - 1 KG",
+        codigo: "0013566",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGFOL CA - 5L",
+        codigo: "0010099",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGFOL CU 1000 - 5L",
+        codigo: "0010551",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGFOL CU-MN-ZN - 5L",
+        codigo: "0010816",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGFOL FLUSH BIO-1L",
+        codigo: "0010202",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGFOL MG - 5L",
+        codigo: "0010203",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGFOL ZN 70 - 5L",
+        codigo: "0010118",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KINGLIFE K400 - 5 KG",
+        codigo: "0010474",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KOMBAT PLUS - 1 L",
+        codigo: "0011646",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KOMBAT PLUS - 5 L",
+        codigo: "0011651",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KOPPREL 30 SL - 5 L",
+        codigo: "0011520",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KORRECTOR MN 13 SL - 20 L",
+        codigo: "0012438",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "KORRECTOR N 30 SL - 20 L",
+        codigo: "0012424",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LITO-S (CA22,5%) - 1 L",
+        codigo: "0011286",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LITO-S (CA22,5%) - 5 L",
+        codigo: "0011541",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LOCKER - 10 L",
+        codigo: "0014090",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LOCKER - 5L",
+        codigo: "0013935",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LOWER 7 - 1 L",
+        codigo: "0000133",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LOWER 7 - 20L",
+        codigo: "0000135",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "LOWER 7 - 5 L",
+        codigo: "0000134",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "M10 AD - 20 L",
+        codigo: "0010478",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL K - 5 L",
+        codigo: "0003967",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL N 400 - 20 L",
+        codigo: "0000473",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL N 400 - 5 L",
+        codigo: "0005355",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL NP 1030 - 1 L",
+        codigo: "0008281",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL NP 1030 - 20 L",
+        codigo: "0007200",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL S - 20 L",
+        codigo: "0010721",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MACROFOL S - 5 L",
+        codigo: "0010668",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MAGMEX EDTA - 1KG",
+        codigo: "0011835",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MAGNESIOGREEN - 10 KG",
+        codigo: "0010482",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MAGNISAL 11-00-00 25KG",
+        codigo: "0009770",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MAP PURIFICADO MANUCHAR 12-61-00 - 25 KG",
+        codigo: "0012348",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FRUTAGRO - COMERCIO E TRANSPORTADORA DE FRUTAS E LEGUMES LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MAP PURIFICADO OF - 25 KG",
+        codigo: "0012332",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MARCADOR AZUL - 20 L",
+        codigo: "0013085",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MAXIKARE - 1 L",
+        codigo: "0013267",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMAX - 1 L",
+        codigo: "0010605",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMAX COMBO 1 - 1 KG",
+        codigo: "0011599",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMAX CU K EDTA - 1 KG",
+        codigo: "0011603",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMAX FE K EDTA - 1 KG",
+        codigo: "0011601",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMAX ZN K EDTA - 1 KG",
+        codigo: "0011602",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMIX UVA - 20 L",
+        codigo: "0012957",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROMIX UVA - 5 L",
+        codigo: "0012748",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIGRANTEC TECNOLOGIAS P SEMENTES PLANTAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROPHITO 36 - 20 L",
+        codigo: "0010613",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MICROPHITO PK 30-20 - 1 L",
+        codigo: "0008363",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MOLIBDATO DE SODIO - 100 GR",
+        codigo: "0010842",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "WALDYR VOLPE"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MOLYBDATE 250 - 1 L",
+        codigo: "0005362",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MOLYSTAR - 1 L",
+        codigo: "0010485",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MOVER - 20 L",
+        codigo: "0013734",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "STOLLER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MOVER - 5 L",
+        codigo: "0013735",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "STOLLER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "MULTI NPK 13-02-44 - 25 KG",
+        codigo: "0010505",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NATURVITAL PLUS - 5 L",
+        codigo: "0011754",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DAYMSA DO BRASIL COML. DE INSUMOS AGRIC LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NITRATO DE CALCIO CALCINIT YARATERA - 25 KG",
+        codigo: "0011282",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "YARA BRASIL FERTILIZANTES S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NITRATO DE CALCIO CHEMICAL - 25 KG",
+        codigo: "0013391",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CHEMICAL INDUSTRIA E COMERCIO DE PRODUTOS AGROINDUSTRIAIS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NITRATO DE CALCIO CHEMICAL - 50 KG",
+        codigo: "0013154",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CHEMICAL INDUSTRIA E COMERCIO DE PRODUTOS AGROINDUSTRIAIS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NITRATO DE CALCIO MANUCHAR - 25 KG",
+        codigo: "0012832",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MANUCHAR AGRO COMERCIO E IMPORTACAO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NITRATO DE CALCIO OF - 25 KG",
+        codigo: "0012356",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NITRATO DE MAGNESIO EM PO - 25 KG",
+        codigo: "0012398",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NOVA MAGNIFIC PLUS - 25 KG",
+        codigo: "0011590",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "ICL BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NUTRICOMPLEX AZUL PLUS - 25 KG",
+        codigo: "0012061",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NUTRICOMPLEX BLANCO - 25 KG",
+        codigo: "0002791",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NUTRICOMPLEX ROJO - 25 KG",
+        codigo: "0002793",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "NUTRICOMPLEX TRIPLE - 25KG",
+        codigo: "0002794",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "OMEX BORO - 1L",
+        codigo: "0011086",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "OMEX BORO - 5L",
+        codigo: "0010120",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PERFORMA 5 L",
+        codigo: "0012671",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHIX - 1L",
+        codigo: "0010437",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHIX - 20 L",
+        codigo: "0011522",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHIX - 5 L",
+        codigo: "0011524",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN GEMMA 1 - LT",
+        codigo: "0009884",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN GEMMA 5 - LT",
+        codigo: "0009887",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN ELECTRA - 1L",
+        codigo: "0009888",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN ELECTRA - 20 L",
+        codigo: "0010573",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN ELECTRA - 5 L",
+        codigo: "0009885",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN NEO - 1L",
+        codigo: "0012042",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYLGREEN NEO - 5 L",
+        codigo: "0012043",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYSIOGROW AMINO 25 SL - 1 L",
+        codigo: "0011991",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYSIOGROW COLOR - 20 L",
+        codigo: "0011224",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PHYSIOGROW COLOR - 5 L",
+        codigo: "0011223",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PLENNO - 1 L",
+        codigo: "0003968",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PLENNO - 5 L",
+        codigo: "0000474",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PLENNO - 50 L",
+        codigo: "0001768",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLICAL - 20 L",
+        codigo: "0014077",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED 04-08-42+ME - 25 KG",
+        codigo: "0009759",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED 10-10-43 +ME - 25 KG",
+        codigo: "0010369",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED 12-43-12 +ME - 25 KG",
+        codigo: "0009761",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED 16-08-32 - 25 KG",
+        codigo: "0009762",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED 19-19-19 + ME - 25 KG",
+        codigo: "0009760",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED BONUS MAR 19-19-19+ME - 15 KG",
+        codigo: "0009757",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED FOLIAR MAR 19-19-19 + ME - 25 KG",
+        codigo: "0010700",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED IMPACT 04-15-37 - 25 KG",
+        codigo: "0012713",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYFEED SPARK 11-40-11 +ME - 25 KG",
+        codigo: "0012834",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "HAIFA QUIMICA DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYMEX - 20 L",
+        codigo: "0010206",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POLYPHOS - 20 L",
+        codigo: "0010606",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POWER FLOWER - 1L",
+        codigo: "0013880",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FARMITON AGRO BIOTECH EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POWER FLOWER - 20 L",
+        codigo: "0013980",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FARMITON AGRO BIOTECH EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POWER FLOWER - 20 L",
+        codigo: "0011526",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POWER FLOWER - 5 L",
+        codigo: "0011424",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "POWER FLOWER - 5L",
+        codigo: "0013881",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FARMITON AGRO BIOTECH EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PRIMER BIO ZN - 3L",
+        codigo: "0012387",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PUMMA - 25 KG",
+        codigo: "0010572",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PUMMA - 3 KG",
+        codigo: "0004228",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PUMMA KALIDAD - 25 KG",
+        codigo: "0010775",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PUMMA KALIDAD - 3 KG",
+        codigo: "0003970",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "PUMMA TC - 3 KG",
+        codigo: "0009372",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "QUIMIFOL 30 N - 20 L",
+        codigo: "0012416",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FENIX AGRO PECUS INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "QUIMIFOL FLORADA 1 LT",
+        codigo: "0012052",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FENIX AGRO PECUS INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "QUIMIFOL FLORADA 5L",
+        codigo: "0012339",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FENIX AGRO PECUS INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "QUIMIFOL MG-8 - 5 L",
+        codigo: "0011967",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FENIX AGRO PECUS INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "QUIMIFOL S450 - 1 L",
+        codigo: "0012542",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FENIX AGRO PECUS INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "QUIMIFOL ZINCO - 5 L",
+        codigo: "0012044",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FENIX AGRO PECUS INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RIPENING BRIX - 4X5 L",
+        codigo: "0012747",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RIZOFLOW COMONI - 1 L",
+        codigo: "0013964",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIZOBACTER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RIZOFLOW COMONI - 5 L",
+        codigo: "0014015",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIZOBACTER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RIZOPOWER - 1 KG",
+        codigo: "0013760",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "PRO FARM TECHNOLOGIES COMERCIO DE INSUMOS AGRICOLAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RIZOSPRAY EXTREMO - 5 L",
+        codigo: "0011772",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIZOBACTER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RIZOSTAR - 20 KG",
+        codigo: "0011985",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "RIZOBACTER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ROOTEX - 1 KG",
+        codigo: "0013109",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ROOTEX - 10 KG",
+        codigo: "0013110",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ROUND 3 - 1 L",
+        codigo: "0013944",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ROUND 3 - 5 L",
+        codigo: "0013991",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RUTER AA - 20 L",
+        codigo: "0002798",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RUTER AA - 5 L",
+        codigo: "0002800",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "RUTER-AA - 15X1 L",
+        codigo: "0012576",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SAFENER MN - 5L",
+        codigo: "0011299",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SEAFARM - COT6% - K2% FLUIDO DESN. 1,20 G/ML - 5L",
+        codigo: "0012250",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FARMITON AGRO BIOTECH EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SECTOR HF - 1 L",
+        codigo: "0012191",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FARMITON AGRO BIOTECH EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SECTOR HF - 5 L",
+        codigo: "0012335",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FARMITON AGRO BIOTECH EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SHOCK - 20 L",
+        codigo: "0011759",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SIBERIO - 20 L",
+        codigo: "0010476",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "STAR - 1 L",
+        codigo: "0011425",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "STAR - 5 L",
+        codigo: "0011574",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "STILO VERDE - 5L",
+        codigo: "0012867",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SIPCAM AGRO S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "STOLLER ZINCO - 5 L",
+        codigo: "0013783",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "STOLLER DO BRASIL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "STRESSOFF - 1 L",
+        codigo: "0013940",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "STRESSOFF - 5 L",
+        codigo: "0013941",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFATO DE AMONIO FERTINE - 25 KG",
+        codigo: "0013870",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFATO DE AMONIO OF - 25 KG",
+        codigo: "0012235",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFATO DE MAGNESIO 9% HEPTAHIDRATADO UTINGA - 25KG",
+        codigo: "0012695",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "PERI INDUSTRIA DE FERTILIZANTES LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFATO DE POTASSIO EM PO MANUCHAR- 25 KG",
+        codigo: "0012349",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FRUTAGRO - COMERCIO E TRANSPORTADORA DE FRUTAS E LEGUMES LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFATO DE POTASSIO FORTAL - 25 KG",
+        codigo: "0013136",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FORTAL INDUSTRIA E COMERCIO S.A"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFATO DE POTASSIO PO OF - 25 KG",
+        codigo: "0011950",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULFRA SK - 5 L",
+        codigo: "0011442",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SULPHOMEX - 5L",
+        codigo: "0011153",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "SW8 - 1L",
+        codigo: "0011165",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TECHNO S - SULPHUR 90% - 20 KG",
+        codigo: "0013615",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TECHNO S - SULPHUR 90% - 5 KG",
+        codigo: "0013614",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TECHNO Z - SULPHUR 70% + 15% ZINCO - 20 KG",
+        codigo: "0013617",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TECHNO Z - SULPHUR 70% + 15% ZINCO - 5 KG",
+        codigo: "0013616",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TECMO - 500 GR",
+        codigo: "0006557",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TERRA CAMG+B (CA6% MG2% B1%) - 1 L",
+        codigo: "0011283",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TERRA CAMG+B (CA6% MG2% B1%) - 20 L",
+        codigo: "0011432",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TERRA CAMG+B (CA6% MG2% B1%) - 5 L",
+        codigo: "0011285",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "SHEMITON DO BRASIL INDUSTRIAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "THEION FERTILIZANTE MINERAL MISTO - 25 KG",
+        codigo: "0002986",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "INTERCUF INDUSTRIA E COMERCIO LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TOPFLOWER - 1 L",
+        codigo: "0013942",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADEBOR - 1 L",
+        codigo: "0002802",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADEBOR - 5 L",
+        codigo: "0002803",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP AZ II - 1 KG",
+        codigo: "0005380",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP AZ II - 5 KG",
+        codigo: "0004226",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP CA - 1 KG",
+        codigo: "0002806",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP FE - 1 KG",
+        codigo: "0002808",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP MN - 5 KG",
+        codigo: "0008808",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP MN - 12,5 KG",
+        codigo: "0012350",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP ZN - 1 KG",
+        codigo: "0002810",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADECORP ZN - 5 KG",
+        codigo: "0002811",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADESEED - 1 L",
+        codigo: "0004832",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRADESEED EVOLUTION - 1L",
+        codigo: "0009972",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRAFOS GREEN PLUS - 1 KG",
+        codigo: "0005350",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TRAFOS SINERGY - 1 LT",
+        codigo: "0005351",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "TROPICEL - 1 KG",
+        codigo: "0013238",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ULTRAFERRO - 1 KG",
+        codigo: "0002817",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ULTRAFERRO - 5 KG",
+        codigo: "0002816",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "UREIA FERTILIZANTES 46%N FERTINE 50KG",
+        codigo: "0000423",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES DO NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "UREIA GRANULADA 46% N HERINGER - 25 KG",
+        codigo: "0011578",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "FERTILIZANTES HERINGER S.A."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "UREIA PEROLADA 46% OF - 25 KG",
+        codigo: "0011240",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OUROFERTIL NORDESTE LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VERGUE - 1 L",
+        codigo: "0012991",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VIGOSTART - 10 KG",
+        codigo: "0013810",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VISAFERTIL FLEX COND DE SOLO - 20 KG",
+        codigo: "0012300",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GIRARDI AMBIENTAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VISAFERTIL ORIGEM COND DE SOLO - 20 KG",
+        codigo: "0012302",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GIRARDI AMBIENTAL LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VITALEM FORTE - 1 L",
+        codigo: "0010986",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VIT-ORG - 1 L",
+        codigo: "0010493",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GREEN HAS DO BRASIL"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VORAX - 1 L",
+        codigo: "0008346",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VORAX - 20 L",
+        codigo: "0008826",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VORAX - 250 ML",
+        codigo: "0011806",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "VORAX BIOFERTILIZANTE - 10 L",
+        codigo: "0012568",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "WA 400 - 20 L",
+        codigo: "0010751",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CAPE FOOD INGREDIENTES BRASIL EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "WA 400 - 5 L",
+        codigo: "0011051",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CAPE FOOD INGREDIENTES BRASIL EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "WA BESSER - 1 L",
+        codigo: "0011049",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CAPE FOOD INGREDIENTES BRASIL EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "WA100 - 5 L",
+        codigo: "0010817",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CAPE FOOD INGREDIENTES BRASIL EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "WA100 FLORADA - 1 L",
+        codigo: "0011019",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "CAPE FOOD INGREDIENTES BRASIL EIRELI"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ZINPLEX - 1 L",
+        codigo: "0010368",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ZINPLEX - 20 L",
+        codigo: "0001777",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ZINPLEX - 5 L",
+        codigo: "0000475",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ZINPLEX - 50 L",
+        codigo: "0001780",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ZYNERGY - 1L",
+        codigo: "0012468",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "ZYNERGY - 5L",
+        codigo: "0010435",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AK - 1 L",
+        codigo: "0011649",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "https://via.placeholder.com/280x200?text=Placeholder",
+        nome: "AK - 5 L",
+        codigo: "0011656",
+        qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "CRYSTAL - 1 KG",
+        codigo: "0011808",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "CRYSTAL - 5 KG",
+        codigo: "0011807",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "D-MOLIDOR - 1 L",
+        codigo: "0011653",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "GLABRANEEN - 20 L",
+        codigo: "0012723",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "DVA ESPECIALIDADES COMERCIO E EXPORTACAO DE INSUMOS"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "GLABRANEEN 1L - 12 X 1 L",
+        codigo: "0012744",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "DVA ESPECIALIDADES COMERCIO E EXPORTACAO DE INSUMOS"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "LEPDOS - 1L",
+        codigo: "0012841",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "LEPDOS - 20 L",
+        codigo: "0013015",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "LIFE SOIL - FLEXROOT 1 L",
+        codigo: "0013217",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "LIFE SOIL - FLEXROOT 5 L",
+        codigo: "0012781",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "MATRIX - 1 L",
+        codigo: "0011650",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "MATRIX - 5 L",
+        codigo: "0011652",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "PROTONADO 5 - 1 L",
+        codigo: "0011658",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "PROTONADO 5 - 20 L",
+        codigo: "0011883",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "PROTONADO 5 - 5 L",
+        codigo: "0011659",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "ROOTLAND - 5 L",
+        codigo: "0013338",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "SHOCK - 1 L",
+        codigo: "0011647",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "SHOCK - 5 L",
+        codigo: "0011654",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "VORTEX - 1 L",
+        codigo: "0011648",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "VORTEX - 5 L",
+        codigo: "0011657",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "GLOBAL CROPS IND. E COM. DE PROD. AGRICOLAS LTDA"
+    },
+    {
+        imagem: "URL_DA_IMAGEM_PADRAO",
+        nome: "DEMARC AZUL - 4 X 5 L",
+        codigo: "0010056",
+        qrcode: "URL_DO_QRCODE_PADRAO",
+        fornecedor: "BIOGROW BRASIL LTDA."
+    },
+    ];
+
+    let produtosFiltrados = produtos;
+
+    const catalogo = document.querySelector('.catalogo');
+    const paginacaoDiv = document.getElementById('paginacao');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const filtroFornecedor = document.getElementById('filtroFornecedor');
+    const filtroUnidade = document.getElementById('filtroUnidade');
+
+    const produtosPorPagina = 8;
+    
+    let paginaAtual = 1;
+
+
+    function preencherFiltros() {
+        // 1. Preencher Fornecedores
+        const fornecedores = [...new Set(produtos.map(p => p.fornecedor))].sort();
+        fornecedores.forEach(fornecedor => {
+            if (fornecedor) {
+                const option = document.createElement('option');
+                option.value = fornecedor;
+                option.innerText = fornecedor;
+                filtroFornecedor.appendChild(option);
+            }
+        });
+    }
+    
+    function aplicarFiltros() {
+        const termoPesquisa = searchInput.value.toLowerCase().trim();
+        const fornecedorSelecionado = filtroFornecedor.value;
+        const unidadeSelecionada = filtroUnidade.value;
+
+        produtosFiltrados = produtos.filter(produto => {
+            
+            // Filtro por Nome/Código/Fornecedor (Pesquisa)
+            const correspondePesquisa = !termoPesquisa || 
+                (produto.nome.toLowerCase().includes(termoPesquisa) || 
+                produto.codigo.includes(termoPesquisa) ||
+                (produto.fornecedor && produto.fornecedor.toLowerCase().includes(termoPesquisa)));
+            
+            // Filtro por Fornecedor
+            const correspondeFornecedor = !fornecedorSelecionado || produto.fornecedor === fornecedorSelecionado;
+
+            // Filtro por Unidade (Verifica se o nome do produto CONTÉM a unidade selecionada)
+            // A lógica de filtragem continua a mesma e suporta as novas unidades (ex: ' - 5 KG')
+            const correspondeUnidade = !unidadeSelecionada || produto.nome.includes(`- ${unidadeSelecionada}`);
+            
+            return correspondePesquisa && correspondeFornecedor && correspondeUnidade;
+        });
+
+        paginaAtual = 1;
+        renderizarProdutos(produtosFiltrados, paginaAtual);
+        setupPaginacao(produtosFiltrados);
+    }
+    
+    // Adiciona ouvintes de evento para os novos filtros
+    filtroFornecedor.addEventListener('change', aplicarFiltros);
+    filtroUnidade.addEventListener('change', aplicarFiltros);
+    // Associa a função `aplicarFiltros` aos botões e eventos de pesquisa existentes
+    searchButton.addEventListener('click', aplicarFiltros);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            aplicarFiltros();
+        }
+    });
+    
+
+    function renderizarProdutos(listaDeProdutos, pagina) {
+        catalogo.innerHTML = '';
+        const inicio = (pagina - 1) * produtosPorPagina;
+        const fim = inicio + produtosPorPagina;
+        const produtosDaPagina = listaDeProdutos.slice(inicio, fim);
+        
+        if (produtosDaPagina.length === 0) {
+            catalogo.innerHTML = '<p style="text-align: center; width: 100%;">Nenhum produto encontrado.</p>';
+            return;
+        }
+
+        produtosDaPagina.forEach(produto => {
+            const card = document.createElement('div');
+            card.className = 'produto-card';
+            card.innerHTML = `
+                <img class="produto-imagem" src="${produto.imagem}" alt="Imagem do ${produto.nome}">
+                <h3>${produto.nome}</h3>
+                <p class="fornecedor">Fornecedor: <strong>${produto.fornecedor || 'N/A'}</strong></p>
+                <p class="preco">Cod. Siagri: ${produto.codigo}</p>
+                <img class="qr-code" src="${produto.qrcode}" alt="QR Code ${produto.nome}">
+            `;
+            catalogo.appendChild(card);
+        });
+    }
+
+function setupPaginacao(listaDeProdutos) {
+    paginacaoDiv.innerHTML = '';
+    const totalPaginas = Math.ceil(listaDeProdutos.length / produtosPorPagina);
+
+    if (totalPaginas <= 1) {
+        return;
+    }
+
+    const maxBotoesNumericos = 5; 
+    
+    let inicioLoop = Math.max(1, paginaAtual - Math.floor(maxBotoesNumericos / 2));
+    let fimLoop = Math.min(totalPaginas, inicioLoop + maxBotoesNumericos - 1);
+
+    if (fimLoop === totalPaginas) {
+        inicioLoop = Math.max(1, totalPaginas - maxBotoesNumericos + 1);
+    }
+
+    // Botão "Anterior"
+    if (paginaAtual > 1) {
+        const prevBtn = criarBotaoPaginacao('Anterior', paginaAtual - 1, listaDeProdutos);
+        paginacaoDiv.appendChild(prevBtn);
+    }
+
+    // Botão da primeira página (se não estiver visível)
+    if (inicioLoop > 1) {
+        const firstBtn = criarBotaoPaginacao(1, 1, listaDeProdutos);
+        paginacaoDiv.appendChild(firstBtn);
+        if (inicioLoop > 2) {
+            adicionarEllipsis();
+        }
+    }
+
+    // Botões numéricos limitados
+    for (let i = inicioLoop; i <= fimLoop; i++) {
+        const btn = criarBotaoPaginacao(i, i, listaDeProdutos);
+        if (i === paginaAtual) {
+            btn.classList.add('ativo');
+        }
+        paginacaoDiv.appendChild(btn);
+    }
+
+    // Ellipsis (...)
+    if (fimLoop < totalPaginas) {
+        if (fimLoop < totalPaginas - 1) {
+            adicionarEllipsis();
+        }
+        // Botão da última página
+        const lastBtn = criarBotaoPaginacao(totalPaginas, totalPaginas, listaDeProdutos);
+        paginacaoDiv.appendChild(lastBtn);
+    }
+
+    // Botão "Próximo"
+    if (paginaAtual < totalPaginas) {
+        const nextBtn = criarBotaoPaginacao('Próximo', paginaAtual + 1, listaDeProdutos);
+        paginacaoDiv.appendChild(nextBtn);
+    }
+}
+
+function criarBotaoPaginacao(texto, paginaDestino, listaDeProdutos) {
+    const btn = document.createElement('button');
+    btn.innerText = texto;
+    btn.addEventListener('click', () => {
+        paginaAtual = paginaDestino;
+        renderizarProdutos(listaDeProdutos, paginaAtual);
+        setupPaginacao(listaDeProdutos);
+    });
+    return btn;
+}
+
+function adicionarEllipsis() {
+    const ellipsis = document.createElement('span');
+    ellipsis.innerText = '...';
+    ellipsis.style.padding = '0 5px';
+    ellipsis.style.color = '#555';
+    paginacaoDiv.appendChild(ellipsis);
+}
+
+    preencherFiltros();
+    renderizarProdutos(produtosFiltrados, paginaAtual);
+    setupPaginacao(produtosFiltrados);
+});
+</script>
+</body>
+</html>

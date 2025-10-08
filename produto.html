@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Detalhes do Produto</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .detalhes-container {
+            max-width: 900px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-detalhes {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .imagem-produto {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .info-basica {
+            flex-grow: 1;
+        }
+        
+        .info-basica h1 {
+            color: #0a95ff;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        
+        .info-basica h2 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .secao-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .secao-info h3 {
+            color: #333;
+            border-bottom: 2px solid #0a95ff;
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-top: 0;
+        }
+        
+        .qr-code-display {
+            width: 100px;
+            height: 100px;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background-color: #555;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            margin-left: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="seu_catalogo.html" class="back-btn">← Voltar ao Catálogo</a>
+
+    <div class="detalhes-container" id="detalhes-produto">
+        <p style="text-align: center;">Buscando informações do produto...</p>
+    </div>
+
+    <script type="module">
+        // 🚨 IMPORTANTE: Você precisará da sua API Key da AgroAPI/Embrapa para a integração real.
+        // O array abaixo é uma simulação dos dados que você está usando no catálogo.
+        
+        // Dados simulados com campos adicionais para a página de detalhes
+        const produtosSimulados = [
+            {
+                imagem: "https://imgs.search.brave.com/r_diLnXG2PoKMxXMKX7hVIoqTNenxGKIJDdev1UVqeY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9hZ3Jv/cm91bmR1cC5jb20u/YnIvd3AtY29udGVu/dC91cGxvYWRzLzIw/MjQvMDUvS0FJU08t/MjUwLUNTLTEtTGl0/cm8tZTE3MTQ2MTU5/OTc2NTUucG5n",
+                nome: "Kaiso 250 SC 1L",
+                codigo: "0075236",
+                qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+                detalhes: "Produto Kaiso para o controle de pragas, ideal para diversas culturas.",
+                registro_mapa: "5423",
+                ingrediente_ativo: "Lambda-Cialotrina",
+                empresa_registro: "Syngenta Proteção de Cultivos Ltda",
+                tipo: "Defensivo Químico"
+            },
+            {
+                imagem: "https://imgs.search.brave.com/YyorvZjd_3PBLKX4IUhYL1MpzN1JY7sxf51QVs0bNNw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cm91bmR1cGJyYXpp/bC5jb20vd3AtY29u/dGVudC91cGxvYWRz/LzIwMjQvMDUvQWJh/bWV4LmpwZy0zMDB4/MzAwLnBuZw",
+                nome: "Abamex 5L",
+                codigo: "000698",
+                qrcode: "https://i.ibb.co/dsQr83jk/image.png",
+                detalhes: "Abamex é um inseticida acaricida de contato e ingestão, com ação translaminar.",
+                registro_mapa: "00698",
+                ingrediente_ativo: "Abamectina",
+                empresa_registro: "Syngenta Proteção de Cultivos Ltda",
+                tipo: "Defensivo Químico"
+            },
+            {
+                imagem: "https://imgs.search.brave.com/cHe3gDXxw26345oyRJQa2P1K6b-bE66JkMa_dPygoh8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9oZnNl/bWVudGVzLmNvbS5i/ci93cC1jb250ZW50/L3VwbG9hZHMvMjAy/MS8wNC9OdWZ1cm9u/LnBuZw",
+                nome: "Nufuron 10g",
+                codigo: "0040130",
+                qrcode: "https://i.ibb.co/B5hKzwzt/image.png",
+                detalhes: "Nufuron é um herbicida seletivo sistêmico para o controle de plantas daninhas.",
+                registro_mapa: "4013",
+                ingrediente_ativo: "Sulfometurom-Metílico",
+                empresa_registro: "Nufarm Indústria Química e Farmacêutica S.A.",
+                tipo: "Herbicida"
+            },
+            // ... Inclua os demais produtos simulados aqui com dados detalhados.
+            // Para os produtos genéricos, usarei o mesmo padrão.
+            { codigo: "0004131", nome: "Abamex 1L", detalhes: "Abamex na versão de 1L, com os mesmos benefícios de 5L.", registro_mapa: "00698", ingrediente_ativo: "Abamectina", empresa_registro: "Syngenta Proteção de Cultivos Ltda", tipo: "Defensivo Químico", imagem: "https://tse3.mm.bing.net/th/id/OIP.rdUCw9dLpA95arIPX6DnVgHaHa?rs=1&pid=ImgDetMain&o=7&rm=3", qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png" },
+            { codigo: "0000132", nome: "Produto 5 Biológico", detalhes: "Detalhes do Produto 5 Biológico. Exemplo de um bioinsumo.", registro_mapa: "01054", ingrediente_ativo: "Bacillus subtilis", empresa_registro: "Biotecnologia S.A.", tipo: "Biológico", imagem: "https://tse3.mm.bing.net/th/id/OIP.rdUCw9dLpA95arIPX6DnVgHaHa?rs=1&pid=ImgDetMain&o=7&rm=3", qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png" },
+            // ... adicione o restante dos produtos aqui...
+        ];
+        
+        // 💡 FUNÇÃO SIMULADA DE CHAMADA À API BIOINSUMOS V2
+        // Se você tivesse a API Key e o código fosse o Número de Registro MAPA, 
+        // a implementação seria um 'fetch' aqui.
+        async function fetchDetalhesProduto(codigo) {
+            
+            // SIMULAÇÃO DE BUSCA LOCAL
+            // Substitua esta linha pela chamada 'fetch' se for usar a API real.
+            return new Promise(resolve => {
+                setTimeout(() => { // Simula a latência da rede (500ms)
+                    const produto = produtosSimulados.find(p => p.codigo === codigo);
+                    resolve(produto);
+                }, 500);
+            });
+            
+            /* // ➡️ EXEMPLO DE CÓDIGO PARA A API REAL (descomente e configure)
+            
+            const API_KEY = "SUA_CHAVE_AQUI"; // ⚠️ OBRIGATÓRIO: Substitua pela sua chave
+            const REGISTRO_MAPA = produtosSimulados.find(p => p.codigo === codigo)?.registro_mapa;
+
+            if (!REGISTRO_MAPA) {
+                console.error("Produto não tem Número de Registro MAPA para buscar na API.");
+                return null;
+            }
+
+            const URL_BIOINSUMOS = `https://api.cnptia.embrapa.br/bioinsumos/v2/search/produtos?numeroRegistro=${REGISTRO_MAPA}`; 
+            
+            const response = await fetch(URL_BIOINSUMOS, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `ApiKey ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro ao consultar API: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            // Retorna o primeiro produto encontrado
+            return data.result.data[0]; 
+            */
+        }
+        
+        // FUNÇÃO PRINCIPAL DE CARREGAMENTO DA PÁGINA
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const codigoProduto = params.get('codigo');
+            const detalhesDiv = document.getElementById('detalhes-produto');
+            const backBtn = document.querySelector('.back-btn');
+            
+            // Ajusta o link de voltar para o seu catálogo
+            backBtn.href = 'seu_catalogo.html'; 
+
+            if (!codigoProduto) {
+                detalhesDiv.innerHTML = '<h1>Erro: Código do produto não encontrado na URL.</h1>';
+                return;
+            }
+            
+            // Tenta buscar o produto (simulado ou da API)
+            try {
+                const produto = await fetchDetalhesProduto(codigoProduto);
+
+                if (produto) {
+                    document.getElementById('page-title').innerText = produto.nome;
+                    
+                    // Renderiza os detalhes do produto
+                    detalhesDiv.innerHTML = `
+                        <div class="header-detalhes">
+                            <img class="imagem-produto" src="${produto.imagem}" alt="Imagem do ${produto.nome}">
+                            <div class="info-basica">
+                                <h1>${produto.nome}</h1>
+                                <h2>Cód. Siagri: ${produto.codigo}</h2>
+                                <p><strong>Tipo de Produto:</strong> ${produto.tipo || 'N/A'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="secao-info">
+                            <h3>Registro e Componentes (Dados da API Bioinsumos)</h3>
+                            <p><strong>N° de Registro MAPA:</strong> ${produto.registro_mapa || 'Não Informado'}</p>
+                            <p><strong>Ingrediente Ativo:</strong> ${produto.ingrediente_ativo || 'Não Informado'}</p>
+                            <p><strong>Empresa Registrante:</strong> ${produto.empresa_registro || 'Não Informada'}</p>
+                        </div>
+
+                        <div class="secao-info">
+                            <h3>Descrição e Detalhes</h3>
+                            <p>${produto.detalhes}</p>
+                        </div>
+                        
+                        <div class="secao-info">
+                            <h3>QR Code</h3>
+                            <img class="qr-code-display" src="${produto.qrcode}" alt="QR Code do ${produto.nome}">
+                        </div>
+                    `;
+                } else {
+                    detalhesDiv.innerHTML = `<h1>Produto não encontrado</h1><p>Não foi possível localizar o produto com código **${codigoProduto}**.</p>`;
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar detalhes do produto:", error);
+                detalhesDiv.innerHTML = `<h1>Erro ao carregar os dados</h1><p>Ocorreu um erro na busca: ${error.message}. Verifique sua conexão ou API Key.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
