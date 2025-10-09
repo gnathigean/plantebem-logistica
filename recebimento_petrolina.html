@@ -1,241 +1,273 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="tema.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/tema.css" /> 
 
-    <title>RECEBIMENTO DE PRODUTO</title>
+    <title>RECEBIMENTO DE PRODUTO</title>
 
 </head>
 
 <body>
-    <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo">
-    
-        <a href="menu.html" class="botao-menu">← Voltar ao Catálogo</a>
-    
-    <button id="logout-button">Sair</button>
+    
+    <div class="fixed-nav">
+        <a href="menu.html" class="botao-menu">← Menu</a> 
+        <button id="logout-button">Sair</button>
+    </div>
 
-    <div id="main-content" class="container">
-        <h2>FORMULARIO DE RECEBIMENTO</h2>
-        <form id="meu-formulario">
-            <div class="date-container">
-                <label for="data">Data de Recebimento:</label>
-                <input
-                    type="datetime-local"
-                    name="dataderecebimento"
-                    id="dataderecebimento"
-                    required
-                />
-            </div>
-            <label for="text">Fornecedor:</label>
-            <input type="text" name="fornecedor" id="fornecedor" required />
-            <label for="text">Nota Fiscal:</label>
-            <input type="text" name="nf" id="nf" required />
-            <label for="text">Produto:</label>
-            <input type="text" name="produto" id="produto" required />
-            <label for="text">Embalagem Secundária:</label>
-            <input type="text" name="quantidade" id="quantidade" required />
-            <label for="text">Embalagem Primária:</label>
-            <input type="text" name="quantidade2" id="quantidade2" required />
-            <label for="text">Lote:</label>
-            <input type="text" name="lote" id="lote" required />
-            <div class="date-container">
-                <label for="data">Fabricação:</label>
-                <input type="date" name="fabricacao" id="fabricacao" required />
-            </div>
-            <div class="date-container">
-                <label for="data">Validade:</label>
-                <input type="date" name="validade" id="validade" required />
-            </div>
-            <label for="file">Escolha uma Imagem:</label>
-            <input type="file" name="file" id="file" accept="image/*" multiple capture />
-            <label for="pais">Local de Armazenamento:</label>
-            <select id="local" name="local" required>
-                <option value="">Selecione...</option>
-                <option value="01 - Matriz">01 - Matriz</option>
-                <option value="03 - Redistribuicao">03 - Redistribuicao</option>
-                <option value="04 - DP. Kasinski">04 - DP. Kasinski</option>
-                <option value="05 - Irece">05 - Irece</option>
-                <option value="08 - Agroexpress">08 - Agroexpress</option>
-                <option value="10 - Juazeiro">10 - Juazeiro</option>
-                <option value="12 - Grande Safra">12 - Grande Safra</option>
-                <option value="13 - Loteamento Recife">13 - Loteamento Recife</option>
-                <option value="14 - DP. Quati">14 - DP. Quati</option>
-                <option value="15 - DP Irece 01">15 - DP Irece 01</option>
-                <option value="16 - DP Irece 02">16 - DP Irece 02</option>
-                <option value="18 - Rio Real">18 - Rio Real</option>
-            </select>
-            <div class="opcoes-grupo">
-                <input type="checkbox" id="loteca" name="loteca" value="✓">
-                <label for="embalagem">Lote Cadastrado</label>
-                <br>
-                <input type="checkbox" id="entrada" name="entrada" value="✓">
-                <label for="temperatura">Entrada</label>
-                <br>
-                <input type="checkbox" id="recusa" name="recusa" value="✓">
-                <label for="recusa">Recusa</label>
-            </div>
-            <label for="observacoes">Observações Adicionais:</label>
-            <textarea id="obs" name="observacoes" rows="4"></textarea>
-            <input type="submit" value="Enviar Dados" />
-        </form>
-        <br>
-        <a href="pesquisa.html" class="botao-site" target="_blank"> 
-            Pesquisa detalhada
-        </a>
-        <div id="status" class="mensagem-status"></div>
-    </div>
+    <div class="logo-container">
+        <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+    </div>
 
-    <script type="module">
-        // Importa as funções modulares necessárias do Firebase
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-        
-        const firebaseConfig = {
-  apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
-  authDomain: "login-com-dados.firebaseapp.com",
-  projectId: "login-com-dados",
-  storageBucket: "login-com-dados.firebasestorage.app",
-  messagingSenderId: "75556023458",
-  appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
-  measurementId: "G-W9LRT99579"
-};
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxipm0iS6I2_Gbinj4iZoXv5ggCWP7jDQqs0a19ytNl7Mpuy1Q84uJUoGVpC4NEQZ84HQ/exec";
-        const CLOUDINARY_CLOUD_NAME = "diro90s1u";
-        const CLOUDINARY_UPLOAD_PRESET = "produtos";
+    <div id="main-content" class="container">
+        <h2>FORMULARIO DE RECEBIMENTO</h2>
+        <form id="meu-formulario">
+            <div class="date-container">
+                <label for="dataderecebimento">Data de Recebimento:</label>
+                <input
+                    type="datetime-local"
+                    name="dataderecebimento"
+                    id="dataderecebimento"
+                    required
+                />
+            </div>
+            <label for="fornecedor">Fornecedor:</label>
+            <input type="text" name="fornecedor" id="fornecedor" required />
+            <label for="nf">Nota Fiscal:</label>
+            <input type="text" name="nf" id="nf" required />
+            <label for="produto">Produto:</label>
+            <input type="text" name="produto" id="produto" required />
+            <label for="quantidade">Embalagem Secundária:</label>
+            <input type="text" name="quantidade" id="quantidade" required />
+            <label for="quantidade2">Embalagem Primária:</label>
+            <input type="text" name="quantidade2" id="quantidade2" required />
+            <label for="lote">Lote:</label>
+            <input type="text" name="lote" id="lote" required />
+            <div class="date-container">
+                <label for="fabricacao">Fabricação:</label>
+                <input type="date" name="fabricacao" id="fabricacao" required />
+            </div>
+            <div class="date-container">
+                <label for="validade">Validade:</label>
+                <input type="date" name="validade" id="validade" required />
+            </div>
+            <label for="file">Escolha uma Imagem:</label>
+            <input type="file" name="file" id="file" accept="image/*" capture /> 
 
-        const formulario = document.getElementById("meu-formulario");
-        const statusDiv = document.getElementById("status");
-        const mainContent = document.getElementById("main-content");
-        const logoutButton = document.getElementById("logout-button");
-        
-        let usuarioLogadoEmail = '';
+            <label for="local">Local de Armazenamento:</label>
+            <select id="local" name="local" required>
+                <option value="">Selecione...</option>
+                <option value="01 - Matriz">01 - Matriz</option>
+                <option value="03 - Redistribuicao">03 - Redistribuicao</option>
+                <option value="04 - DP. Kasinski">04 - DP. Kasinski</option>
+                <option value="05 - Irece">05 - Irece</option>
+                <option value="08 - Agroexpress">08 - Agroexpress</option>
+                <option value="10 - Juazeiro">10 - Juazeiro</option>
+                <option value="12 - Grande Safra">12 - Grande Safra</option>
+                <option value="13 - Loteamento Recife">13 - Loteamento Recife</option>
+                <option value="14 - DP. Quati">14 - DP. Quati</option>
+                <option value="15 - DP Irece 01">15 - DP Irece 01</option>
+                <option value="16 - DP Irece 02">16 - DP Irece 02</option>
+                <option value="18 - Rio Real">18 - Rio Real</option>
+            </select>
+            <div class="opcoes-grupo">
+                <input type="checkbox" id="loteca" name="loteca" value="✓">
+                <label for="loteca">Lote Cadastrado</label>
+                <br>
+                <input type="checkbox" id="entrada" name="entrada" value="✓">
+                <label for="entrada">Entrada</label>
+                <br>
+                <input type="checkbox" id="recusa" name="recusa" value="✓">
+                <label for="recusa">Recusa</label>
+            </div>
+            <label for="obs">Observações Adicionais:</label>
+            <textarea id="obs" name="observacoes" rows="4"></textarea>
+            <input type="submit" value="Enviar Dados" />
+        </form>
+        <br>
+        <a href="pesquisa.html" class="botao-site" target="_blank"> 
+            Pesquisa detalhada
+        </a>
+        <div id="status" class="mensagem-status"></div>
+    </div>
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                usuarioLogadoEmail = user.email;
-                console.log(`Usuário logado: ${usuarioLogadoEmail}`);
-                mainContent.style.display = 'block';
-                logoutButton.style.display = 'block';
-            } else {
-                window.location.href = 'index.html'; 
-            }
-        });
-        
-        logoutButton.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error("Erro ao deslogar:", error);
-            });
-        });
+    <script type="module">
+    // Importa as funções modulares necessárias do Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    // SUAS CONFIGURAÇÕES FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+        authDomain: "login-com-dados.firebaseapp.com",
+        projectId: "login-com-dados",
+        storageBucket: "login-com-dados.firebasestorage.app",
+        messagingSenderId: "75556023458",
+        appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+        measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxipm0iS6I2_Gbinj4iZoXv5ggCWP7jDQqs0a19ytNl7Mpuy1Q84uJUoGVpC4NEQZ84HQ/exec";
+    const CLOUDINARY_CLOUD_NAME = "diro90s1u";
+    const CLOUDINARY_UPLOAD_PRESET = "produtos";
 
-        formulario.addEventListener("submit", function (evento) {
-            evento.preventDefault();
-        
-            if (!usuarioLogadoEmail) {
-                statusDiv.textContent = "Erro: Nenhum usuário logado. Por favor, faça o login.";
-                statusDiv.className = "mensagem-status erro";
-                return;
-            }
-        
-            const arquivos = document.getElementById("file").files;
-            if (arquivos.length === 0) {
-                statusDiv.textContent = "Por favor, selecione pelo menos uma imagem.";
-                statusDiv.className = "mensagem-status erro";
-                return;
-            }
+    const formulario = document.getElementById("meu-formulario");
+    const statusDiv = document.getElementById("status");
+    const mainContent = document.getElementById("main-content");
+    const logoutButton = document.getElementById("logout-button");
+    const fileInput = document.getElementById("file"); // Referência ao campo de arquivo
+    
+    let usuarioLogadoEmail = '';
+    // NOVO: Array para acumular os links de todas as fotos
+    let linksAcumulados = []; 
 
-            statusDiv.textContent = `Enviando ${arquivos.length} imagem(ns) para o Cloudinary...`;
-            statusDiv.className = "mensagem-status";
+    // --- LÓGICA DE AUTENTICAÇÃO (MANTIDA) ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            usuarioLogadoEmail = user.email;
+            mainContent.style.display = 'block'; 
+            logoutButton.style.display = 'inline-block'; 
+        } else {
+            window.location.href = 'index.html'; 
+        }
+    });
+    
+    // FUNCIONALIDADE DO BOTÃO DE SAIR (MANTIDA)
+    logoutButton.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error("Erro ao deslogar:", error);
+        });
+    });
 
-            const uploadPromises = [];
-            const linksDasImagens = [];
+    // --- NOVA FUNÇÃO: UPLOAD IMEDIATO DE FOTO ---
+    async function uploadFotoImediato(arquivo) {
+        if (!arquivo) return;
 
-            for (let i = 0; i < arquivos.length; i++) {
-                const arquivo = arquivos[i];
-                const dadosImagem = new FormData();
-                dadosImagem.append("file", arquivo);
-                dadosImagem.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        statusDiv.textContent = `Enviando 1 foto para o Cloudinary...`;
+        statusDiv.className = "mensagem-status";
 
-                const uploadPromise = fetch(
-                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                    {
-                        method: "POST",
-                        body: dadosImagem,
-                    }
-                )
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(`Erro no upload para o Cloudinary: ${errorData.error.message}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    linksDasImagens.push(data.secure_url);
-                });
+        const dadosImagem = new FormData();
+        dadosImagem.append("file", arquivo);
+        dadosImagem.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        
+        try {
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                {
+                    method: "POST",
+                    body: dadosImagem,
+                }
+            );
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Erro no upload para o Cloudinary: ${errorData.error.message}`);
+            }
+            
+            const data = await response.json();
+            
+            // Armazena o link na variável global
+            linksAcumulados.push(data.secure_url); 
+            
+            // Atualiza o status
+            statusDiv.textContent = `Foto salva! ${linksAcumulados.length} foto(s) prontas para envio. Clique novamente para mais fotos.`;
+            statusDiv.className = "mensagem-status sucesso";
+            
+        } catch (error) {
+            statusDiv.textContent = `Erro ao salvar foto: ${error.message}`;
+            statusDiv.className = "mensagem-status erro";
+            console.error("Erro de upload:", error);
+        }
+    }
+    
+    // --- LISTENER PARA O CAMPO DE ARQUIVO (ACESSA A CÂMERA) ---
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            // Envia o arquivo assim que ele é selecionado (tirado da câmera)
+            uploadFotoImediato(this.files[0]); 
+        }
+        
+        // Limpa o valor do campo para que o usuário possa clicar e tirar a próxima foto
+        this.value = ''; 
+    });
 
-                uploadPromises.push(uploadPromise);
-            }
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO (AJUSTADA) ---
+    formulario.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+    
+        if (!usuarioLogadoEmail) {
+            // ... (Lógica de erro)
+            statusDiv.textContent = "Erro: Nenhum usuário logado. Por favor, faça o login.";
+            statusDiv.className = "mensagem-status erro";
+            return;
+        }
+    
+        if (linksAcumulados.length === 0) {
+            statusDiv.textContent = "Por favor, tire ou selecione pelo menos uma imagem.";
+            statusDiv.className = "mensagem-status erro";
+            return;
+        }
 
-            Promise.all(uploadPromises)
-                .then(() => {
-                    statusDiv.textContent = "Todas as imagens enviadas! Salvando dados na planilha...";
+        statusDiv.textContent = `Salvando dados de ${linksAcumulados.length} foto(s) na planilha...`;
+        statusDiv.className = "mensagem-status";
 
-                    const dadosFormulario = new FormData();
-                    dadosFormulario.append("dataderecebimento", document.getElementById("dataderecebimento").value);
-                    dadosFormulario.append("fornecedor", document.getElementById("fornecedor").value);
-                    dadosFormulario.append("nf", document.getElementById("nf").value);
-                    dadosFormulario.append("produto", document.getElementById("produto").value);
-                    dadosFormulario.append("quantidade", document.getElementById("quantidade").value);
-                    dadosFormulario.append("quantidade2", document.getElementById("quantidade2").value);
-                    dadosFormulario.append("lote", document.getElementById("lote").value);
-                    dadosFormulario.append("fabricacao", document.getElementById("fabricacao").value);
-                    dadosFormulario.append("validade", document.getElementById("validade").value);
-                    dadosFormulario.append("local", document.getElementById("local").value);
-                    
-                    if (document.getElementById("loteca").checked) {
-                        dadosFormulario.append("loteca", document.getElementById("loteca").value);
-                    }
-                    if (document.getElementById("entrada").checked) {
-                        dadosFormulario.append("entrada", document.getElementById("entrada").value);
-                    }
-                    if (document.getElementById("recusa").checked) {
-                        dadosFormulario.append("recusa", document.getElementById("recusa").value);
-                    }
-                    
-                    dadosFormulario.append("obs", document.getElementById("obs").value);
-                    dadosFormulario.append("linksDasImagens", linksDasImagens.join(', '));
-                    dadosFormulario.append("usuario", usuarioLogadoEmail);
+        // Prepara os dados do formulário
+        const dadosFormulario = new FormData();
+        dadosFormulario.append("dataderecebimento", document.getElementById("dataderecebimento").value);
+        dadosFormulario.append("fornecedor", document.getElementById("fornecedor").value);
+        dadosFormulario.append("nf", document.getElementById("nf").value);
+        dadosFormulario.append("produto", document.getElementById("produto").value);
+        dadosFormulario.append("quantidade", document.getElementById("quantidade").value);
+        dadosFormulario.append("quantidade2", document.getElementById("quantidade2").value);
+        dadosFormulario.append("lote", document.getElementById("lote").value);
+        dadosFormulario.append("fabricacao", document.getElementById("fabricacao").value);
+        dadosFormulario.append("validade", document.getElementById("validade").value);
+        dadosFormulario.append("local", document.getElementById("local").value);
+        
+        if (document.getElementById("loteca").checked) {
+            dadosFormulario.append("loteca", document.getElementById("loteca").value);
+        }
+        if (document.getElementById("entrada").checked) {
+            dadosFormulario.append("entrada", document.getElementById("entrada").value);
+        }
+        if (document.getElementById("recusa").checked) {
+            dadosFormulario.append("recusa", document.getElementById("recusa").value);
+        }
+        
+        dadosFormulario.append("obs", document.getElementById("obs").value);
+        
+        // NOVO: Usa os links acumulados
+        dadosFormulario.append("linksDasImagens", linksAcumulados.join(', ')); 
+        dadosFormulario.append("usuario", usuarioLogadoEmail);
 
-                    return fetch(APPS_SCRIPT_URL, {
-                        method: "POST",
-                        body: dadosFormulario,
-                    });
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.resultado === "sucesso") {
-                        statusDiv.textContent = "Dados e links das imagens salvos com sucesso!";
-                        statusDiv.className = "mensagem-status sucesso";
-                        formulario.reset();
-                    } else {
-                        throw new Error(data.mensagem || "Erro ao salvar na planilha.");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Erro geral:", error);
-                    statusDiv.textContent = `Erro: ${error.message}`;
-                    statusDiv.className = "mensagem-status erro";
-                });
-        });
-    </script>
+        // Envia para o Google Apps Script
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: dadosFormulario,
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.resultado === "sucesso") {
+                statusDiv.textContent = "Dados e links das imagens salvos com sucesso!";
+                statusDiv.className = "mensagem-status sucesso";
+                formulario.reset();
+                linksAcumulados = []; // Limpa os links após o envio
+            } else {
+                throw new Error(data.mensagem || "Erro ao salvar na planilha.");
+            }
+        })
+        .catch((error) => {
+            console.error("Erro geral:", error);
+            statusDiv.textContent = `Erro: ${error.message}`;
+            statusDiv.className = "mensagem-status erro";
+        });
+    });
+</script>
 </body>
 </html>

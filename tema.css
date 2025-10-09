@@ -3,79 +3,85 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; 
+    /* Removido justify-content: center para permitir que o formulário role */
     min-height: 100vh;
     margin: 0;
-    
-    /* REMOVIDO: A cor de fundo simples, pois será substituída pela imagem */
-    /* background-color: #f0f2f5; */
-
     padding: 20px;
     box-sizing: border-box;
-    position: relative;
+    position: relative; 
+    color: #333; 
+    overflow-x: hidden; 
     
     /* ================================================= */
-    /* NOVOS ESTILOS PARA IMAGEM DE FUNDO */
+    /* ESTILOS PARA IMAGEM DE FUNDO (mantidos) */
     /* ================================================= */
-    /* 1. Substitua 'URL_DA_SUA_IMAGEM.jpg' pelo caminho real */
     background-image: url('/imagens/ptbfundo.png'); 
-    
-    /* 2. Garante que a imagem cubra toda a área do corpo */
     background-size: cover; 
-    
-    /* 3. Centraliza a imagem no fundo */
     background-position: center center; 
-    
-    /* 4. Impede que a imagem role com o conteúdo */
     background-attachment: fixed; 
-    
-    /* 5. (Opcional) Adiciona uma cor de fallback caso a imagem não carregue */
     background-color: #f0f2f5; 
-    /* ================================================= */
 }
 
-/* Estilo para a logo */
-.logo {
+/* Camada semi-transparente sobre a imagem de fundo */
+body::before {
+    content: '';
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.4); 
+    z-index: -1; 
+}
+
+
+/* Estilo para a logo Container */
+.logo-container {
+    text-align: center;
+    padding-bottom: 20px;
+    padding-top: 50px; /* Adiciona espaço no topo para os botões fixos */
+    z-index: 1; 
+}
+
+.logo-img {
     display: block;
-    max-width: 180px;
+    max-width: 300px;
     height: auto;
-    margin: 0 auto 30px auto;
-}
-
-.logo:hover {
-    opacity: 0.8;
+    margin: 0 auto;
     transition: opacity 0.3s ease-in-out;
 }
 
-/* Contêiner dos botões de navegação (Menu e Sair) */
-.nav-buttons-container {
- /* Ocupa a largura total para alinhar o .container centralmente */
- width: 100%;
- max-width: 640px; /* Largura máxima um pouco maior que o container para ajuste fino */
- margin: 0 auto;
- position: relative;
+.logo-img:hover {
+    opacity: 0.8;
 }
 
-/* Estilos para os botões de navegação (Menu e Sair) - Posição Fina */
-#logout-button, .botao-menu {
- /* Consolidado: Alinhamento e espaçamento para aparecerem no canto */
- position: fixed; /* Fixa o botão na tela, independentemente da rolagem */
+/* Contêiner para os botões fixos (Nav) */
+.fixed-nav {
+    position: fixed;
     top: 20px;
- z-index: 10; /* Garante que fique acima de outros elementos */
- font-weight: bold;
+    right: 20px;
+    z-index: 10;
+    display: flex; 
+    gap: 10px; 
 }
 
-/* Ajusta a posição exata de cada botão */
-#logout-button {
-    right: 20px;
-    background-color: #e74c3c; /* Cor vermelha para "Sair" */
-    color: white;
-    border: none;
-    padding: 10px 15px;
+/* Estilos para os botões de navegação (Menu e Sair) */
+#logout-button, .botao-menu {
+    font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
-    display: none; /* Oculto por padrão, será exibido com o login */
+    padding: 10px 15px;
+    font-size: 16px;
     transition: background-color 0.3s;
+}
+
+#logout-button {
+    background-color: #e74c3c; 
+    color: white;
+    border: none;
+    /* CORREÇÃO AQUI: Garante que o botão apareça no menu/formulário */
+    display: inline-block; 
 }
 
 #logout-button:hover {
@@ -83,19 +89,12 @@ body {
 }
 
 .botao-menu {
-    /* Posição ajustada ao lado do 'Sair' */
-    right: 95px; /* Ajuste este valor baseado na largura do botão 'Sair' + espaçamento */
-    background-color: #5c6770; /* Cor secundária para "Menu" */
+    background-color: #5c6770; 
     color: white;
     text-align: center;
     text-decoration: none;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 10px 15px;
-    font-size: 16px;
     display: inline-block; 
-    transition: background-color 0.3s;
 }
 
 .botao-menu:hover {
@@ -103,10 +102,8 @@ body {
 }
 
 /* Estilo do contêiner do formulário */
-.container {
-    /* (OPCIONAL) Se a imagem for muito clara ou escura, ajuste a opacidade */
-    /* background-color: rgba(255, 255, 255, 0.9); */ /* Fundo branco semi-transparente */
-    background-color: #ffffff;
+.menu-container, .container {
+    background-color: rgba(255, 255, 255, 0.95); 
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -114,16 +111,26 @@ body {
     max-width: 600px;
     box-sizing: border-box;
     margin-bottom: 20px;
+    z-index: 1; 
+    margin-top: 0; /* Remove margem desnecessária no topo */
 }
 
 /* Estilo do cabeçalho */
-h2 {
+.menu-header, h2 {
     text-align: center;
     color: #333;
     margin-bottom: 30px;
 }
+.menu-header {
+    background-color: rgba(51, 51, 51, 0.9);
+    color: #fff;
+    padding: 15px;
+    font-size: 1.5em;
+    margin: -40px -40px 30px -40px; 
+}
 
-/* Estilos para Labels e Inputs */
+/* --- ESTILOS DE FORMULÁRIO (MANTIDOS E COMPLETOS) --- */
+
 label {
     display: block;
     margin-bottom: 8px;
@@ -157,21 +164,18 @@ input[type="text"]:focus,
 input[type="email"]:focus,
 select:focus,
 textarea:focus,
-input[type="file"]:focus { /* Adicionado foco para input file */
-    border-color: #58c917; /* Verde da Planta */
+input[type="file"]:focus {
+    border-color: #58c917; 
     box-shadow: 0 0 5px rgba(88, 201, 23, 0.5);
     outline: none;
 }
 
-/* Estilos de foco e hover (Combinado) */
 input:not([type="submit"]):hover,
 select:hover,
 textarea:hover {
     border-color: #999;
 }
 
-
-/* Contêiner e indicadores de data */
 .date-container {
     position: relative;
     width: 100%;
@@ -188,30 +192,27 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    /* Ícone do calendário mantido */
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23888" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7z"/></svg>');
     background-size: contain;
     background-repeat: no-repeat;
 }
 
-/* Checkboxes */
 .opcoes-grupo {
     margin-bottom: 20px;
     text-align: left;
 }
 .opcoes-grupo label {
-    display: inline-block; /* Ajustado para melhor alinhamento com o checkbox */
+    display: inline-block; 
     margin-left: 5px;
     font-weight: normal;
 }
 .opcoes-grupo input[type="checkbox"] {
- width: auto; /* Deixa o checkbox pequeno */
- margin-right: 5px;
+    width: auto; 
+    margin-right: 5px;
 }
 
-/* Botão de Envio (Submit) */
 input[type="submit"] {
-    background-color: #58c917; /* Cor principal verde */
+    background-color: #58c917; 
     color: white;
     padding: 15px 25px;
     border: none;
@@ -221,13 +222,12 @@ input[type="submit"] {
     font-size: 18px;
     font-weight: bold;
     transition: background-color 0.3s ease;
- margin-top: 10px; /* Adicionado um pequeno espaçamento */
+    margin-top: 10px; 
 }
 input[type="submit"]:hover {
-    background-color: #43a014; /* Tom mais escuro do verde */
+    background-color: #43a014; 
 }
 
-/* Estilo para a tag <a> parecer um botão (Pesquisa detalhada) */
 .botao-site {
     display: inline-block;
     padding: 12px 24px;
@@ -244,10 +244,126 @@ input[type="submit"]:hover {
 }
 
 .botao-site:hover {
-    background-color: #0056b3; /* Tom mais escuro do azul */
+    background-color: #0056b3; 
 }
 
-/* Estilo para a área de conteúdo principal (Escondido no login) */
-.main-content {
-    display: none;
+/* Estilos para as mensagens de status */
+.mensagem-status {
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sucesso {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.erro {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* No seu arquivo /tema.css */
+/* --- ESTILOS DE ESTRUTURA E FORMULÁRIO (JÁ EXISTENTES) --- */
+
+/* Ajuste na margem superior do container para não ser escondido pelos botões fixos */
+.container {
+    /* ... estilos existentes ... */
+    margin-top: 80px; /* Garante espaço para a logo e botões */
+    /* Removido o max-width: 600px para permitir que a tabela seja larga */
+    max-width: 90%; /* Ajuste a largura máxima conforme a necessidade da tabela */
+    width: 95%; /* Garante boa largura em telas grandes */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Novo estilo para a logo (use o nome de classe padronizado) */
+.logo-container {
+    text-align: center;
+    padding-bottom: 20px;
+    padding-top: 50px; /* Ajuste para dar espaço aos botões fixos */
+    z-index: 1; 
+}
+
+.logo-img {
+    max-width: 250px; /* Alinhando com seu estilo de pesquisa */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* --- ESTILOS DE PESQUISA E TABELA (ADICIONAR/GARANTIR) --- */
+
+.search-container {
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+    
+#dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#dataTable th, #dataTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+#dataTable th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+#dataTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* --- MEDIA QUERIES PARA RESPONSIVIDADE (ADICIONAR/GARANTIR) --- */
+
+@media (max-width: 768px) {
+    /* Ajuste da tabela para visualização em formato de bloco no celular */
+    #dataTable thead {
+        display: none;
+    }
+
+    #dataTable, #dataTable tbody, #dataTable tr, #dataTable td {
+        display: block;
+        width: 100%;
+    }
+
+    #dataTable tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    #dataTable td {
+        text-align: center;
+        position: relative;
+        padding-left: 0;
+        border-bottom: 1px solid #ddd;
+        border-left: none;
+        border-right: none;
+    }
+
+    #dataTable td::before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
 }
