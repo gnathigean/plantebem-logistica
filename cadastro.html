@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/tema.css" /> 
+
+  <title>Página de Cadastro Exclusiva</title>
+
+  <style>
+    /* Estilos básicos para o contêiner, use o tema.css se preferir */
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Oculta o conteúdo principal por padrão */
+    #main-content {
+      display: none; 
+    }
+
+    /* Estilo para a mensagem de erro/acesso negado */
+    #acesso-negado {
+      color: red;
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #ffdddd;
+      background-color: #ffeeee;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="fixed-nav">
+    <a href="menu.html" class="botao-menu">← Menu</a> 
+    <button id="logout-button" style="display: none;">Sair</button>
+  </div>
+    
+      <div id="loading" class="container" style="text-align: center;">
+    <p>Verificando acesso...</p>
+  </div>
+    
+  <div id="acesso-negado" style="display: none;">
+    <h2>Acesso Negado 🛑</h2>
+    <p>Esta página é exclusiva para o administrador. Por favor, faça login com a conta correta.</p>
+  </div>
+
+    <div id="main-content" class="container">
+    <h1>FORMULÁRIO DE CADASTRO ADMINISTRATIVO</h1>
+    <form id="meu-formulario">
+      <label for="nome-usuario">Nome do Novo Usuário:</label>
+      <input type="text" name="nome-usuario" id="nome-usuario" required />
+            
+      <label for="email-usuario">E-mail do Novo Usuário:</label>
+      <input type="email" name="email-usuario" id="email-usuario" required />
+            
+      <label for="senha-usuario">Senha Temporária:</label>
+      <input type="password" name="senha-usuario" id="senha-usuario" required />
+            
+            <br><br>
+      <input type="submit" value="Criar Novo Usuário" />
+    </form>
+    <div id="status" class="mensagem-status"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    // Importa a função para criar usuário com e-mail e senha
+    import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    // ⚠️ 1. COLOQUE SUAS CONFIGURAÇÕES FIREBASE AQUI ⚠️
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+      authDomain: "login-com-dados.firebaseapp.com",
+      projectId: "login-com-dados",
+      storageBucket: "login-com-dados.firebasestorage.app",
+      messagingSenderId: "75556023458",
+      appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+      measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    // 🚨 2. COLOQUE SEU UID PESSOAL AQUI 🚨
+    // Você pode encontrar seu UID no console do Firebase > Authentication
+    const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2"; 
+    
+    const mainContent = document.getElementById("main-content");
+    const loadingDiv = document.getElementById("loading");
+    const acessoNegadoDiv = document.getElementById("acesso-negado");
+    const logoutButton = document.getElementById("logout-button");
+    const formulario = document.getElementById("meu-formulario");
+    const statusDiv = document.getElementById("status");
+
+    // Função para mostrar status (sucesso/erro)
+    function showStatus(text, type) {
+      statusDiv.textContent = text;
+      statusDiv.className = `mensagem-status ${type}`; // Assumindo que você tem essas classes no tema.css
+    }
+
+    // --- LÓGICA DE AUTENTICAÇÃO E VERIFICAÇÃO DE UID ---
+    onAuthStateChanged(auth, (user) => {
+      loadingDiv.style.display = 'none'; // Esconde a mensagem de carregamento
+
+      if (user) {
+        // Usuário logado
+        logoutButton.style.display = 'inline-block';
+
+        if (user.uid === ADMIN_UID) {
+          // UID corresponde ao admin: Concede acesso
+          mainContent.style.display = 'block'; 
+          acessoNegadoDiv.style.display = 'none';
+        } else {
+          // UID diferente do admin: Acesso negado
+          mainContent.style.display = 'none';
+          acessoNegadoDiv.style.display = 'block';
+        }
+      } else {
+        // Ninguém logado: Redireciona para a página de login
+        window.location.href = 'index.html'; 
+      }
+    });
+    
+    // FUNCIONALIDADE DO BOTÃO DE SAIR
+    logoutButton.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        console.error("Erro ao deslogar:", error);
+      });
+    });
+
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO DE CADASTRO ---
+    formulario.addEventListener("submit", async function (evento) {
+      evento.preventDefault();
+
+      const email = document.getElementById("email-usuario").value;
+      const password = document.getElementById("senha-usuario").value;
+      
+      if (auth.currentUser.uid !== ADMIN_UID) {
+        showStatus("Erro: Você não tem permissão para cadastrar usuários.", 'error');
+        return;
+      }
+      
+      showStatus("Cadastrando novo usuário...", 'message');
+
+      try {
+        // ⚠️ IMPORTANTE: O Firebase precisa que o administrador (você) esteja 
+        // logado para que esta função funcione.
+        
+                // A CRIAÇÃO DE USUÁRIO DIRETO DO CLIENTE (NA WEB) É PERIGOSA!
+                // Este método (createUserWithEmailAndPassword) fará login no novo 
+                // usuário e deslogará o Admin. Para uso real, é MELHOR 
+                // usar Cloud Functions ou Admin SDK em um servidor.
+                
+                // Para o seu propósito de teste/simples, vamos usar a criação
+                // básica, mas é recomendado recarregar a página para re-verificar o Admin.
+                
+        await createUserWithEmailAndPassword(auth, email, password);
+                
+        showStatus(`Usuário ${email} cadastrado com sucesso!`, 'success');
+        formulario.reset();
+
+      } catch (error) {
+        // Trata erros comuns do Firebase
+                let errorMessage = 'Erro ao cadastrar usuário.';
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'O e-mail já está sendo usado por outra conta.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
+                } else {
+                    console.error("Erro detalhado:", error);
+                }
+        showStatus(errorMessage, 'error');
+      }
+    });
+
+  </script>
+</body>
+</html>

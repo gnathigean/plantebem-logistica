@@ -25,6 +25,10 @@
             <li class="menu-list-item"><a href="menu.html">Catálogo (EM PRODUÇÃO)</a></li>
             <li class="menu-list-item"><a href="menu.html">Mapa de Produtos (EM PRODUÇÃO)</a></li>
             <li class="menu-list-item"><a href="pesquisa.html">Detalhes de Recebimentos</a></li>
+            
+            <li class="menu-list-item" id="admin-cadastro-link" style="display: none;">
+                <a href="/cadastro.html">CADASTRAR USUARIOS</a>
+            </li>
         </ul>
 
         <div class="loja-selecao-container">
@@ -44,9 +48,61 @@
         <div id="botao-loja-container"></div>
     </div>
     
-    <script type="module" src="auth.js"></script> 
+    <script type="module">
+        // Importa as funções modulares necessárias do Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+        
+        // ⚠️ 1. COLOQUE SUAS CONFIGURAÇÕES FIREBASE AQUI ⚠️
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+      authDomain: "login-com-dados.firebaseapp.com",
+      projectId: "login-com-dados",
+      storageBucket: "login-com-dados.firebasestorage.app",
+      messagingSenderId: "75556023458",
+      appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+      measurementId: "G-W9LRT99579"
+    };
 
-    <script>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        // 🚨 2. COLOQUE SEU UID PESSOAL AQUI 🚨
+        const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2"; 
+        
+        const logoutButton = document.getElementById("logout-button");
+        const adminCadastroLink = document.getElementById("admin-cadastro-link");
+        
+        // --- LÓGICA DE AUTENTICAÇÃO E CONTROLE DE VISIBILIDADE ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuário logado
+                logoutButton.style.display = 'inline-block';
+                
+                // Verifica o UID do usuário
+                if (user.uid === ADMIN_UID) {
+                    // Se for o Admin, exibe o link de cadastro
+                    adminCadastroLink.style.display = 'block'; 
+                } else {
+                    // Se não for o Admin, mantém o link escondido
+                    adminCadastroLink.style.display = 'none';
+                }
+            } else {
+                // Ninguém logado: Redireciona para a página de login
+                window.location.href = 'index.html'; 
+            }
+        });
+        
+        // FUNCIONALIDADE DO BOTÃO DE SAIR
+        logoutButton.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Erro ao deslogar:", error);
+            });
+        });
+
+        // --- LÓGICA DO SELETOR DE LOJA (MANTIDA) ---
         function exibirBotaoDaLoja() {
             const seletor = document.getElementById('seletor-loja');
             const container = document.getElementById('botao-loja-container');
@@ -72,6 +128,7 @@
             const seletor = document.getElementById('seletor-loja');
             seletor.addEventListener('change', exibirBotaoDaLoja); 
         });
+
     </script>
 </body>
 </html>
