@@ -3,37 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PESQUISA DETALHADA DE RECEBIMENTO -  JUAZEIRO</title>
+<title>PESQUISA DETALHADA DE RECEBIMENTO - JUAZEIRO</title>
 <link rel="stylesheet" href="/tema.css"> 
 </head>
 <body>
 
 <div class="fixed-nav">
-    <a id="menu-button" class="botao-menu" href="menu.html">← Menu</a> 
-    <button id="logout-button">Sair</button>
+  <a id="menu-button" class="botao-menu" href="menu.html">← Menu</a> 
+  <button id="logout-button">Sair</button>
 </div>
 
 <div class="logo-container">
-    <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+  <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
 </div>
 
 <div class="container"> 
-    <h1>Detalhes de Recebimentos - JUAZEIRO</h1>
+  <h1>Detalhes de Recebimentos - JUAZEIRO</h1>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="DIGITE AQUI, NOME DO PRODUTO, LOTE, VALIDADE...">
-    </div>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="DIGITE AQUI, NOME DO PRODUTO, LOTE, VALIDADE...">
+  </div>
 
-    <p id="loading">Carregando dados...</p>
+  <p id="loading">Carregando dados...</p>
 
+  <div class="tabela-wrapper"> 
     <table id="dataTable">
-        <thead>
-            <tr></tr>
-        </thead>
-        <tbody>
-        </tbody>
+      <thead>
+        <tr></tr>
+      </thead>
+      <tbody>
+      </tbody>
     </table>
-</div>
+  </div>
+  </div>
+
 
 <script type="module">
     // --- FIREBASE IMPORTS (Certifique-se de que os links de versão estão corretos) ---
