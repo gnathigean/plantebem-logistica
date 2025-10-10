@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PESQUISA DETALHADA DE RECEBIMENTO -  JUAZEIRO</title>
+<link rel="stylesheet" href="/tema.css"> 
+</head>
+<body>
+
+<div class="fixed-nav">
+    <a id="menu-button" class="botao-menu" href="menu.html">← Menu</a> 
+    <button id="logout-button">Sair</button>
+</div>
+
+<div class="logo-container">
+    <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+</div>
+
+<div class="container"> 
+    <h1>Detalhes de Recebimentos - JUAZEIRO</h1>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="DIGITE AQUI, NOME DO PRODUTO, LOTE, VALIDADE...">
+    </div>
+
+    <p id="loading">Carregando dados...</p>
+
+    <table id="dataTable">
+        <thead>
+            <tr></tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<script type="module">
+    // --- FIREBASE IMPORTS (Certifique-se de que os links de versão estão corretos) ---
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    // ⚠️ SUAS CREDENCIAIS FIREBASE ⚠️
+    const firebaseConfig = {
+        apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+        authDomain: "login-com-dados.firebaseapp.com",
+        projectId: "login-com-dados",
+        storageBucket: "login-com-dados.firebasestorage.app",
+        messagingSenderId: "75556023458",
+        appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+        measurementId: "G-W9LRT99579"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    // --- VARIÁVEIS DO DOM E URLS ---
+    const appsScriptURL = 'https://script.google.com/macros/s/AKfycbzIysDh6E0RgwMK4UJ8WwQTdxu2eL8qeZ9p_0jg1hUSuqmTpdrCyVA-yn_3qTAmEqVX/exec';
+    const loadingMessage = document.getElementById('loading');
+    const searchInput = document.getElementById('searchInput');
+    const tableHead = document.querySelector('#dataTable thead tr');
+    const tableBody = document.querySelector('#dataTable tbody');
+    const logoutButton = document.getElementById('logout-button');
+
+    let fullData = [];
+
+    // --- LÓGICA DE AUTENTICAÇÃO E EXIBIÇÃO ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Se logado, inicia o carregamento dos dados e torna o botão Sair visível
+            fetchDataAndRender();
+            if (logoutButton) {
+                logoutButton.style.display = 'inline-block';
+            }
+        } else {
+            // Se não estiver logado, redireciona para a página de login
+            window.location.href = 'index.html'; 
+        }
+    });
+    
+    // --- FUNÇÕES DE LOGOUT E DATAS ---
+    
+    logoutButton.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch(error => {
+            console.error("Erro ao deslogar:", error);
+            alert("Erro ao sair. Tente novamente.");
+        });
+    });
+
+    function formatarDataBrasileira(dataString) {
+        const data = new Date(dataString);
+        if (isNaN(data.getTime())) {
+            return dataString;
+        }
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO E BUSCA ---
+
+    function renderTable(dataToRender) {
+        tableBody.innerHTML = '';
+        tableHead.innerHTML = '';
+
+        if (dataToRender.length > 0) {
+            const headers = Object.keys(dataToRender[0]);
+
+            headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText;
+                tableHead.appendChild(th);
+            });
+
+            dataToRender.forEach(rowData => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    let valor = rowData[header];
+
+                    // 1. Tratamento de múltiplos links (ex: links separados por vírgula)
+                    if (typeof valor === 'string' && valor.includes(',')) {
+                        const links = valor.split(',').map(link => link.trim());
+                        links.forEach(link => {
+                            if (link) {
+                                const a = document.createElement('a');
+                                a.href = link;
+                                a.textContent = 'Ver Imagem';
+                                a.target = '_blank';
+                                a.style.marginRight = '5px';
+                                td.appendChild(a);
+                            }
+                        });
+                    } else {
+                        try {
+                            // 2. Tenta criar um URL para link único
+                            new URL(valor);
+
+                            const a = document.createElement('a');
+                            a.href = valor;
+                            a.textContent = 'Ver Imagem';
+                            a.target = '_blank';
+                            td.appendChild(a);
+
+                        } catch (e) {
+                            // 3. Se não for um link, formata datas
+                            if (header.toLowerCase().includes('data') || header.toLowerCase().includes('validade') || header.toLowerCase().includes('fabricação')) {
+                                valor = formatarDataBrasileira(valor);
+                            }
+                            td.textContent = valor;
+                        }
+                    }
+
+                    td.setAttribute('data-label', header);
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+        }
+    }
+
+    async function fetchDataAndRender() {
+        try {
+            const response = await fetch(appsScriptURL);
+            if (!response.ok) {
+                throw new Error('Erro de rede: ' + response.statusText);
+            }
+            const data = await response.json();
+            
+            loadingMessage.style.display = 'none';
+            fullData = data;
+            renderTable(fullData);
+        } catch(error) {
+            loadingMessage.textContent = 'Erro ao carregar os dados. Verifique o URL do script.';
+            console.error('Erro:', error);
+        }
+    }
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+
+        const filteredData = fullData.filter(row => {
+            return Object.values(row).some(value => {
+                let searchValue = String(value).toLowerCase();
+                return searchValue.includes(searchTerm);
+            });
+        });
+
+        renderTable(filteredData);
+    });
+</script>
+</body>
+</html>
