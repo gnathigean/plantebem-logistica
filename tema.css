@@ -4,18 +4,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center; 
-  /* Removido justify-content: center para permitir que o formulário role */
   min-height: 100vh;
   margin: 0;
   padding: 20px;
   box-sizing: border-box;
   position: relative; 
   color: #333; 
-  overflow-x: hidden; /* Mantido para garantir que NADA fora do corpo crie scroll horizontal indesejado */
+  overflow-x: hidden; /* **MANTIDO:** Essencial para evitar scroll horizontal do BODY */
   
-  /* ================================================= */
-  /* ESTILOS PARA IMAGEM DE FUNDO (mantidos) */
-  /* ================================================= */
   background-image: url('/imagens/ptbfundo.png'); 
   background-size: cover; 
   background-position: center center; 
@@ -40,7 +36,7 @@ body::before {
 .logo-container {
   text-align: center;
   padding-bottom: 20px;
-  padding-top: 50px; /* Adiciona espaço no topo para os botões fixos */
+  padding-top: 50px; 
   z-index: 1; 
 }
 
@@ -80,7 +76,6 @@ body::before {
   background-color: #e74c3c; 
   color: white;
   border: none;
-  /* CORREÇÃO AQUI: Garante que o botão apareça no menu/formulário */
   display: inline-block; 
 }
 
@@ -108,11 +103,11 @@ body::before {
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   width: 90%;
-  max-width: 95%; /* Mantido seu ajuste */
+  max-width: 95%; 
   box-sizing: border-box;
   margin-bottom: 20px;
   z-index: 1; 
-  margin-top: 80px; /* Mantido seu ajuste */
+  margin-top: 80px; 
   margin-left: auto;
   margin-right: auto;
 }
@@ -131,7 +126,7 @@ body::before {
   margin: -40px -40px 30px -40px; 
 }
 
-/* --- ESTILOS DE FORMULÁRIO (MANTIDOS) --- */
+/* --- ESTILOS DE FORMULÁRIO (GARANTINDO 100% WIDHT) --- */
 
 label {
   display: block;
@@ -147,7 +142,7 @@ input[type="email"],
 select,
 textarea,
 input[type="file"] {
-  width: 100%;
+  width: 100%; /* Garante 100% de largura */
   padding: 12px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
@@ -183,6 +178,7 @@ textarea:hover {
   width: 100%;
   margin-bottom: 20px;
 }
+/* Estilos para o ícone de calendário */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   background: transparent;
@@ -272,12 +268,12 @@ input[type="submit"]:hover {
 
 /* Novo estilo para a logo (use o nome de classe padronizado) */
 .logo-img {
-  max-width: 250px; /* Alinhando com seu estilo de pesquisa */
+  max-width: 250px;
   height: auto;
   margin-bottom: 20px;
 }
 
-/* --- ESTILOS DE PESQUISA E TABELA (ADICIONAR/GARANTIR) --- */
+/* --- ESTILOS DE PESQUISA E TABELA (MANTIDOS) --- */
 
 .search-container {
   margin-bottom: 20px;
@@ -293,14 +289,13 @@ input[type="submit"]:hover {
 }
   
 #dataTable {
-  width: auto; /* 🟢 AJUSTE: Permite que a tabela se expanda além de 100% se necessário */
-  min-width: 100%; /* Garante que preencha o espaço disponível se couber */
+  width: auto; 
+  min-width: 100%; 
   border-collapse: collapse;
   margin-top: 20px;
 }
 
 #dataTable th, #dataTable td {
-    /* 🟢 AJUSTE: Impede a quebra de linha forçada, garantindo que a rolagem funcione */
     white-space: nowrap; 
   border: 1px solid #ddd;
   padding: 8px;
@@ -316,76 +311,115 @@ input[type="submit"]:hover {
   background-color: #f9f9f9;
 }
 
-
-/* ================================================= */
-/* 🟢 NOVO WRAPPER RESPONSIVO PARA A TABELA 🟢 */
-/* Você deve usar esta classe na <div> que envolve a tabela no HTML */
-/* ================================================= */
-
+/* 🟢 WRAPPER RESPONSIVO PARA A TABELA (SOLUÇÃO DE SCROLL) 🟢 */
 .tabela-wrapper {
-    /* 💡 O SEGREDO: Aplica rolagem horizontal quando o conteúdo exceder o contêiner pai (.container) */
-    overflow-x: auto;
+    overflow-x: auto; /* Habilita o scroll horizontal DENTRO deste contêiner */
     width: 100%;
-    padding-bottom: 10px; /* Espaço para a barra de rolagem */
+    padding-bottom: 10px; 
 }
 
-/* --- MEDIA QUERIES PARA RESPONSIVIDADE (REMOVIDO O BLOCO DA TABELA) --- */
-
-/* ⚠️ BLOCO REMOVIDO:
-A Media Query abaixo foi removida.
-O código tentava transformar a tabela em cartões, o que é ineficiente para muitas colunas.
-A solução com .tabela-wrapper é mais robusta.
-
-@media (max-width: 768px) {
-    #dataTable thead { display: none; }
-    #dataTable, #dataTable tbody, #dataTable tr, #dataTable td { display: block; width: 100%; }
-    // ... restante do código removido
-}
-*/
 
 /* NOVO ESTILO: Select de Múltipla Escolha (Lista de Rolagem) */
 select[multiple] {
-    /* Restaura a aparência de lista de rolagem */
     -webkit-appearance: auto;
     -moz-appearance: auto;
     appearance: auto;
-    
-    /* Remove o ícone de seta que não é necessário aqui */
     background-image: none; 
-
-    /* Garante que a caixa de lista tenha uma altura visível */
     height: auto;
     min-height: 150px; 
     padding: 10px;
-    border: 1px solid #aaa; /* Borda levemente mais proeminente */
-    
-    /* Adicionais de Estilo */
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Sutil efeito 3D */
+    border: 1px solid #aaa;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Estilo para opções selecionadas (mais amigável) */
 select[multiple] option:checked {
-    background-color: #e8f5e9; /* Verde bem claro (harmoniza com o tema) */
-    color: #333; /* Cor do texto mais escura para melhor leitura */
+    background-color: #e8f5e9;
+    color: #333;
 }
 
-/* ---------------------------------------------------- */
 /* Melhoria Estética: Barra de Rolagem Customizada (Webkit) */
-/* ---------------------------------------------------- */
 select[multiple]::-webkit-scrollbar {
-    width: 8px; /* Largura da barra */
+    width: 8px;
 }
 
 select[multiple]::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Cor de fundo da trilha */
+    background: #f1f1f1;
     border-radius: 10px;
 }
 
 select[multiple]::-webkit-scrollbar-thumb {
-    background: #ccc; /* Cor do "polegar" (a alça) */
+    background: #ccc;
     border-radius: 10px;
 }
 
 select[multiple]::-webkit-scrollbar-thumb:hover {
-    background: #888888; /* Cor ao passar o mouse */
+    background: #888888;
+}
+
+/* ================================================= */
+/* 🟢 MEDIA QUERIES PARA MÓVEL (Máximo 600px) 🟢 */
+/* ================================================= */
+
+@media (max-width: 600px) {
+    
+    /* 1. LAYOUT GERAL E CONTÊINERES */
+    body {
+        padding: 10px; 
+    }
+
+    .container {
+        padding: 20px; 
+        margin-top: 60px; 
+        width: 100%; 
+        max-width: 100%;
+    }
+    
+    /* 2. NAVEGAÇÃO FIXA */
+    .fixed-nav {
+        top: 10px;
+        right: 10px;
+        flex-direction: row; 
+        gap: 5px;
+    }
+    
+    #logout-button, .botao-menu {
+        padding: 8px 12px; 
+        font-size: 14px;
+    }
+
+    /* 3. LOGO */
+    .logo-img {
+        max-width: 180px; 
+        padding-top: 0;
+    }
+    
+    /* 4. TÍTULOS */
+    h2 {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+    
+    /* 5. INPUTS E BOTÕES */
+    input[type="submit"], .botao-site {
+        padding: 12px 15px;
+        font-size: 16px;
+    }
+    
+    /* 6. CHECKLIST - GARANTIA DE EMPILHAMENTO */
+    .checklist-header {
+        /* Garante que o Título e as Opções fiquem em duas linhas */
+        flex-direction: column; 
+        align-items: flex-start;
+    }
+    .checklist-options {
+        /* Garante que as opções Sim/Não fiquem em uma linha horizontal */
+        justify-content: flex-start;
+        margin-top: 5px;
+    }
+    
+    /* 7. TABELA (Já está resolvida pelo .tabela-wrapper, mas garante que não haja margens estranhas) */
+    .tabela-wrapper {
+        margin: 0 -10px; /* Compensa o padding do container para usar 100% da tela */
+        width: calc(100% + 20px);
+    }
 }
