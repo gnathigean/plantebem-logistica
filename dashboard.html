@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Recebimento - AGROEXPRESS</title>
+    <link rel="stylesheet" href="/tema.css"> 
+    
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <style>
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        .kpi-title {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .kpi-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #58c917; 
+        }
+        .insights-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsividade móvel */
+        @media (max-width: 600px) {
+            .dashboard-container, .filter-controls {
+                grid-template-columns: 1fr;
+            }
+            .kpi-value {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="fixed-nav">
+  <a id="menu-button" class="botao-menu" href="menu.html">← Menu</a> 
+  <button id="logout-button">Sair</button>
+</div>
+
+<div class="logo-container">
+  <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+</div>
+
+<div class="container"> 
+   <h2>DASHBOARD DE RECEBIMENTO - <span style="color: red;">AGROEXPRESS</span></h2>
+
+    <p id="loading-dashboard">Carregando dados das lojas...</p>
+    
+    <div class="filter-controls" id="filter-controls" style="display: none;">
+        <select id="loja-filter">
+            <option value="TODAS">TODAS AS LOJAS</option>
+        </select>
+        <select id="fornecedor-filter">
+            <option value="TODOS">TODOS OS FORNECEDORES</option>
+        </select>
+        <select id="produto-filter">
+            <option value="TODOS">TODOS OS PRODUTOS</option>
+        </select>
+    </div>
+
+    <div class="dashboard-container" id="kpi-display" style="display: none;">
+        </div>
+    
+    <div id="insights-container" style="display: none;">
+        
+        <div class="insights-section">
+            <h3>Visão Geral dos Problemas</h3>
+            <div id="pie-chart-problemas" class="chart-container"></div>
+        </div>
+
+        <div class="insights-section">
+            <h3>Detalhe dos Problemas e Causas</h3>
+            <div id="detalhe-problemas">
+                <h4>1. Recusas e Avarias (Ocorrências)</h4>
+                <ul id="problemas-detalhados">
+                    </ul>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script type="module">
+    // --- FIREBASE IMPORTS ---
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    const firebaseConfig = { /* ... Suas credenciais ... */ };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    // --- VARIÁVEIS DO DOM E URLs ---
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2Ty2Z_UM74Czl29ZSD_8_HFubBq8qYzBNRHAMpg7R1nJhWa-PeG81jD7BNi9_vCvk/exec';
+    const loadingMessage = document.getElementById('loading-dashboard');
+    const kpiDisplay = document.getElementById('kpi-display');
+    const insightsContainer = document.getElementById('insights-container');
+    const filterControls = document.getElementById('filter-controls');
+    
+    const lojaFilter = document.getElementById('loja-filter');
+    const fornecedorFilter = document.getElementById('fornecedor-filter');
+    const produtoFilter = document.getElementById('produto-filter');
+    
+    let allData = []; // Armazena todos os dados de todas as lojas
+    let currentData = []; // Dados sendo exibidos (após a filtragem)
+
+    // --- MAPA DE LOJAS (DEVE COINCIDIR COM O APPS SCRIPT) ---
+    const LOJAS_MAP = {
+        'matriz': 'Matriz',
+        'juazeiro': 'Filial Juazeiro',
+        'loteamento': 'Filial Loteamento',
+        'irece': 'Filial Irecê',
+        'rioreal': 'Filial Rio Real',
+        'agroexpress': 'Agroexpress',
+        'grandesafra': 'Grande Safra'
+    };
+    const LOJAS_KEYS = Object.keys(LOJAS_MAP);
+
+
+    // ====================================================================
+    // 📊 FUNÇÕES DE CÁLCULO E RENDERIZAÇÃO 📊
+    // ====================================================================
+
+    function formatNumber(num) {
+        return num.toLocaleString('pt-BR');
+    }
+
+    function calcularKpis(data) {
+        const totalRegistros = data.length;
+        
+        let totalRecusado = 0;
+        let contagemProblemas = {
+            'FALTA': 0,
+            'AVARIA': 0,
+            'VENCIMENTO CURTO': 0,
+            'NF DIVERGENCIA / CARGA': 0,
+            'PRODUTO RECUSADO': 0
+        };
+        let detalhesProblemas = {}; // Para armazenar as descrições dos problemas
+
+        data.forEach(item => {
+            const recusaStatus = String(item['PRODUTO RECUSADO']).startsWith('Sim');
+            if (recusaStatus) {
+                totalRecusado++;
+            }
+
+            ['FALTA', 'AVARIA', 'VENCIMENTO CURTO', 'NF DIVERGENCIA / CARGA', 'PRODUTO RECUSADO'].forEach(coluna => {
+                const valor = String(item[coluna]);
+                if (valor.startsWith('Sim')) {
+                    contagemProblemas[coluna]++;
+                    
+                    // Adiciona a descrição ao detalhe (métrica 'detalhada')
+                    if (valor.includes(':')) {
+                        const descricao = valor.split(':')[1].trim();
+                        if (descricao) {
+                            detalhesProblemas[coluna] = detalhesProblemas[coluna] || [];
+                            detalhesProblemas[coluna].push({
+                                produto: item['produto'] || 'N/A',
+                                fornecedor: item['fornecedor'] || 'N/A',
+                                lote: item['lote'] || 'N/A',
+                                descricao: descricao
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
+        const percentualRecusado = totalRegistros > 0 
+            ? ((totalRecusado / totalRegistros) * 100).toFixed(1) 
+            : 0;
+
+        return {
+            totalRegistros,
+            totalRecusado,
+            percentualRecusado,
+            contagemProblemas,
+            detalhesProblemas
+        };
+    }
+
+    function renderKpis(kpis) {
+        kpiDisplay.innerHTML = ''; 
+        
+        // KPl 1: Total de Registros
+        kpiDisplay.innerHTML += `
+            <div class="kpi-card">
+                <div class="kpi-title">TOTAL DE REGISTROS</div>
+                <div class="kpi-value">${formatNumber(kpis.totalRegistros)}</div>
+            </div>
+        `;
+        
+        // KPl 2: Total de Recusas
+        kpiDisplay.innerHTML += `
+            <div class="kpi-card">
+                <div class="kpi-title">TOTAL RECUSADO</div>
+                <div class="kpi-value" style="color: #e74c3c;">${formatNumber(kpis.totalRecusado)}</div>
+            </div>
+        `;
+        
+        // KPl 3: Taxa de Recusa
+        kpiDisplay.innerHTML += `
+            <div class="kpi-card">
+                <div class="kpi-title">TAXA DE RECUSA</div>
+                <div class="kpi-value">${kpis.percentualRecusado}%</div>
+            </div>
+        `;
+        
+        kpiDisplay.style.display = 'grid';
+        insightsContainer.style.display = 'block';
+    }
+
+    function renderChartsAndDetails(kpis) {
+        // --- GRÁFICO (Gráfico de Pizza para Problemas) ---
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            const problemasData = [['Problema', 'Ocorrências']];
+            Object.entries(kpis.contagemProblemas).forEach(([nome, contagem]) => {
+                if (contagem > 0) {
+                    problemasData.push([nome, contagem]);
+                }
+            });
+            
+            const dataTable = google.visualization.arrayToDataTable(problemasData);
+            const options = {
+                title: 'Distribuição dos Tipos de Problemas',
+                pieHole: 0.4,
+                colors: ['#f44336', '#ff9800', '#2196f3', '#4caf50', '#9c27b0'] // Cores personalizadas
+            };
+
+            const chart = new google.visualization.PieChart(document.getElementById('pie-chart-problemas'));
+            chart.draw(dataTable, options);
+        }
+
+        // --- DETALHE DOS PROBLEMAS (MÉTRICAS DETALHADAS) ---
+        const detalheProblemasDiv = document.getElementById('detalhe-problemas');
+        let htmlDetalhe = '<h4>1. Recusas e Avarias (Ocorrências e Detalhes)</h4>';
+
+        Object.keys(kpis.detalhesProblemas).forEach(problema => {
+            const ocorrencias = kpis.detalhesProblemas[problema];
+            if (ocorrencias.length > 0) {
+                htmlDetalhe += `
+                    <h5>${problema} (${ocorrencias.length} Ocorrência${ocorrencias.length > 1 ? 's' : ''}):</h5>
+                    <ul style="list-style-type: none; padding-left: 0;">
+                `;
+                ocorrencias.forEach(detalhe => {
+                    htmlDetalhe += `
+                        <li style="margin-bottom: 5px; padding: 5px; border-left: 3px solid #f44336; background-color: #ffebee;">
+                            Produto: ${detalhe.produto} | Fornecedor: ${detalhe.fornecedor} | Lote: ${detalhe.lote}<br>
+                            Descrição: <strong>${detalhe.descricao}</strong>
+                        </li>
+                    `;
+                });
+                htmlDetalhe += `</ul>`;
+            }
+        });
+
+        detalheProblemasDiv.innerHTML = htmlDetalhe;
+    }
+
+
+    // ====================================================================
+    // ⚙️ LÓGICA DE FILTRAGEM ⚙️
+    // ====================================================================
+
+    function populateFilters(data) {
+        const fornecedores = new Set();
+        const produtos = new Set();
+
+        data.forEach(item => {
+            if (item.fornecedor) fornecedores.add(item.fornecedor);
+            if (item.produto) produtos.add(item.produto);
+        });
+
+        // 1. Filtro de Loja (Já preenchido no HTML, mas garantimos as opções)
+        Object.entries(LOJAS_MAP).forEach(([key, name]) => {
+             // Evita duplicar se já foi adicionado
+             if (!lojaFilter.querySelector(`option[value="${key}"]`)) {
+                 const option = document.createElement('option');
+                 option.value = key;
+                 option.textContent = name;
+                 lojaFilter.appendChild(option);
+             }
+        });
+
+        // 2. Filtro de Fornecedor
+        fornecedorFilter.innerHTML = '<option value="TODOS">TODOS OS FORNECEDORES</option>';
+        Array.from(fornecedores).sort().forEach(forn => {
+            fornecedorFilter.innerHTML += `<option value="${forn}">${forn}</option>`;
+        });
+
+        // 3. Filtro de Produto
+        produtoFilter.innerHTML = '<option value="TODOS">TODOS OS PRODUTOS</option>';
+        Array.from(produtos).sort().forEach(prod => {
+            produtoFilter.innerHTML += `<option value="${prod}">${prod}</option>`;
+        });
+        
+        filterControls.style.display = 'grid';
+    }
+
+    function applyFilters() {
+        const lojaSelecionada = lojaFilter.value;
+        const fornecedorSelecionado = fornecedorFilter.value;
+        const produtoSelecionado = produtoFilter.value;
+
+        let filteredData = allData;
+        
+        // 1. Filtrar por Loja
+        if (lojaSelecionada !== 'TODAS') {
+            filteredData = filteredData.filter(item => item.LOJA === lojaSelecionada);
+        }
+
+        // 2. Filtrar por Fornecedor
+        if (fornecedorSelecionado !== 'TODOS') {
+            filteredData = filteredData.filter(item => item.fornecedor === fornecedorSelecionado);
+        }
+
+        // 3. Filtrar por Produto
+        if (produtoSelecionado !== 'TODOS') {
+            filteredData = filteredData.filter(item => item.produto === produtoSelecionado);
+        }
+
+        currentData = filteredData;
+        
+        // Recalcular e renderizar KPls e Gráficos
+        const kpis = calcularKpis(currentData);
+        renderKpis(kpis);
+        renderChartsAndDetails(kpis);
+    }
+    
+    // Adiciona Listeners aos filtros
+    lojaFilter.addEventListener('change', applyFilters);
+    fornecedorFilter.addEventListener('change', applyFilters);
+    produtoFilter.addEventListener('change', applyFilters);
+
+
+    // ====================================================================
+    // 🌐 FUNÇÃO DE FETCH GLOBAL (BUSCA DADOS DE TODAS AS LOJAS) 🌐
+    // ====================================================================
+
+    async function fetchDataAllStores() {
+        loadingMessage.textContent = 'Buscando dados das 7 lojas...';
+        
+        const fetchPromises = LOJAS_KEYS.map(lojaKey => {
+            const fetchUrl = `${APPS_SCRIPT_URL}?loja=${lojaKey}`;
+            return fetch(fetchUrl)
+                .then(response => response.json())
+                .catch(error => {
+                    console.error(`Erro ao buscar dados da loja ${lojaKey}:`, error);
+                    return []; // Retorna um array vazio em caso de erro
+                });
+        });
+
+        const results = await Promise.all(fetchPromises);
+        let combinedData = [];
+
+        results.forEach(result => {
+            if (Array.isArray(result)) {
+                combinedData.push(...result);
+            }
+        });
+
+        return combinedData;
+    }
+
+    async function initializeDashboard() {
+        allData = await fetchDataAllStores();
+        
+        loadingMessage.style.display = 'none';
+
+        if (allData.length === 0) {
+            loadingMessage.textContent = 'Nenhum dado encontrado em todas as lojas para análise.';
+            return;
+        }
+        
+        populateFilters(allData);
+        applyFilters(); // Aplica os filtros iniciais ('TODAS' as lojas)
+    }
+
+    // --- INICIALIZAÇÃO ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            initializeDashboard();
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.style.display = 'inline-block';
+            }
+        } else {
+            window.location.href = 'index.html'; 
+        }
+    });
+
+    // ... (Logout listener mantido) ...
+    document.getElementById('logout-button').addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch(error => {
+            console.error("Erro ao deslogar:", error);
+            alert("Erro ao sair. Tente novamente.");
+        });
+    });
+
+</script>
+</body>
+</html>
