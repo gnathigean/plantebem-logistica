@@ -35,10 +35,10 @@
       </tbody>
     </table>
   </div>
-    </div>
+  </div>
 
 <script type="module">
-    // --- FIREBASE IMPORTS (Certifique-se de que os links de versão estão corretos) ---
+    // --- FIREBASE IMPORTS (MANTIDOS) ---
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
     
@@ -56,7 +56,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     
-    // --- VARIÁVEIS DO DOM E URLS ---
+    // --- VARIÁVEIS DO DOM E URLS (MANTIDOS) ---
     const appsScriptURL = 'https://script.google.com/macros/s/AKfycbzd3szafqvHqoly7zap3HukuPeoale79GHwKfoNQ3gs9GV8NAGsQ1ipjbxdrT4Mg1q9/exec';
     const loadingMessage = document.getElementById('loading');
     const searchInput = document.getElementById('searchInput');
@@ -66,21 +66,19 @@
 
     let fullData = [];
 
-    // --- LÓGICA DE AUTENTICAÇÃO E EXIBIÇÃO ---
+    // --- LÓGICA DE AUTENTICAÇÃO E EXIBIÇÃO (MANTIDOS) ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Se logado, inicia o carregamento dos dados e torna o botão Sair visível
             fetchDataAndRender();
             if (logoutButton) {
                 logoutButton.style.display = 'inline-block';
             }
         } else {
-            // Se não estiver logado, redireciona para a página de login
             window.location.href = 'index.html'; 
         }
     });
     
-    // --- FUNÇÕES DE LOGOUT E DATAS ---
+    // --- FUNÇÕES DE LOGOUT E DATAS (MANTIDOS) ---
     
     logoutButton.addEventListener('click', () => {
         signOut(auth).then(() => {
@@ -102,67 +100,87 @@
         return `${dia}/${mes}/${ano}`;
     }
 
-    // --- FUNÇÕES DE RENDERIZAÇÃO E BUSCA ---
+    // --- FUNÇÕES DE RENDERIZAÇÃO E BUSCA (MANTIDOS, COM LÓGICA DE EXCEÇÃO DE LINK) ---
 
     function renderTable(dataToRender) {
-        tableBody.innerHTML = '';
-        tableHead.innerHTML = '';
+    tableBody.innerHTML = '';
+    tableHead.innerHTML = '';
 
-        if (dataToRender.length > 0) {
-            const headers = Object.keys(dataToRender[0]);
+    // Colunas que NÃO devem ser tratadas como link
+    const CHECKLIST_HEADERS = [
+        'FALTA', 
+        'AVARIA', 
+        'VENCIMENTO CURTO', 
+        'NF DIVERGENCIA / CARGA', 
+        'PRODUTO RECUSADO'
+    ];
 
-            headers.forEach(headerText => {
-                const th = document.createElement('th');
-                th.textContent = headerText;
-                tableHead.appendChild(th);
-            });
+    if (dataToRender.length > 0) {
+        const headers = Object.keys(dataToRender[0]);
 
-            dataToRender.forEach(rowData => {
-                const tr = document.createElement('tr');
-                headers.forEach(header => {
-                    const td = document.createElement('td');
-                    let valor = rowData[header];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            tableHead.appendChild(th);
+        });
 
-                    // 1. Tratamento de múltiplos links (ex: links separados por vírgula)
-                    if (typeof valor === 'string' && valor.includes(',')) {
-                        const links = valor.split(',').map(link => link.trim());
-                        links.forEach(link => {
-                            if (link) {
-                                const a = document.createElement('a');
-                                a.href = link;
-                                a.textContent = 'Ver Imagem';
-                                a.target = '_blank';
-                                a.style.marginRight = '5px';
-                                td.appendChild(a);
-                            }
-                        });
-                    } else {
-                        try {
-                            // 2. Tenta criar um URL para link único
-                            new URL(valor);
+        dataToRender.forEach(rowData => {
+            const tr = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                let valor = rowData[header];
+                let isLink = false;
 
+                // 1. VERIFICAÇÃO DE CHECKLIST (IGNORA CONVERSÃO PARA LINK)
+                if (CHECKLIST_HEADERS.includes(header.toUpperCase())) {
+                    td.textContent = valor;
+                    isLink = true; 
+                } 
+
+                // 2. Tratamento de múltiplos links
+                else if (typeof valor === 'string' && valor.includes(',')) {
+                    const links = valor.split(',').map(link => link.trim());
+                    links.forEach(link => {
+                        if (link) {
                             const a = document.createElement('a');
-                            a.href = valor;
+                            a.href = link;
                             a.textContent = 'Ver Imagem';
                             a.target = '_blank';
+                            a.style.marginRight = '5px';
                             td.appendChild(a);
-
-                        } catch (e) {
-                            // 3. Se não for um link, formata datas
-                            if (header.toLowerCase().includes('data') || header.toLowerCase().includes('validade') || header.toLowerCase().includes('fabricação')) {
-                                valor = formatarDataBrasileira(valor);
-                            }
-                            td.textContent = valor;
+                            isLink = true;
                         }
-                    }
+                    });
+                } 
+                
+                // 3. Tenta criar um URL para link único
+                else if (!isLink) {
+                    try {
+                        new URL(valor);
 
-                    td.setAttribute('data-label', header);
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
+                        const a = document.createElement('a');
+                        a.href = valor;
+                        a.textContent = 'Ver Imagem';
+                        a.target = '_blank';
+                        td.appendChild(a);
+                        isLink = true;
+
+                    } catch (e) {
+                        // 4. Se não for um link, formata datas
+                        if (header.toLowerCase().includes('data') || header.toLowerCase().includes('validade') || header.toLowerCase().includes('fabricação')) {
+                            valor = formatarDataBrasileira(valor);
+                        }
+                        td.textContent = valor;
+                    }
+                }
+
+                td.setAttribute('data-label', header);
+                tr.appendChild(td);
             });
-        }
+            tableBody.appendChild(tr);
+        });
     }
+}
 
     async function fetchDataAndRender() {
         try {
