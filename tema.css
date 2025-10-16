@@ -342,3 +342,50 @@ A solução com .tabela-wrapper é mais robusta.
     // ... restante do código removido
 }
 */
+
+/* NOVO ESTILO: Select de Múltipla Escolha (Lista de Rolagem) */
+select[multiple] {
+    /* Restaura a aparência de lista de rolagem */
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    appearance: auto;
+    
+    /* Remove o ícone de seta que não é necessário aqui */
+    background-image: none; 
+
+    /* Garante que a caixa de lista tenha uma altura visível */
+    height: auto;
+    min-height: 150px; 
+    padding: 10px;
+    border: 1px solid #aaa; /* Borda levemente mais proeminente */
+    
+    /* Adicionais de Estilo */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Sutil efeito 3D */
+}
+
+/* Estilo para opções selecionadas (mais amigável) */
+select[multiple] option:checked {
+    background-color: #e8f5e9; /* Verde bem claro (harmoniza com o tema) */
+    color: #333; /* Cor do texto mais escura para melhor leitura */
+}
+
+/* ---------------------------------------------------- */
+/* Melhoria Estética: Barra de Rolagem Customizada (Webkit) */
+/* ---------------------------------------------------- */
+select[multiple]::-webkit-scrollbar {
+    width: 8px; /* Largura da barra */
+}
+
+select[multiple]::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Cor de fundo da trilha */
+    border-radius: 10px;
+}
+
+select[multiple]::-webkit-scrollbar-thumb {
+    background: #ccc; /* Cor do "polegar" (a alça) */
+    border-radius: 10px;
+}
+
+select[multiple]::-webkit-scrollbar-thumb:hover {
+    background: #888888; /* Cor ao passar o mouse */
+}

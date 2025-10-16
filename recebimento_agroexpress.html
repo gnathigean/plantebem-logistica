@@ -4,8 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/tema.css" /> 
-
-    <title>FORMULARIO DE RECEBIMENTO - AGROEXPRESS</title>
+    
+    <style>
+        .checklist-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9; /* Leve fundo para destacar o bloco */
+        }
+        .checklist-item {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1em;
+            margin-bottom: 0;
+            cursor: pointer; /* Indica que a linha é interativa */
+        }
+        .checklist-header legend {
+            font-weight: bold;
+            color: #333;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+        .checklist-options {
+            display: flex;
+            gap: 15px; /* Espaçamento entre Sim e Não */
+        }
+        .checklist-options label {
+            font-weight: normal;
+            margin: 0;
+            cursor: pointer;
+        }
+        .checklist-options input[type="radio"] {
+            margin-right: 5px;
+        }
+        .descricao-problema {
+            margin-top: 10px;
+            width: calc(100% - 10px);
+            border-radius: 4px;
+            border: 1px solid #f44336; /* Cor de problema */
+            padding: 8px;
+            box-sizing: border-box;
+            background-color: #fffafa;
+            color: #333;
+        }
+        .descricao-problema::placeholder {
+            color: #f44336;
+        }
+    </style>
+        <title>FORMULARIO DE RECEBIMENTO - AGROEXPRESS</title>
 
 </head>
 
@@ -71,16 +127,70 @@
                 <option value="16 - DP Irece 02">16 - DP Irece 02</option>
                 <option value="18 - Rio Real">18 - Rio Real</option>
             </select>
-            <div class="opcoes-grupo">
-                <input type="checkbox" id="loteca" name="loteca" value="✓">
-                <label for="loteca">Lote Cadastrado</label>
-                <br>
-                <input type="checkbox" id="entrada" name="entrada" value="✓">
-                <label for="entrada">Entrada</label>
-                <br>
-                <input type="checkbox" id="recusa" name="recusa" value="✓">
-                <label for="recusa">Recusa</label>
+
+            <label>CheckList de Recebimento:</label>
+            <div class="checklist-container" id="checklist-recusa">
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>FALTA</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="faltaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="faltaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="faltaDescricao" name="faltaDescricao" placeholder="Descreva o problema de FALTA..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>AVARIA</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="avariaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="avariaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="avariaDescricao" name="avariaDescricao" placeholder="Descreva o problema de AVARIA..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>VENCIMENTO CURTO</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="vencimentoCurtoCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="vencimentoCurtoCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="vencimentoCurtoDescricao" name="vencimentoCurtoDescricao" placeholder="Descreva o problema de VENCIMENTO CURTO..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>NF DIVERGENCIA / CARGA</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="nfDivergenciaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="nfDivergenciaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="nfDivergenciaDescricao" name="nfDivergenciaDescricao" placeholder="Descreva o problema de NF DIVERGENCIA / CARGA..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>PRODUTO RECUSADO</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="recusaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="recusaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="recusaDescricao" name="recusaDescricao" placeholder="Motivo geral da recusa..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
             </div>
+            
+            <div class="opcoes-grupo">
+            </div>
+            
             <label for="obs">Observações Adicionais:</label>
             <textarea id="obs" name="observacoes" rows="4"></textarea>
             <input type="submit" value="Enviar Dados" />
@@ -119,11 +229,51 @@
     const statusDiv = document.getElementById("status");
     const mainContent = document.getElementById("main-content");
     const logoutButton = document.getElementById("logout-button");
-    const fileInput = document.getElementById("file"); // Referência ao campo de arquivo
-    
+    const fileInput = document.getElementById("file"); 
+    const checklistRecusa = document.getElementById('checklist-recusa');
+
     let usuarioLogadoEmail = '';
-    // NOVO: Array para acumular os links de todas as fotos
     let linksAcumulados = []; 
+
+    // --- FUNÇÃO PARA MOSTRAR/OCULTAR CAIXAS DE TEXTO ---
+    function toggleDescricao(radioName, descricaoId) {
+        const simRadio = document.querySelector(`input[name="${radioName}"][value="Sim"]`);
+        const descricaoTextarea = document.getElementById(descricaoId);
+
+        if (simRadio.checked) {
+            descricaoTextarea.style.display = 'block';
+            descricaoTextarea.required = true; // Torna obrigatório se "Sim" estiver selecionado
+        } else {
+            descricaoTextarea.style.display = 'none';
+            descricaoTextarea.required = false;
+            descricaoTextarea.value = ''; // Limpa o valor
+        }
+    }
+
+    // --- LISTENER GERAL PARA O CHECKLIST ---
+    if (checklistRecusa) {
+        checklistRecusa.addEventListener('change', function(event) {
+            const name = event.target.name;
+            let descricaoId = '';
+
+            // Mapeia o nome do radio button para o ID da caixa de texto
+            if (name === 'faltaCheck') {
+                descricaoId = 'faltaDescricao';
+            } else if (name === 'avariaCheck') {
+                descricaoId = 'avariaDescricao';
+            } else if (name === 'vencimentoCurtoCheck') {
+                descricaoId = 'vencimentoCurtoDescricao';
+            } else if (name === 'nfDivergenciaCheck') {
+                descricaoId = 'nfDivergenciaDescricao';
+            } else if (name === 'recusaCheck') { 
+                descricaoId = 'recusaDescricao';
+            }
+            
+            if (descricaoId) {
+                toggleDescricao(name, descricaoId);
+            }
+        });
+    }
 
     // --- LÓGICA DE AUTENTICAÇÃO (MANTIDA) ---
     onAuthStateChanged(auth, (user) => {
@@ -145,7 +295,7 @@
         });
     });
 
-    // --- NOVA FUNÇÃO: UPLOAD IMEDIATO DE FOTO ---
+    // --- NOVA FUNÇÃO: UPLOAD IMEDIATO DE FOTO (MANTIDA) ---
     async function uploadFotoImediato(arquivo) {
         if (!arquivo) return;
 
@@ -186,7 +336,7 @@
         }
     }
     
-    // --- LISTENER PARA O CAMPO DE ARQUIVO (ACESSA A CÂMERA) ---
+    // --- LISTENER PARA O CAMPO DE ARQUIVO (MANTIDO) ---
     fileInput.addEventListener('change', function() {
         if (this.files.length > 0) {
             // Envia o arquivo assim que ele é selecionado (tirado da câmera)
@@ -197,12 +347,11 @@
         this.value = ''; 
     });
 
-    // --- LÓGICA DE ENVIO DO FORMULÁRIO (AJUSTADA) ---
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO (MANTIDA) ---
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
     
         if (!usuarioLogadoEmail) {
-            // ... (Lógica de erro)
             statusDiv.textContent = "Erro: Nenhum usuário logado. Por favor, faça o login.";
             statusDiv.className = "mensagem-status erro";
             return;
@@ -230,19 +379,35 @@
         dadosFormulario.append("validade", document.getElementById("validade").value);
         dadosFormulario.append("local", document.getElementById("local").value);
         
-        if (document.getElementById("loteca").checked) {
-            dadosFormulario.append("loteca", document.getElementById("loteca").value);
-        }
-        if (document.getElementById("entrada").checked) {
-            dadosFormulario.append("entrada", document.getElementById("entrada").value);
-        }
-        if (document.getElementById("recusa").checked) {
-            dadosFormulario.append("recusa", document.getElementById("recusa").value);
-        }
+        // Coleta e combina os valores dos 5 radio buttons (Sim/Não) com suas descrições
         
+        // 1. FALTA
+        const faltaValue = document.querySelector('input[name="faltaCheck"]:checked').value;
+        const faltaDescricao = document.getElementById("faltaDescricao").value;
+        dadosFormulario.append("falta", `${faltaValue}${faltaValue === 'Sim' ? `: ${faltaDescricao}` : ''}`);
+        
+        // 2. AVARIA
+        const avariaValue = document.querySelector('input[name="avariaCheck"]:checked').value;
+        const avariaDescricao = document.getElementById("avariaDescricao").value;
+        dadosFormulario.append("avaria", `${avariaValue}${avariaValue === 'Sim' ? `: ${avariaDescricao}` : ''}`);
+        
+        // 3. VENCIMENTO CURTO
+        const vencimentoCurtoValue = document.querySelector('input[name="vencimentoCurtoCheck"]:checked').value;
+        const vencimentoCurtoDescricao = document.getElementById("vencimentoCurtoDescricao").value;
+        dadosFormulario.append("vencimento_curto", `${vencimentoCurtoValue}${vencimentoCurtoValue === 'Sim' ? `: ${vencimentoCurtoDescricao}` : ''}`);
+        
+        // 4. NF DIVERGENCIA / CARGA
+        const nfDivergenciaValue = document.querySelector('input[name="nfDivergenciaCheck"]:checked').value;
+        const nfDivergenciaDescricao = document.getElementById("nfDivergenciaDescricao").value;
+        dadosFormulario.append("nf_divergencia", `${nfDivergenciaValue}${nfDivergenciaValue === 'Sim' ? `: ${nfDivergenciaDescricao}` : ''}`);
+        
+        // 5. PRODUTO RECUSADO
+        const recusaValue = document.querySelector('input[name="recusaCheck"]:checked').value;
+        const recusaDescricao = document.getElementById("recusaDescricao").value;
+        dadosFormulario.append("recusa", `${recusaValue}${recusaValue === 'Sim' ? `: ${recusaDescricao}` : ''}`);
+
         dadosFormulario.append("obs", document.getElementById("obs").value);
         
-        // NOVO: Usa os links acumulados
         dadosFormulario.append("linksDasImagens", linksAcumulados.join(', ')); 
         dadosFormulario.append("usuario", usuarioLogadoEmail);
 
@@ -258,6 +423,24 @@
                 statusDiv.className = "mensagem-status sucesso";
                 formulario.reset();
                 linksAcumulados = []; // Limpa os links após o envio
+                
+                // Reseta os radio buttons e oculta/limpa as descrições após o envio
+                document.querySelector('input[name="faltaCheck"][value="Não"]').checked = true;
+                toggleDescricao('faltaCheck', 'faltaDescricao');
+
+                document.querySelector('input[name="avariaCheck"][value="Não"]').checked = true;
+                toggleDescricao('avariaCheck', 'avariaDescricao');
+
+                document.querySelector('input[name="vencimentoCurtoCheck"][value="Não"]').checked = true;
+                toggleDescricao('vencimentoCurtoCheck', 'vencimentoCurtoDescricao');
+
+                document.querySelector('input[name="nfDivergenciaCheck"][value="Não"]').checked = true;
+                toggleDescricao('nfDivergenciaCheck', 'nfDivergenciaDescricao');
+                
+                // RESET: PRODUTO RECUSADO
+                document.querySelector('input[name="recusaCheck"][value="Não"]').checked = true;
+                toggleDescricao('recusaCheck', 'recusaDescricao');
+
             } else {
                 throw new Error(data.mensagem || "Erro ao salvar na planilha.");
             }

@@ -105,64 +105,85 @@
     // --- FUNÇÕES DE RENDERIZAÇÃO E BUSCA ---
 
     function renderTable(dataToRender) {
-        tableBody.innerHTML = '';
-        tableHead.innerHTML = '';
+    tableBody.innerHTML = '';
+    tableHead.innerHTML = '';
 
-        if (dataToRender.length > 0) {
-            const headers = Object.keys(dataToRender[0]);
+    // Colunas que NÃO devem ser tratadas como link, mesmo que contenham texto 'Sim:...'
+    const CHECKLIST_HEADERS = [
+        'FALTA', 
+        'AVARIA', 
+        'VENCIMENTO CURTO', 
+        'NF DIVERGENCIA / CARGA', 
+        'PRODUTO RECUSADO'
+    ];
 
-            headers.forEach(headerText => {
-                const th = document.createElement('th');
-                th.textContent = headerText;
-                tableHead.appendChild(th);
-            });
+    if (dataToRender.length > 0) {
+        const headers = Object.keys(dataToRender[0]);
 
-            dataToRender.forEach(rowData => {
-                const tr = document.createElement('tr');
-                headers.forEach(header => {
-                    const td = document.createElement('td');
-                    let valor = rowData[header];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            tableHead.appendChild(th);
+        });
 
-                    // 1. Tratamento de múltiplos links (ex: links separados por vírgula)
-                    if (typeof valor === 'string' && valor.includes(',')) {
-                        const links = valor.split(',').map(link => link.trim());
-                        links.forEach(link => {
-                            if (link) {
-                                const a = document.createElement('a');
-                                a.href = link;
-                                a.textContent = 'Ver Imagem';
-                                a.target = '_blank';
-                                a.style.marginRight = '5px';
-                                td.appendChild(a);
-                            }
-                        });
-                    } else {
-                        try {
-                            // 2. Tenta criar um URL para link único
-                            new URL(valor);
+        dataToRender.forEach(rowData => {
+            const tr = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                let valor = rowData[header];
+                let isLink = false;
 
+                // 1. VERIFICAÇÃO DE CHECKLIST (NOVO: PRIORIDADE MÁXIMA)
+                if (CHECKLIST_HEADERS.includes(header.toUpperCase())) {
+                    td.textContent = valor;
+                    isLink = true; // Força a pular a verificação de link abaixo
+                } 
+                // FIM DA VERIFICAÇÃO DE CHECKLIST
+
+                // 2. Tratamento de múltiplos links (MANTIDO, mas precisa da verificação 'isLink')
+                else if (typeof valor === 'string' && valor.includes(',')) {
+                    const links = valor.split(',').map(link => link.trim());
+                    links.forEach(link => {
+                        if (link) {
                             const a = document.createElement('a');
-                            a.href = valor;
+                            a.href = link;
                             a.textContent = 'Ver Imagem';
                             a.target = '_blank';
+                            a.style.marginRight = '5px';
                             td.appendChild(a);
-
-                        } catch (e) {
-                            // 3. Se não for um link, formata datas
-                            if (header.toLowerCase().includes('data') || header.toLowerCase().includes('validade') || header.toLowerCase().includes('fabricação')) {
-                                valor = formatarDataBrasileira(valor);
-                            }
-                            td.textContent = valor;
+                            isLink = true;
                         }
-                    }
+                    });
+                } 
+                
+                // 3. Tenta criar um URL para link único
+                else if (!isLink) {
+                    try {
+                        new URL(valor);
 
-                    td.setAttribute('data-label', header);
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
+                        const a = document.createElement('a');
+                        a.href = valor;
+                        a.textContent = 'Ver Imagem';
+                        a.target = '_blank';
+                        td.appendChild(a);
+                        isLink = true;
+
+                    } catch (e) {
+                        // 4. Se não for um link, formata datas
+                        if (header.toLowerCase().includes('data') || header.toLowerCase().includes('validade') || header.toLowerCase().includes('fabricação')) {
+                            valor = formatarDataBrasileira(valor);
+                        }
+                        td.textContent = valor;
+                    }
+                }
+
+                td.setAttribute('data-label', header);
+                tr.appendChild(td);
             });
-        }
+            tableBody.appendChild(tr);
+        });
     }
+}
 
     async function fetchDataAndRender() {
         try {
