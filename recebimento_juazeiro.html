@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/tema.css" /> 
     
     <style>
-        /* Estes estilos estão aqui apenas para referência e devem ser fundidos com o tema.css se for o arquivo principal */
+        /* [Estilos CSS omitidos para brevidade, mantidos no original] */
         .checklist-container {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -62,7 +62,7 @@
             color: #f44336;
         }
     </style>
-        <title>FORMULARIO DE RECEBIMENTO - JUAZEIRO</title>
+        <title>FORMULARIO DE RECEBIMENTO - IRECÊ</title>
 
 </head>
 
@@ -78,7 +78,7 @@
     </div>
 
     <div id="main-content" class="container">
-        <h2>FORMULARIO DE RECEBIMENTO - <span style="color: red;">JUAZEIRO</span></h2>
+        <h2>FORMULARIO DE RECEBIMENTO - <span style="color: red;">IRECÊ</span></h2>
         <form id="meu-formulario">
             <div class="date-container">
                 <label for="dataderecebimento">Data de Recebimento:</label>
@@ -222,7 +222,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIysDh6E0RgwMK4UJ8WwQTdxu2eL8qeZ9p_0jg1hUSuqmTpdrCyVA-yn_3qTAmEqVX/exec';
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIysDh6E0RgwMK4UJ8WwQTdxu2eL8qeZ9p_0jg1hUSuqmTpdrCyVA-yn_3qTAmEqVX/exec";
     const CLOUDINARY_CLOUD_NAME = "diro90s1u";
     const CLOUDINARY_UPLOAD_PRESET = "produtos";
 
@@ -348,69 +348,105 @@
         this.value = ''; 
     });
 
-    // --- LÓGICA DE ENVIO DO FORMULÁRIO (MANTIDA) ---
+    // --- FUNÇÃO PARA CONVERTER TEXTO PARA MAIÚSCULAS ---
+    function toUpperCaseSafe(value) {
+        return typeof value === 'string' ? value.toUpperCase() : value;
+    }
+
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO (CONVERSÃO PARA MAIÚSCULAS) ---
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
     
         if (!usuarioLogadoEmail) {
-            statusDiv.textContent = "Erro: Nenhum usuário logado. Por favor, faça o login.";
+            statusDiv.textContent = "ERRO: NENHUM USUÁRIO LOGADO. POR FAVOR, FAÇA O LOGIN.";
             statusDiv.className = "mensagem-status erro";
             return;
         }
     
         if (linksAcumulados.length === 0) {
-            statusDiv.textContent = "Por favor, tire ou selecione pelo menos uma imagem.";
+            statusDiv.textContent = "POR FAVOR, TIRE OU SELECIONE PELO MENOS UMA IMAGEM.";
             statusDiv.className = "mensagem-status erro";
             return;
         }
 
-        statusDiv.textContent = `Salvando dados de ${linksAcumulados.length} foto(s) na planilha...`;
+        statusDiv.textContent = `SALVANDO DADOS DE ${linksAcumulados.length} FOTO(S) NA PLANILHA...`;
         statusDiv.className = "mensagem-status";
 
-        // Prepara os dados do formulário
-        const dadosFormulario = new FormData();
-        dadosFormulario.append("dataderecebimento", document.getElementById("dataderecebimento").value);
-        dadosFormulario.append("fornecedor", document.getElementById("fornecedor").value);
-        dadosFormulario.append("nf", document.getElementById("nf").value);
-        dadosFormulario.append("produto", document.getElementById("produto").value);
-        dadosFormulario.append("quantidade", document.getElementById("quantidade").value);
-        dadosFormulario.append("quantidade2", document.getElementById("quantidade2").value);
-        dadosFormulario.append("lote", document.getElementById("lote").value);
-        dadosFormulario.append("fabricacao", document.getElementById("fabricacao").value);
-        dadosFormulario.append("validade", document.getElementById("validade").value);
-        dadosFormulario.append("local", document.getElementById("local").value);
-        
-        // Coleta e combina os valores dos 5 radio buttons (Sim/Não) com suas descrições
-        
-        // 1. FALTA
-        const faltaValue = document.querySelector('input[name="faltaCheck"]:checked').value;
-        const faltaDescricao = document.getElementById("faltaDescricao").value;
-        dadosFormulario.append("falta", `${faltaValue}${faltaValue === 'Sim' ? `: ${faltaDescricao}` : ''}`);
-        
-        // 2. AVARIA
-        const avariaValue = document.querySelector('input[name="avariaCheck"]:checked').value;
-        const avariaDescricao = document.getElementById("avariaDescricao").value;
-        dadosFormulario.append("avaria", `${avariaValue}${avariaValue === 'Sim' ? `: ${avariaDescricao}` : ''}`);
-        
-        // 3. VENCIMENTO CURTO
-        const vencimentoCurtoValue = document.querySelector('input[name="vencimentoCurtoCheck"]:checked').value;
-        const vencimentoCurtoDescricao = document.getElementById("vencimentoCurtoDescricao").value;
-        dadosFormulario.append("vencimento_curto", `${vencimentoCurtoValue}${vencimentoCurtoValue === 'Sim' ? `: ${vencimentoCurtoDescricao}` : ''}`);
-        
-        // 4. NF DIVERGENCIA / CARGA
-        const nfDivergenciaValue = document.querySelector('input[name="nfDivergenciaCheck"]:checked').value;
-        const nfDivergenciaDescricao = document.getElementById("nfDivergenciaDescricao").value;
-        dadosFormulario.append("nf_divergencia", `${nfDivergenciaValue}${nfDivergenciaValue === 'Sim' ? `: ${nfDivergenciaDescricao}` : ''}`);
-        
-        // 5. PRODUTO RECUSADO
-        const recusaValue = document.querySelector('input[name="recusaCheck"]:checked').value;
-        const recusaDescricao = document.getElementById("recusaDescricao").value;
-        dadosFormulario.append("recusa", `${recusaValue}${recusaValue === 'Sim' ? `: ${recusaDescricao}` : ''}`);
+        // Cria um objeto temporário para coletar e converter todos os dados
+        const dadosRaw = {
+            // Campos de texto e seleção que DEVEM SER CONVERTIDOS
+            fornecedor: document.getElementById("fornecedor").value,
+            nf: document.getElementById("nf").value,
+            produto: document.getElementById("produto").value,
+            quantidade: document.getElementById("quantidade").value,
+            quantidade2: document.getElementById("quantidade2").value,
+            lote: document.getElementById("lote").value,
+            local: document.getElementById("local").value,
+            obs: document.getElementById("obs").value, // Observações
+            
+            // Campos de data (não devem ser convertidos para maiúsculas)
+            dataderecebimento: document.getElementById("dataderecebimento").value,
+            fabricacao: document.getElementById("fabricacao").value,
+            validade: document.getElementById("validade").value,
+            
+            // Links e Usuário
+            linksDasImagens: linksAcumulados.join(', '),
+            usuario: usuarioLogadoEmail,
+            
+            // Valores Sim/Não (Radio Buttons)
+            faltaValue: document.querySelector('input[name="faltaCheck"]:checked').value,
+            faltaDescricao: document.getElementById("faltaDescricao").value,
+            avariaValue: document.querySelector('input[name="avariaCheck"]:checked').value,
+            avariaDescricao: document.getElementById("avariaDescricao").value,
+            vencimentoCurtoValue: document.querySelector('input[name="vencimentoCurtoCheck"]:checked').value,
+            vencimentoCurtoDescricao: document.getElementById("vencimentoCurtoDescricao").value,
+            nfDivergenciaValue: document.querySelector('input[name="nfDivergenciaCheck"]:checked').value,
+            nfDivergenciaDescricao: document.getElementById("nfDivergenciaDescricao").value,
+            recusaValue: document.querySelector('input[name="recusaCheck"]:checked').value,
+            recusaDescricao: document.getElementById("recusaDescricao").value
+        };
 
-        dadosFormulario.append("obs", document.getElementById("obs").value);
-        
-        dadosFormulario.append("linksDasImagens", linksAcumulados.join(', ')); 
-        dadosFormulario.append("usuario", usuarioLogadoEmail);
+        // Cria o FormData final
+        const dadosFormulario = new FormData();
+        
+        // Converte e anexa campos de texto para MAIÚSCULAS
+        for (const key in dadosRaw) {
+            const value = dadosRaw[key];
+            // Exceções: datas, links, email de usuário e status (SIM/NÃO)
+            if (key.includes('data') || key.includes('links') || key === 'usuario' || key.includes('Value')) {
+                dadosFormulario.append(key, value);
+            } else {
+                dadosFormulario.append(key, toUpperCaseSafe(value));
+            }
+        }
+        
+        // Combina e formata os CheckLists (já convertidos para MAIÚSCULAS)
+        const formatarCheckList = (statusKey, descKey, appendName) => {
+            const status = toUpperCaseSafe(dadosRaw[statusKey]);
+            const descricao = toUpperCaseSafe(dadosRaw[descKey]);
+            dadosFormulario.append(appendName, `${status}${status === 'SIM' ? `: ${descricao}` : ''}`);
+        };
+
+        // Adiciona os campos combinados no formato final para o Apps Script
+        formatarCheckList('faltaValue', 'faltaDescricao', 'falta');
+        formatarCheckList('avariaValue', 'avariaDescricao', 'avaria');
+        formatarCheckList('vencimentoCurtoValue', 'vencimentoCurtoDescricao', 'vencimento_curto');
+        formatarCheckList('nfDivergenciaValue', 'nfDivergenciaDescricao', 'nf_divergencia');
+        formatarCheckList('recusaValue', 'recusaDescricao', 'recusa');
+
+
+        // Remove os campos separados de status e descrição (para não duplicar no Apps Script)
+        dadosFormulario.delete('faltaValue');
+        dadosFormulario.delete('faltaDescricao');
+        dadosFormulario.delete('avariaValue');
+        dadosFormulario.delete('avariaDescricao');
+        dadosFormulario.delete('vencimentoCurtoValue');
+        dadosFormulario.delete('vencimentoCurtoDescricao');
+        dadosFormulario.delete('nfDivergenciaValue');
+        dadosFormulario.delete('nfDivergenciaDescricao');
+        dadosFormulario.delete('recusaValue');
+        dadosFormulario.delete('recusaDescricao');
+
 
         // Envia para o Google Apps Script
         fetch(APPS_SCRIPT_URL, {
@@ -420,7 +456,7 @@
         .then((response) => response.json())
         .then((data) => {
             if (data.resultado === "sucesso") {
-                statusDiv.textContent = "Dados e links das imagens salvos com sucesso!";
+                statusDiv.textContent = "DADOS E LINKS DAS IMAGENS SALVOS COM SUCESSO!";
                 statusDiv.className = "mensagem-status sucesso";
                 formulario.reset();
                 linksAcumulados = []; // Limpa os links após o envio
@@ -443,12 +479,12 @@
                 toggleDescricao('recusaCheck', 'recusaDescricao');
 
             } else {
-                throw new Error(data.mensagem || "Erro ao salvar na planilha.");
+                throw new Error(data.mensagem || "ERRO AO SALVAR NA PLANILHA.");
             }
         })
         .catch((error) => {
             console.error("Erro geral:", error);
-            statusDiv.textContent = `Erro: ${error.message}`;
+            statusDiv.textContent = `ERRO: ${error.message}`;
             statusDiv.className = "mensagem-status erro";
         });
     });
