@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/tema.css" /> 
+  <title>Gerenciar Usuários - Sistema de Recebimento</title>
+
+  <style>
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    #main-content {
+      display: none; 
+    }
+
+    #acesso-negado {
+      color: red;
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #ffdddd;
+      background-color: #ffeeee;
+      margin-top: 50px;
+      border-radius: 8px;
+    }
+
+    .usuarios-grid {
+      display: grid;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .usuario-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    .usuario-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .usuario-card.admin {
+      background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+      color: white;
+    }
+
+    .usuario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .usuario-nome {
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+
+    .usuario-tipo {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .usuario-tipo.admin {
+      background-color: #ff9800;
+      color: white;
+    }
+
+    .usuario-tipo.usuario {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    .usuario-info {
+      margin: 10px 0;
+      font-size: 0.95em;
+    }
+
+    .usuario-info strong {
+      display: inline-block;
+      min-width: 100px;
+    }
+
+    .lojas-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .loja-tag {
+      padding: 6px 12px;
+      background: white;
+      color: #667eea;
+      border-radius: 15px;
+      font-size: 0.85em;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .usuario-card.admin .loja-tag {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+    }
+
+    .btn-excluir {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-excluir:hover {
+      background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+    }
+
+    .btn-excluir:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .mensagem-status {
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .mensagem-status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .mensagem-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .total-usuarios {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .total-usuarios h3 {
+      margin: 0;
+      font-size: 2em;
+    }
+
+    .protecao-admin {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      color: #856404;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="fixed-nav">
+    <a href="menu.html" class="botao-menu">← Menu</a> 
+    <button id="logout-button" style="display: none;">Sair</button>
+  </div>
+    
+  <div id="loading" class="container loading">
+    <p>Verificando acesso e carregando usuários...</p>
+    <div class="loading-spinner"></div>
+  </div>
+    
+  <div id="acesso-negado" style="display: none;">
+    <h2>Acesso Negado 🛑</h2>
+    <p>Esta página é exclusiva para administradores. Por favor, faça login com a conta correta.</p>
+  </div>
+
+  <div id="main-content" class="container">
+    <h1>🗑️ Gerenciamento de Usuários</h1>
+    
+    <div class="total-usuarios" id="total-usuarios">
+      <h3>Carregando...</h3>
+    </div>
+
+    <div class="protecao-admin">
+      ⚠️ <strong>ATENÇÃO:</strong> Você não pode excluir sua própria conta de administrador enquanto estiver logado.
+    </div>
+    
+    <div id="status" class="mensagem-status" style="display: none;"></div>
+    
+    <div class="usuarios-grid" id="usuarios-grid"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    import { getFirestore, collection, getDocs, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+      authDomain: "login-com-dados.firebaseapp.com",
+      projectId: "login-com-dados",
+      storageBucket: "login-com-dados.firebasestorage.app",
+      messagingSenderId: "75556023458",
+      appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+      measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2";
+    
+    const LOJAS_MAP = {
+      'matriz': 'Matriz',
+      'juazeiro': 'Filial Juazeiro',
+      'loteamento': 'Filial Loteamento',
+      'irece': 'Filial Irecê',
+      'rioreal': 'Filial Rio Real',
+      'agroexpress': 'Agroexpress',
+      'grandesafra': 'Grande Safra'
+    };
+    
+    const mainContent = document.getElementById("main-content");
+    const loadingDiv = document.getElementById("loading");
+    const acessoNegadoDiv = document.getElementById("acesso-negado");
+    const logoutButton = document.getElementById("logout-button");
+    const statusDiv = document.getElementById("status");
+    const usuariosGrid = document.getElementById("usuarios-grid");
+    const totalUsuariosDiv = document.getElementById("total-usuarios");
+
+    function showStatus(text, type) {
+      statusDiv.textContent = text;
+      statusDiv.className = `mensagem-status ${type}`;
+      statusDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    async function carregarUsuarios() {
+      try {
+        const usuariosSnapshot = await getDocs(collection(db, "usuarios"));
+        const usuarios = [];
+        
+        usuariosSnapshot.forEach((doc) => {
+          usuarios.push({
+            uid: doc.id,
+            ...doc.data()
+          });
+        });
+        
+        totalUsuariosDiv.innerHTML = `<h3>📊 Total: ${usuarios.length} usuário${usuarios.length !== 1 ? 's' : ''} cadastrado${usuarios.length !== 1 ? 's' : ''}</h3>`;
+        
+        renderizarUsuarios(usuarios);
+        
+      } catch (error) {
+        console.error('Erro ao carregar usuários:', error);
+        showStatus('❌ Erro ao carregar lista de usuários.', 'error');
+      }
+    }
+
+    function renderizarUsuarios(usuarios) {
+      usuariosGrid.innerHTML = '';
+      
+      if (usuarios.length === 0) {
+        usuariosGrid.innerHTML = '<p style="text-align: center; color: #999;">Nenhum usuário cadastrado ainda.</p>';
+        return;
+      }
+      
+      // Ordena: Admins primeiro, depois por nome
+      usuarios.sort((a, b) => {
+        if (a.isAdmin && !b.isAdmin) return -1;
+        if (!a.isAdmin && b.isAdmin) return 1;
+        return (a.nome || '').localeCompare(b.nome || '');
+      });
+      
+      usuarios.forEach(usuario => {
+        const isCurrentUser = auth.currentUser && usuario.uid === auth.currentUser.uid;
+        const isAdmin = usuario.isAdmin || usuario.tipo === 'admin';
+        
+        const lojasHtml = usuario.lojasPermitidas && usuario.lojasPermitidas.length > 0
+          ? usuario.lojasPermitidas.map(lojaKey => 
+              `<span class="loja-tag">${LOJAS_MAP[lojaKey] || lojaKey}</span>`
+            ).join('')
+          : '<span class="loja-tag">Nenhuma loja</span>';
+        
+        const card = document.createElement('div');
+        card.className = `usuario-card ${isAdmin ? 'admin' : ''}`;
+        card.innerHTML = `
+          <div class="usuario-header">
+            <div class="usuario-nome">${usuario.nome || 'Sem nome'}</div>
+            <span class="usuario-tipo ${isAdmin ? 'admin' : 'usuario'}">
+              ${isAdmin ? '🔑 Admin' : '👤 Usuário'}
+            </span>
+          </div>
+          
+          <div class="usuario-info">
+            <strong>📧 E-mail:</strong> ${usuario.email || 'N/A'}
+          </div>
+          
+          <div class="usuario-info">
+            <strong>📅 Criado em:</strong> ${usuario.criadoEm ? new Date(usuario.criadoEm).toLocaleDateString('pt-BR') : 'N/A'}
+          </div>
+          
+          <div class="usuario-info">
+            <strong>✅ Status:</strong> ${usuario.ativo ? '🟢 Ativo' : '🔴 Inativo'}
+          </div>
+          
+          <div class="usuario-info">
+            <strong>🏢 Lojas permitidas:</strong>
+            <div class="lojas-tags">${lojasHtml}</div>
+          </div>
+          
+          <button 
+            class="btn-excluir" 
+            data-uid="${usuario.uid}"
+            data-nome="${usuario.nome}"
+            data-email="${usuario.email}"
+            ${isCurrentUser ? 'disabled' : ''}
+          >
+            ${isCurrentUser ? '🛡️ Você está logado com esta conta' : '🗑️ Excluir Usuário'}
+          </button>
+        `;
+        
+        usuariosGrid.appendChild(card);
+      });
+      
+      // Adiciona eventos aos botões de excluir
+      document.querySelectorAll('.btn-excluir:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', handleExcluirUsuario);
+      });
+    }
+
+    async function handleExcluirUsuario(event) {
+      const btn = event.target;
+      const uid = btn.getAttribute('data-uid');
+      const nome = btn.getAttribute('data-nome');
+      const email = btn.getAttribute('data-email');
+      
+      const confirmacao = confirm(
+        `⚠️ ATENÇÃO: Tem certeza que deseja excluir o usuário?\n\n` +
+        `Nome: ${nome}\n` +
+        `E-mail: ${email}\n\n` +
+        `Esta ação NÃO pode ser desfeita!\n\n` +
+        `Digite "EXCLUIR" para confirmar.`
+      );
+      
+      if (!confirmacao) return;
+      
+      const confirmacaoTexto = prompt('Digite "EXCLUIR" para confirmar:');
+      
+      if (confirmacaoTexto !== 'EXCLUIR') {
+        showStatus('❌ Exclusão cancelada.', 'error');
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.textContent = '⏳ Excluindo...';
+      
+      try {
+        // 1. Excluir do Firestore
+        await deleteDoc(doc(db, "usuarios", uid));
+        
+        // 2. Excluir do Authentication (via API REST)
+        const idToken = await auth.currentUser.getIdToken();
+        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${firebaseConfig.apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idToken: idToken,
+            localId: uid
+          })
+        });
+        
+        if (!response.ok) {
+          console.warn('Usuário removido do Firestore, mas pode ainda existir no Authentication');
+        }
+        
+        showStatus(`✅ Usuário ${nome} excluído com sucesso!`, 'success');
+        
+        // Recarrega a lista
+        await carregarUsuarios();
+        
+      } catch (error) {
+        console.error('Erro ao excluir usuário:', error);
+        showStatus(`❌ Erro ao excluir usuário: ${error.message}`, 'error');
+        btn.disabled = false;
+        btn.textContent = '🗑️ Excluir Usuário';
+      }
+    }
+
+   onAuthStateChanged(auth, async (user) => {
+  loadingDiv.style.display = 'none';
+
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  logoutButton.style.display = 'inline-block';
+
+  // ✅ VERIFICA SE É ADMIN (por UID ou por Firestore)
+  let isAdmin = (user.uid === ADMIN_UID);
+  
+  try {
+    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      if (userData.isAdmin === true || userData.tipo === 'admin') {
+        isAdmin = true;
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao verificar permissões:', error);
+  }
+
+  if (isAdmin) {
+    mainContent.style.display = 'block'; 
+    acessoNegadoDiv.style.display = 'none';
+    await carregarUsuarios();
+  } else {
+    mainContent.style.display = 'none';
+    acessoNegadoDiv.style.display = 'block';
+  }
+});
+
+    
+    logoutButton.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        console.error("Erro ao deslogar:", error);
+      });
+    });
+
+  </script>
+</body>
+</html>

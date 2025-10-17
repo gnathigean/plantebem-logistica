@@ -3,27 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/tema.css" /> 
-
-  <title>Página de Cadastro Exclusiva</title>
+  <link rel="stylesheet" href="/tema.css" /> 
+  <title>Cadastro de Usuários com Permissões</title>
 
   <style>
-    /* Estilos básicos para o contêiner, use o tema.css se preferir */
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 50px auto;
-      padding: 20px;
+      padding: 30px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      background: white;
     }
     
-    /* Oculta o conteúdo principal por padrão */
     #main-content {
       display: none; 
     }
 
-    /* Estilo para a mensagem de erro/acesso negado */
     #acesso-negado {
       color: red;
       text-align: center;
@@ -31,6 +28,165 @@
       border: 1px solid #ffdddd;
       background-color: #ffeeee;
       margin-top: 50px;
+      border-radius: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .lojas-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .loja-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .loja-checkbox:hover {
+      border-color: #667eea;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .loja-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
+
+    .loja-checkbox label {
+      cursor: pointer;
+      margin: 0;
+      font-weight: 500;
+      color: #555;
+      flex: 1;
+    }
+
+    .loja-checkbox input[type="checkbox"]:checked + label {
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .selecionar-todas {
+      margin: 15px 0;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .selecionar-todas:hover {
+      background: #5568d3;
+    }
+
+    .mensagem-status {
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .mensagem-status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .mensagem-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .mensagem-status.message {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    /* ✨ NOVO: Estilo para checkbox de ADMIN */
+    .admin-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+      color: white;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .admin-checkbox input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .admin-checkbox label {
+      cursor: pointer;
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.1em;
     }
   </style>
 </head>
@@ -42,7 +198,7 @@
     <button id="logout-button" style="display: none;">Sair</button>
   </div>
     
-      <div id="loading" class="container" style="text-align: center;">
+  <div id="loading" class="container" style="text-align: center;">
     <p>Verificando acesso...</p>
   </div>
     
@@ -51,31 +207,52 @@
     <p>Esta página é exclusiva para o administrador. Por favor, faça login com a conta correta.</p>
   </div>
 
-    <div id="main-content" class="container">
-    <h1>FORMULÁRIO DE CADASTRO ADMINISTRATIVO</h1>
+  <div id="main-content" class="container">
+    <h1>📋 Cadastro de Usuário - Sistema de Recebimento</h1>
+    
     <form id="meu-formulario">
-      <label for="nome-usuario">Nome do Novo Usuário:</label>
-      <input type="text" name="nome-usuario" id="nome-usuario" required />
-            
-      <label for="email-usuario">E-mail do Novo Usuário:</label>
-      <input type="email" name="email-usuario" id="email-usuario" required />
-            
-      <label for="senha-usuario">Senha Temporária:</label>
-      <input type="password" name="senha-usuario" id="senha-usuario" required />
-            
-            <br><br>
-      <input type="submit" value="Criar Novo Usuário" />
+      <div class="form-group">
+        <label for="nome-usuario">Nome Completo:</label>
+        <input type="text" name="nome-usuario" id="nome-usuario" required placeholder="Ex: João da Silva" />
+      </div>
+      
+      <div class="form-group">
+        <label for="email-usuario">E-mail:</label>
+        <input type="email" name="email-usuario" id="email-usuario" required placeholder="usuario@empresa.com" />
+      </div>
+      
+      <div class="form-group">
+        <label for="senha-usuario">Senha Temporária:</label>
+        <input type="password" name="senha-usuario" id="senha-usuario" required placeholder="Mínimo 6 caracteres" />
+      </div>
+
+      <!-- ✨ NOVO: CHECKBOX PARA MARCAR COMO ADMIN -->
+      <div class="admin-checkbox">
+        <input type="checkbox" id="is-admin" name="is-admin">
+        <label for="is-admin">🔑 Marcar este usuário como ADMINISTRADOR</label>
+      </div>
+      
+      <div class="form-group" id="lojas-section">
+        <label>🏢 Selecione as Lojas de Recebimento que o usuário poderá acessar:</label>
+        <p style="color: #999; font-size: 0.9em; margin-top: 5px;">
+          (Administradores têm acesso total - não é necessário selecionar)
+        </p>
+        <button type="button" class="selecionar-todas" id="btn-selecionar-todas">✅ Selecionar Todas</button>
+        <div class="lojas-container" id="lojas-container"></div>
+      </div>
+      
+      <button type="submit" class="btn-submit">✨ Criar Novo Usuário</button>
     </form>
-    <div id="status" class="mensagem-status"></div>
+    
+    <div id="status" class="mensagem-status" style="display: none;"></div>
   </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-    // Importa a função para criar usuário com e-mail e senha
-    import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js';
     
-    // ⚠️ 1. COLOQUE SUAS CONFIGURAÇÕES FIREBASE AQUI ⚠️
     const firebaseConfig = {
       apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
       authDomain: "login-com-dados.firebaseapp.com",
@@ -88,10 +265,19 @@
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     
-    // 🚨 2. COLOQUE SEU UID PESSOAL AQUI 🚨
-    // Você pode encontrar seu UID no console do Firebase > Authentication
-    const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2"; 
+    const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2";
+    
+    const LOJAS = {
+      'matriz': { nome: 'Matriz', url: 'recebimento_petrolina.html' },
+      'juazeiro': { nome: 'Filial Juazeiro', url: 'recebimento_juazeiro.html' },
+      'loteamento': { nome: 'Filial Loteamento', url: 'recebimento_loteamento.html' },
+      'irece': { nome: 'Filial Irecê', url: 'recebimento_irece.html' },
+      'rioreal': { nome: 'Filial Rio Real', url: 'recebimento_rioreal.html' },
+      'agroexpress': { nome: 'Agroexpress', url: 'recebimento_agroexpress.html' },
+      'grandesafra': { nome: 'Grande Safra', url: 'recebimento_grandesafra.html' }
+    };
     
     const mainContent = document.getElementById("main-content");
     const loadingDiv = document.getElementById("loading");
@@ -99,37 +285,90 @@
     const logoutButton = document.getElementById("logout-button");
     const formulario = document.getElementById("meu-formulario");
     const statusDiv = document.getElementById("status");
+    const lojasContainer = document.getElementById("lojas-container");
+    const btnSelecionarTodas = document.getElementById("btn-selecionar-todas");
+    const isAdminCheckbox = document.getElementById("is-admin");
+    const lojasSection = document.getElementById("lojas-section");
 
-    // Função para mostrar status (sucesso/erro)
-    function showStatus(text, type) {
-      statusDiv.textContent = text;
-      statusDiv.className = `mensagem-status ${type}`; // Assumindo que você tem essas classes no tema.css
+    function renderLojasCheckboxes() {
+      Object.entries(LOJAS).forEach(([key, loja]) => {
+        const div = document.createElement('div');
+        div.className = 'loja-checkbox';
+        div.innerHTML = `
+          <input type="checkbox" id="loja-${key}" name="lojas" value="${key}">
+          <label for="loja-${key}">${loja.nome}</label>
+        `;
+        lojasContainer.appendChild(div);
+      });
     }
 
-    // --- LÓGICA DE AUTENTICAÇÃO E VERIFICAÇÃO DE UID ---
-    onAuthStateChanged(auth, (user) => {
-      loadingDiv.style.display = 'none'; // Esconde a mensagem de carregamento
-
-      if (user) {
-        // Usuário logado
-        logoutButton.style.display = 'inline-block';
-
-        if (user.uid === ADMIN_UID) {
-          // UID corresponde ao admin: Concede acesso
-          mainContent.style.display = 'block'; 
-          acessoNegadoDiv.style.display = 'none';
-        } else {
-          // UID diferente do admin: Acesso negado
-          mainContent.style.display = 'none';
-          acessoNegadoDiv.style.display = 'block';
-        }
+    // ✨ DESABILITAR SELEÇÃO DE LOJAS SE ADMIN
+    isAdminCheckbox.addEventListener('change', (e) => {
+      const checkboxes = document.querySelectorAll('input[name="lojas"]');
+      if (e.target.checked) {
+        lojasSection.style.opacity = '0.5';
+        checkboxes.forEach(cb => {
+          cb.disabled = true;
+          cb.checked = false;
+        });
+        btnSelecionarTodas.disabled = true;
       } else {
-        // Ninguém logado: Redireciona para a página de login
-        window.location.href = 'index.html'; 
+        lojasSection.style.opacity = '1';
+        checkboxes.forEach(cb => cb.disabled = false);
+        btnSelecionarTodas.disabled = false;
       }
     });
+
+    btnSelecionarTodas.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('input[name="lojas"]');
+      const todasSelecionadas = Array.from(checkboxes).every(cb => cb.checked);
+      
+      checkboxes.forEach(cb => cb.checked = !todasSelecionadas);
+      btnSelecionarTodas.textContent = todasSelecionadas ? '✅ Selecionar Todas' : '❌ Desselecionar Todas';
+    });
+
+    function showStatus(text, type) {
+      statusDiv.textContent = text;
+      statusDiv.className = `mensagem-status ${type}`;
+      statusDiv.style.display = 'block';
+    }
+
+   onAuthStateChanged(auth, async (user) => {
+  loadingDiv.style.display = 'none';
+
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  logoutButton.style.display = 'inline-block';
+
+  // ✅ VERIFICA SE É ADMIN (por UID ou por Firestore)
+  let isAdmin = (user.uid === ADMIN_UID);
+  
+  try {
+    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      if (userData.isAdmin === true || userData.tipo === 'admin') {
+        isAdmin = true;
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao verificar permissões:', error);
+  }
+
+  if (isAdmin) {
+    mainContent.style.display = 'block'; 
+    acessoNegadoDiv.style.display = 'none';
+    renderLojasCheckboxes();
+  } else {
+    mainContent.style.display = 'none';
+    acessoNegadoDiv.style.display = 'block';
+  }
+});
+
     
-    // FUNCIONALIDADE DO BOTÃO DE SAIR
     logoutButton.addEventListener('click', () => {
       signOut(auth).then(() => {
         window.location.href = 'index.html';
@@ -138,47 +377,93 @@
       });
     });
 
-    // --- LÓGICA DE ENVIO DO FORMULÁRIO DE CADASTRO ---
     formulario.addEventListener("submit", async function (evento) {
       evento.preventDefault();
 
+      const nomeUsuario = document.getElementById("nome-usuario").value;
       const email = document.getElementById("email-usuario").value;
       const password = document.getElementById("senha-usuario").value;
+      const isAdmin = isAdminCheckbox.checked;
+      
+      let lojasPermitidas = [];
+      
+      if (!isAdmin) {
+        lojasPermitidas = Array.from(document.querySelectorAll('input[name="lojas"]:checked'))
+          .map(cb => cb.value);
+        
+        if (lojasPermitidas.length === 0) {
+          showStatus("❌ Erro: Selecione pelo menos uma loja ou marque como administrador!", 'error');
+          return;
+        }
+      }
       
       if (auth.currentUser.uid !== ADMIN_UID) {
-        showStatus("Erro: Você não tem permissão para cadastrar usuários.", 'error');
+        showStatus("❌ Erro: Você não tem permissão para cadastrar usuários.", 'error');
         return;
       }
       
-      showStatus("Cadastrando novo usuário...", 'message');
+      showStatus("⏳ Cadastrando novo usuário...", 'message');
 
       try {
-        // ⚠️ IMPORTANTE: O Firebase precisa que o administrador (você) esteja 
-        // logado para que esta função funcione.
+        // ✅ SOLUÇÃO: Usar API do Firebase Admin (modo servidor)
+        // Como não temos servidor, vamos usar uma abordagem alternativa
         
-                // A CRIAÇÃO DE USUÁRIO DIRETO DO CLIENTE (NA WEB) É PERIGOSA!
-                // Este método (createUserWithEmailAndPassword) fará login no novo 
-                // usuário e deslogará o Admin. Para uso real, é MELHOR 
-                // usar Cloud Functions ou Admin SDK em um servidor.
-                
-                // Para o seu propósito de teste/simples, vamos usar a criação
-                // básica, mas é recomendado recarregar a página para re-verificar o Admin.
-                
-        await createUserWithEmailAndPassword(auth, email, password);
-                
-        showStatus(`Usuário ${email} cadastrado com sucesso!`, 'success');
+        // Criar usuário temporariamente
+        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            returnSecureToken: true
+          })
+        });
+
+        const userData = await response.json();
+        
+        if (userData.error) {
+          throw new Error(userData.error.message);
+        }
+
+        const newUserUid = userData.localId;
+        
+        // ✅ SALVA AS PERMISSÕES NO FIRESTORE
+        await setDoc(doc(db, "usuarios", newUserUid), {
+          nome: nomeUsuario,
+          email: email,
+          lojasPermitidas: isAdmin ? Object.keys(LOJAS) : lojasPermitidas,
+          criadoEm: new Date().toISOString(),
+          criadoPor: auth.currentUser.uid,
+          ativo: true,
+          tipo: isAdmin ? 'admin' : 'usuario',
+          isAdmin: isAdmin
+        });
+        
+        const tipoUsuario = isAdmin ? '🔑 ADMINISTRADOR' : '👤 Usuário';
+        const acessoInfo = isAdmin 
+          ? 'Acesso total a todas as funcionalidades' 
+          : `Lojas: ${lojasPermitidas.map(l => LOJAS[l].nome).join(', ')}`;
+        
+        showStatus(`✅ ${tipoUsuario} ${nomeUsuario} cadastrado com sucesso!\n\n${acessoInfo}`, 'success');
+        
         formulario.reset();
+        document.querySelectorAll('input[name="lojas"]').forEach(cb => cb.checked = false);
+        btnSelecionarTodas.textContent = '✅ Selecionar Todas';
+        lojasSection.style.opacity = '1';
+
+        // ✅ NÃO DESLOGA O ADMIN!
+        console.log('✅ Usuário criado! Admin permanece logado.');
 
       } catch (error) {
-        // Trata erros comuns do Firebase
-                let errorMessage = 'Erro ao cadastrar usuário.';
-                if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = 'O e-mail já está sendo usado por outra conta.';
-                } else if (error.code === 'auth/weak-password') {
-                    errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
-                } else {
-                    console.error("Erro detalhado:", error);
-                }
+        let errorMessage = 'Erro ao cadastrar usuário.';
+        if (error.message.includes('EMAIL_EXISTS')) {
+          errorMessage = '❌ O e-mail já está sendo usado por outra conta.';
+        } else if (error.message.includes('WEAK_PASSWORD')) {
+          errorMessage = '❌ A senha deve ter pelo menos 6 caracteres.';
+        } else {
+          console.error("Erro detalhado:", error);
+          errorMessage = `❌ Erro: ${error.message}`;
+        }
         showStatus(errorMessage, 'error');
       }
     });

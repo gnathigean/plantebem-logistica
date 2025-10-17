@@ -5,7 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Menu Plantebem</title>
   
-  <link rel="stylesheet" href="/menu.css"> 
+  <link rel="stylesheet" href="/menu.css">
+  
+  <style>
+    /* ✅ ESTILOS PARA BOTÕES DE ADMIN */
+    .btn-admin-cadastro, .btn-admin-gerenciar {
+      display: block;
+      padding: 15px 30px;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+    
+    .btn-admin-cadastro {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-admin-cadastro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn-admin-gerenciar {
+      background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+      box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+    }
+    
+    .btn-admin-gerenciar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
+    }
+  </style>
 </head>
 <body>
   
@@ -25,18 +60,28 @@
       <li class="menu-list-item"><a href="menu.html">Catálogo (EM PRODUÇÃO)</a></li>
       <li class="menu-list-item"><a href="menu.html">Mapa de Produtos (EM PRODUÇÃO)</a></li>
       <li class="menu-list-item"><a href="dashboard.html">DASHBOARD (KPls e Insights)</a></li>
-      
-      
-      <li class="menu-list-item" id="admin-cadastro-link" style="display: none;">
-        <a href="/cadastro.html">CADASTRAR USUARIOS</a>
-      </li>
     </ul>
+    
+    <!-- ✅ ÁREA ADMINISTRATIVA - SÓ ADMIN VÊ -->
+    <div id="admin-section" style="display: none; margin-top: 30px;">
+      <div class="loja-selecao-container">
+        <label style="color: #667eea; font-weight: bold; display: block; margin-bottom: 15px;">⚙️ Área Administrativa:</label>
+        
+        <a href="cadastro.html" class="btn-admin-cadastro">
+          👥 Cadastrar Novo Usuário
+        </a>
+        
+        <a href="gerenciar-usuarios.html" class="btn-admin-gerenciar">
+          🗑️ Gerenciar Usuários
+        </a>
+      </div>
+    </div>
 
     <div class="loja-selecao-container">
-            <label for="seletor-loja" id="loja-label">Recebimento de Mercadorias:</label>
+      <label for="seletor-loja" id="loja-label">Recebimento de Mercadorias:</label>
       <select id="seletor-loja">
         <option value="" data-url="null">-- Selecione uma Loja --</option>
-                <option value="Matriz" data-loja-key="matriz" data-url="recebimento_petrolina.html">Matriz</option>
+        <option value="Matriz" data-loja-key="matriz" data-url="recebimento_petrolina.html">Matriz</option>
         <option value="Juazeiro" data-loja-key="juazeiro" data-url="recebimento_juazeiro.html">Filial Juazeiro</option>
         <option value="Loteamento" data-loja-key="loteamento" data-url="recebimento_loteamento.html">Filial Loteamento</option>
         <option value="Irece" data-loja-key="irece" data-url="recebimento_irece.html">Filial Irecê</option>
@@ -49,165 +94,127 @@
     <div id="botao-loja-container"></div>
   </div>
   
-  <script type="module">
-    // Importa as funções modulares necessárias do Firebase
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-    
-    // ⚠️ 1. COLOQUE SUAS CONFIGURAÇÕES FIREBASE AQUI ⚠️
-    const firebaseConfig = {
-      apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
-      authDomain: "login-com-dados.firebaseapp.com",
-      projectId: "login-com-dados",
-      storageBucket: "login-com-dados.firebasestorage.app",
-      messagingSenderId: "75556023458",
-      appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
-      measurementId: "G-W9LRT99579"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    
-    // 🚨 2. COLOQUE SEU UID PESSOAL AQUI 🚨
-    const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2"; 
-    
-    const logoutButton = document.getElementById("logout-button");
-    const adminCadastroLink = document.getElementById("admin-cadastro-link");
-    const seletorLoja = document.getElementById('seletor-loja');
-
-    // ====================================================================
-    // 🔑 MAPA DE PERMISSÕES: CONFIGURAÇÃO DE ACESSO POR USUÁRIO (UID) 🔑
-    // ====================================================================
-    const PERMISSOES_LOJAS = {
-        // Admin (Acesso total)
-        [ADMIN_UID]: ['matriz', 'juazeiro', 'loteamento', 'irece', 'rioreal', 'agroexpress', 'grandesafra'],
-        
-        // ** GARANTIR QUE SEU UID DE TESTE ESTEJA AQUI **
-        "6hpiqSundWaDGQqCdz2peiwc0yF2": ['matriz'],
-        "fP0uxFF1BhVjU91wLBuqjXZgto53": ['juazeiro'],
-        "": ['loteamento'],
-        "": ['irece'],
-        "": ['rioreal'],
-        "": ['agroexpress'],
-        "": ['grandesafra'],
-    };
-
-
-    // --- FUNÇÃO CORRIGIDA: FILTRA AS OPÇÕES DO SELECT ---
-    function filtrarLojasPorUsuario(user) {
-        const permissoesDoUsuario = PERMISSOES_LOJAS[user.uid] || [];
-        const todasOpcoes = seletorLoja.querySelectorAll('option');
-        
-        const opcaoPadrao = seletorLoja.querySelector('option[data-url="null"]');
-        let lojasVisiveisCount = 0;
-        let primeiraLojaVisivel = null;
-        let lojasParaRemover = [];
-
-        // PRIMEIRO LOOP: Identifica as opções a serem mantidas e as a serem removidas
-        todasOpcoes.forEach(opcao => {
-            const chaveLoja = opcao.getAttribute('data-loja-key');
-            
-            if (!chaveLoja) return; // Mantém a opção padrão fora desta contagem
-
-            // Verifica se o usuário tem permissão
-            if (permissoesDoUsuario.includes(chaveLoja) || user.uid === ADMIN_UID) {
-                lojasVisiveisCount++;
-                if (!primeiraLojaVisivel) {
-                    primeiraLojaVisivel = opcao;
-                }
-            } else {
-                lojasParaRemover.push(opcao);
-            }
-        });
-        
-        // SEGUNDO LOOP: Remove as opções após a contagem, para não atrapalhar o NodeList
-        lojasParaRemover.forEach(opcao => opcao.remove());
-
-
-        // LÓGICA DE INTERFACE
-        const lojaLabel = document.getElementById('loja-label');
-        const containerBotao = document.getElementById('botao-loja-container');
-
-        if (lojasVisiveisCount === 0) {
-            // Se o usuário não tiver permissão para NENHUMA loja
-            lojaLabel.textContent = "Acesso Restrito: Nenhuma loja disponível.";
-            seletorLoja.style.display = 'none';
-            containerBotao.innerHTML = '';
-        } else if (lojasVisiveisCount === 1 && primeiraLojaVisivel) {
-            // Se restar apenas UMA loja: Seleciona automaticamente e esconde o select
-            seletorLoja.value = primeiraLojaVisivel.value;
-            lojaLabel.textContent = `Local de Recebimento: ${primeiraLojaVisivel.textContent}`;
-            
-            if (opcaoPadrao) opcaoPadrao.remove();
-            
-            exibirBotaoDaLoja();
-            seletorLoja.style.display = 'none';
-        } else {
-            // Se houver MÚLTIPLAS lojas: Mostra o seletor normalmente
-            lojaLabel.textContent = "Recebimento de Mercadorias:";
-            seletorLoja.style.display = 'block';
-            
-            // Garante que a opção padrão esteja selecionada inicialmente se não houver seleção
-            if (opcaoPadrao) seletorLoja.value = "";
-            
-            containerBotao.innerHTML = ''; // Remove o botão até que uma opção seja escolhida
-        }
-    }
-
-
-    // --- LÓGICA DE AUTENTICAÇÃO E CONTROLE DE VISIBILIDADE ---
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        logoutButton.style.display = 'inline-block';
-        filtrarLojasPorUsuario(user); // CHAMA A FUNÇÃO CORRIGIDA
-        
-        // Verifica o UID do usuário para o link de cadastro
-        if (user.uid === ADMIN_UID) {
-          adminCadastroLink.style.display = 'block'; 
-        } else {
-          adminCadastroLink.style.display = 'none';
-        }
-      } else {
-        window.location.href = 'index.html'; 
-      }
-    });
-    
-    // FUNCIONALIDADE DO BOTÃO DE SAIR (MANTIDA)
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+  import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+    authDomain: "login-com-dados.firebaseapp.com",
+    projectId: "login-com-dados",
+    storageBucket: "login-com-dados.firebasestorage.app",
+    messagingSenderId: "75556023458",
+    appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+    measurementId: "G-W9LRT99579"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2";
+  
+  const logoutButton = document.getElementById('logout-button');
+  if (logoutButton) {
     logoutButton.addEventListener('click', () => {
       signOut(auth).then(() => {
         window.location.href = 'index.html';
       }).catch((error) => {
         console.error("Erro ao deslogar:", error);
+        alert("Erro ao sair. Tente novamente.");
       });
     });
-
-    // --- LÓGICA DO SELETOR DE LOJA (MANTIDA) ---
-    function exibirBotaoDaLoja() {
-      const container = document.getElementById('botao-loja-container');
-      
-      container.innerHTML = ''; 
-      const valorSelecionado = seletorLoja.value;
-
-      if (valorSelecionado) {
-        const opcaoSelecionada = seletorLoja.options[seletorLoja.selectedIndex];
-        const urlBase = opcaoSelecionada.getAttribute('data-url');
-        const nomeDaLoja = opcaoSelecionada.textContent;
-
-        const urlFinal = `${urlBase}?loja=${valorSelecionado}`;
-
-        const botao = document.createElement('a');
-        botao.setAttribute('href', urlFinal);
-        botao.setAttribute('class', 'btn-loja botao-site');
-        botao.style.display = 'inline-block'; 
-        botao.textContent = `Acessar Recebimento (${nomeDaLoja})`;
-        container.appendChild(botao);
-      }
+  }
+  
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
     }
+    
+    if (logoutButton) {
+      logoutButton.style.display = 'inline-block';
+    }
+    
+    // ✅ VERIFICA SE É ADMIN (por UID ou por campo no Firestore)
+    let isAdmin = (user.uid === ADMIN_UID);
+    
+    try {
+      const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        // ✅ VERIFICA SE TEM isAdmin: true OU tipo: 'admin'
+        if (userData.isAdmin === true || userData.tipo === 'admin') {
+          isAdmin = true;
+        }
+        
+        // ✅ SE FOR ADMIN, MOSTRA ÁREA ADMINISTRATIVA
+        if (isAdmin) {
+          const adminSection = document.getElementById('admin-section');
+          if (adminSection) {
+            adminSection.style.display = 'block';
+          }
+          console.log('✅ Admin logado - acesso total');
+          return; // Admin não precisa de filtros
+        }
+        
+        // ✅ USUÁRIO COMUM - FILTRAR LOJAS
+        const lojasPermitidas = userData.lojasPermitidas || [];
+        
+        if (lojasPermitidas.length === 0) {
+          alert('❌ Você não tem permissão para acessar nenhuma loja.\n\nEntre em contato com o administrador.');
+          signOut(auth).then(() => window.location.href = 'index.html');
+          return;
+        }
+        
+        const seletorLoja = document.getElementById('seletor-loja');
+        
+        if (seletorLoja) {
+          const options = Array.from(seletorLoja.querySelectorAll('option'));
+          let opcoesRemovidas = 0;
+          
+          options.forEach(option => {
+            const lojaKey = option.getAttribute('data-loja-key');
+            
+            if (lojaKey && !lojasPermitidas.includes(lojaKey)) {
+              option.remove();
+              opcoesRemovidas++;
+            }
+          });
+          
+          console.log(`✅ Filtro aplicado para ${userData.nome || user.email}`);
+          console.log(`📋 Lojas permitidas:`, lojasPermitidas.map(l => l.toUpperCase()).join(', '));
+          console.log(`🚫 Opções removidas: ${opcoesRemovidas}`);
+          
+          const opcoesRestantes = seletorLoja.querySelectorAll('option[data-loja-key]');
+          if (opcoesRestantes.length === 1) {
+            seletorLoja.value = opcoesRestantes[0].value;
+            console.log(`🎯 Seleção automática: ${opcoesRestantes[0].textContent}`);
+          }
+        }
+        
+      } else {
+        console.warn('⚠️ Usuário sem permissões cadastradas no Firestore');
+        
+        // ✅ SE FOR O ADMIN_UID, MOSTRA ÁREA ADMIN MESMO SEM DADOS
+        if (isAdmin) {
+          const adminSection = document.getElementById('admin-section');
+          if (adminSection) {
+            adminSection.style.display = 'block';
+          }
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Erro ao buscar permissões:', error);
+      alert('Erro ao carregar permissões. Entre em contato com o administrador.');
+    }
+  });
+  
+</script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-      seletorLoja.addEventListener('change', exibirBotaoDaLoja); 
-    });
-
-  </script>
 </body>
 </html>
