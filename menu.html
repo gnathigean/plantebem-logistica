@@ -40,6 +40,28 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
     }
+    
+    /* ✅ ESTILO PARA BOTÃO DE ACESSAR LOJA */
+    .btn-acessar-loja {
+      display: block;
+      padding: 20px 30px;
+      margin-top: 20px;
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1.2em;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .btn-acessar-loja:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(46, 204, 113, 0.5);
+      background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
   </style>
 </head>
 <body>
@@ -49,9 +71,11 @@
     <button id="logout-button">Sair</button>
   </div>
 
+
   <div class="logo-container">
     <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
   </div>
+
 
   <div class="menu-container">
     <div class="menu-header">Menu Principal</div>
@@ -60,6 +84,7 @@
       <li class="menu-list-item"><a href="menu.html">Catálogo (EM PRODUÇÃO)</a></li>
       <li class="menu-list-item"><a href="menu.html">Mapa de Produtos (EM PRODUÇÃO)</a></li>
       <li class="menu-list-item"><a href="dashboard.html">DASHBOARD (KPls e Insights)</a></li>
+      <li class="menu-list-item"><a href="mapa-estoque.html">MAPA ESTOQUE MATRIZ (EM PRODUÇÃO)</a></li>
     </ul>
     
     <!-- ✅ ÁREA ADMINISTRATIVA - SÓ ADMIN VÊ -->
@@ -77,6 +102,7 @@
       </div>
     </div>
 
+
     <div class="loja-selecao-container">
       <label for="seletor-loja" id="loja-label">Recebimento de Mercadorias:</label>
       <select id="seletor-loja">
@@ -90,6 +116,7 @@
         <option value="Grande Safra" data-loja-key="grandesafra" data-url="recebimento_grandesafra.html">Grande Safra</option>
       </select>
     </div>
+
 
     <div id="botao-loja-container"></div>
   </div>
@@ -214,7 +241,30 @@
     }
   });
   
-</script>
+  // ✅ FUNCIONALIDADE PARA CRIAR BOTÃO DE ACESSO À LOJA
+  const seletorLoja = document.getElementById('seletor-loja');
+  const botaoLojaContainer = document.getElementById('botao-loja-container');
 
+  if (seletorLoja && botaoLojaContainer) {
+    seletorLoja.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      const url = selectedOption.getAttribute('data-url');
+      const lojaName = selectedOption.value;
+      
+      // Limpa o container
+      botaoLojaContainer.innerHTML = '';
+      
+      // Se selecionou uma loja válida, cria o botão
+      if (url && url !== 'null' && lojaName) {
+        const botao = document.createElement('a');
+        botao.href = url;
+        botao.className = 'btn-acessar-loja';
+        botao.textContent = `📦 Acessar ${lojaName}`;
+        botaoLojaContainer.appendChild(botao);
+      }
+    });
+  }
+  
+</script>
 </body>
 </html>
