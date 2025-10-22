@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Produto - Plantebem</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .header { background: white; padding: 25px 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+    .header h1 { font-size: 2em; color: #333; }
+    .header-buttons { display: flex; gap: 10px; }
+    .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+    .btn-back { background: #667eea; color: white; }
+    .btn-back:hover { background: #5568d3; }
+    .btn-logout { background: #f44336; color: white; }
+    .btn-logout:hover { background: #d32f2f; }
+    .form-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+    .form-title { font-size: 1.8em; color: #333; margin-bottom: 10px; text-align: center; }
+    .form-subtitle { color: #666; text-align: center; margin-bottom: 30px; }
+    .form-group { margin-bottom: 25px; }
+    .form-group label { display: block; font-weight: 600; color: #555; margin-bottom: 8px; font-size: 0.95em; }
+    .form-group label span { color: #f44336; margin-left: 3px; }
+    .form-group input, .form-group select { width: 100%; padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em; transition: all 0.3s ease; background: white; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+    .location-display { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center; }
+    .location-display h3 { font-size: 1.3em; margin-bottom: 10px; }
+    .location-display .location-info { font-size: 1.5em; font-weight: 700; letter-spacing: 2px; }
+    .btn-submit { width: 100%; padding: 18px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; border: none; border-radius: 8px; font-size: 1.2em; font-weight: 700; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; }
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .help-text { font-size: 0.85em; color: #999; margin-top: 5px; }
+    .info-box { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 5px; margin-bottom: 25px; }
+    .info-box-title { font-weight: 700; color: #1976d2; margin-bottom: 8px; }
+    .info-box-text { color: #555; font-size: 0.95em; }
+    @media (max-width: 768px) { .form-container { padding: 25px; } .form-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>➕ Adicionar Produto</h1>
+      <div class="header-buttons">
+        <a href="mapa-estoque.html" class="btn btn-back">← Voltar ao Mapa</a>
+        <button id="logout-button" class="btn btn-logout">Sair</button>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <h2 class="form-title">Novo Produto no Estoque</h2>
+      <p class="form-subtitle">Cadastre um novo produto no pallet selecionado</p>
+
+      <div id="alert-container"></div>
+
+      <div class="info-box">
+        <div class="info-box-title">ℹ️ Múltiplos Produtos por Pallet</div>
+        <div class="info-box-text">Você pode adicionar vários produtos no mesmo pallet. Cada produto será registrado individualmente com seu próprio lote e validade.</div>
+      </div>
+
+      <div class="location-display" id="location-display" style="display: none;">
+        <h3>📍 Localização do Produto</h3>
+        <div class="location-info" id="location-info">RUA A1 - VÃO 1 - NÍVEL 1 - PALLET 1</div>
+      </div>
+
+      <form id="product-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rua">🛣️ Rua <span>*</span></label>
+            <select id="rua" required>
+              <option value="">-- Selecione --</option>
+              <option value="A1">Rua A1</option>
+              <option value="A2">Rua A2</option>
+              <option value="A3">Rua A3</option>
+              <option value="B1">Rua B1</option>
+              <option value="B2">Rua B2</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="vao">🏢 Vão <span>*</span></label>
+            <select id="vao" required>
+              <option value="">-- Selecione --</option>
+              <option value="1">Vão 1</option>
+              <option value="2">Vão 2</option>
+              <option value="3">Vão 3</option>
+              <option value="4">Vão 4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="nivel">📊 Nível <span>*</span></label>
+            <select id="nivel" required>
+              <option value="">-- Selecione --</option>
+              <option value="1">Nível 1 (Térreo)</option>
+              <option value="2">Nível 2</option>
+              <option value="3">Nível 3</option>
+              <option value="4">Nível 4</option>
+              <option value="5">Nível 5</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="pallet">📦 Pallet <span>*</span></label>
+            <select id="pallet" required>
+              <option value="">-- Selecione --</option>
+              <option value="1">Pallet 1</option>
+              <option value="2">Pallet 2</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="produto">🏷️ Nome do Produto <span>*</span></label>
+          <input type="text" id="produto" placeholder="Ex: Adubo NPK 10-10-10" required>
+          <div class="help-text">Digite o nome completo do produto</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lote">🔖 Lote <span>*</span></label>
+            <input type="text" id="lote" placeholder="Ex: L2024-001" required>
+            <div class="help-text">Código do lote de fabricação</div>
+          </div>
+          <div class="form-group">
+            <label for="validade">📅 Data de Validade <span>*</span></label>
+            <input type="date" id="validade" required>
+            <div class="help-text">Data de vencimento do produto</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-submit">✅ Adicionar Produto ao Pallet</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    import { getFirestore, collection, addDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+      authDomain: "login-com-dados.firebaseapp.com",
+      projectId: "login-com-dados",
+      storageBucket: "login-com-dados.firebasestorage.app",
+      messagingSenderId: "75556023458",
+      appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+      measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = 'index.html';
+    });
+
+    document.getElementById('logout-button').addEventListener('click', () => {
+      signOut(auth).then(() => window.location.href = 'index.html');
+    });
+
+    function showAlert(message, type) {
+      const container = document.getElementById('alert-container');
+      container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      setTimeout(() => { container.innerHTML = ''; }, 5000);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const ruaParam = urlParams.get('rua');
+    const vaoParam = urlParams.get('vao');
+    const nivelParam = urlParams.get('nivel');
+    const palletParam = urlParams.get('pallet');
+
+    if (ruaParam && vaoParam && nivelParam && palletParam) {
+      document.getElementById('rua').value = ruaParam;
+      document.getElementById('vao').value = vaoParam;
+      document.getElementById('nivel').value = nivelParam;
+      document.getElementById('pallet').value = palletParam;
+      
+      const locationDisplay = document.getElementById('location-display');
+      const locationInfo = document.getElementById('location-info');
+      locationDisplay.style.display = 'block';
+      locationInfo.textContent = `RUA ${ruaParam} - VÃO ${vaoParam} - NÍVEL ${nivelParam} - PALLET ${palletParam}`;
+      
+      document.getElementById('rua').disabled = true;
+      document.getElementById('vao').disabled = true;
+      document.getElementById('nivel').disabled = true;
+      document.getElementById('pallet').disabled = true;
+    }
+
+    function atualizarLocationPreview() {
+      const rua = document.getElementById('rua').value;
+      const vao = document.getElementById('vao').value;
+      const nivel = document.getElementById('nivel').value;
+      const pallet = document.getElementById('pallet').value;
+      
+      if (rua && vao && nivel && pallet) {
+        const locationDisplay = document.getElementById('location-display');
+        const locationInfo = document.getElementById('location-info');
+        locationDisplay.style.display = 'block';
+        locationInfo.textContent = `RUA ${rua} - VÃO ${vao} - NÍVEL ${nivel} - PALLET ${pallet}`;
+      }
+    }
+
+    document.getElementById('rua').addEventListener('change', atualizarLocationPreview);
+    document.getElementById('vao').addEventListener('change', atualizarLocationPreview);
+    document.getElementById('nivel').addEventListener('change', atualizarLocationPreview);
+    document.getElementById('pallet').addEventListener('change', atualizarLocationPreview);
+
+   document.getElementById('product-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const btnSubmit = document.getElementById('btn-submit');
+  btnSubmit.disabled = true;
+  btnSubmit.textContent = '⏳ Salvando...';
+  
+  const agora = new Date();
+  const dataFormatada = agora.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+ // BUSCAR NOME DO USUÁRIO
+let nomeUsuario = 'Usuário';
+try {
+  const userDoc = await getDoc(doc(db, 'usuarios', auth.currentUser.uid));
+  if (userDoc.exists() && userDoc.data().nome) {
+    nomeUsuario = userDoc.data().nome;
+  } else {
+    // Extrair o nome do email (antes do @)
+    const emailParts = auth.currentUser.email.split('@')[0];
+    // Substituir pontos e underscores por espaços e capitalizar
+    nomeUsuario = emailParts.replace(/[._]/g, ' ').split(' ').map(palavra => 
+      palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase()
+    ).join(' ');
+  }
+} catch (error) {
+  console.error('Erro ao buscar nome do usuário:', error);
+  // Fallback: extrair do email
+  const emailParts = auth.currentUser.email.split('@')[0];
+  nomeUsuario = emailParts.replace(/[._]/g, ' ').split(' ').map(palavra => 
+    palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase()
+  ).join(' ');
+}
+
+  
+  console.log('Nome do usuário:', nomeUsuario); // DEBUG - para ver no console
+  
+  const produto = {
+    rua: document.getElementById('rua').value,
+    vao: parseInt(document.getElementById('vao').value),
+    nivel: parseInt(document.getElementById('nivel').value),
+    pallet: parseInt(document.getElementById('pallet').value),
+    nome: document.getElementById('produto').value,
+    lote: document.getElementById('lote').value,
+    validade: document.getElementById('validade').value,
+    criadoPor: nomeUsuario,
+    criadoPorUid: auth.currentUser.uid,
+    criadoEm: dataFormatada
+  };
+  
+  try {
+    await addDoc(collection(db, 'estoque'), produto);
+    showAlert('✅ Produto adicionado ao estoque com sucesso!', 'success');
+    
+    document.getElementById('produto').value = '';
+    document.getElementById('lote').value = '';
+    document.getElementById('validade').value = '';
+    
+    btnSubmit.textContent = '✅ Adicionar Produto ao Pallet';
+    btnSubmit.disabled = false;
+    document.getElementById('produto').focus();
+    
+  } catch (error) {
+    console.error('Erro ao salvar:', error);
+    showAlert('❌ Erro ao salvar produto: ' + error.message, 'error');
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = '✅ Adicionar Produto ao Pallet';
+  }
+});
+
+  </script>
+</body>
+</html>

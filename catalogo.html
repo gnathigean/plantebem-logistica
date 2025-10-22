@@ -1,0 +1,3406 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de Produtos</title>
+
+<style>
+    /* Estilos gerais para a visualização na tela */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Estilos para o menu lateral */
+    .menu-lateral {
+        width: 250px;
+        background-color: rgba(210, 210, 210, 0.5); 
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        color: white;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+        overflow-y: auto;
+    }
+
+    .menu-lateral h2 {
+        margin-top: 0;
+        color: #0a95ff;
+    }
+
+    .menu-lateral ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .menu-lateral ul li {
+        margin-bottom: 10px;
+    }
+
+    .menu-lateral ul li a {
+        color: #333;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .menu-lateral ul li a:hover {
+        background-color: rgba(29, 131, 210, 0.7);
+        color: white;
+    }
+
+    /* Estilos para o conteúdo principal */
+    .conteudo-principal {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 20px 20px 40px;
+        position: relative;
+    }
+
+    /* Estilos para o logo/imagem de topo (Centralizada) */
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .logo-container img {
+        max-width: 150px;
+        height: auto;
+    }
+
+    /* Estilos para o botão de voltar */
+    #back-to-menu-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: #555;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        z-index: 5;
+    }
+
+    #back-to-menu-btn:hover {
+        background-color: #777;
+    }
+    
+    /* Estilos para o container de filtros */
+    .filtros-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    .filtro-group {
+        flex: 1;
+    }
+
+    .filtro-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+        font-size: 0.9em;
+    }
+    
+    .filtros-container select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+    }
+
+    .barra-pesquisa {
+        display: flex;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    .barra-pesquisa input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    .barra-pesquisa button {
+        padding: 10px 15px;
+        margin-left: 10px;
+        background-color: #0a95ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    .barra-pesquisa button:hover {
+        background-color: #087fce;
+    }
+
+    .catalogo {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .produto-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .produto-card img.produto-imagem {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .produto-card .qr-code {
+        width: 80px;
+        height: 80px;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    .produto-card h3 {
+        margin: 0 0 5px;
+        color: #333;
+    }
+
+    /* ESTILO PARA O FORNECEDOR */
+    .produto-card .fornecedor {
+        font-size: 0.9em;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .produto-card .preco {
+        font-size: 1.2em;
+        color: #0a95ff;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    /* Paginação */
+    #paginacao {
+        margin-top: 20px;
+        display: flex;
+        gap: 5px;
+    }
+
+    #paginacao button {
+        background-color: #0a95ff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #paginacao button:hover {
+        background-color: #087fce;
+    }
+    
+    #paginacao button.ativo {
+        background-color: #0561a0;
+        font-weight: bold;
+    }
+    /* Estilo para as elipses (...) */
+    #paginacao span {
+        padding: 10px 5px;
+        color: #555;
+    }
+
+    /* Removendo transições e sombras para impressão */
+    .produto-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Estilos específicos para a impressão (PDF) */
+    @media print {
+        body {
+            background-color: #fff;
+            padding: 0;
+            margin: 0;
+            display: block;
+        }
+
+        h1, .barra-pesquisa, #paginacao, .menu-lateral, #back-to-menu-btn, .logo-container, .filtros-container {
+            display: none;
+        }
+
+        .conteudo-principal {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .catalogo {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 5px;
+            width: 210mm;
+            max-width: none;
+            padding: 5mm;
+            box-sizing: border-box;
+        }
+
+        .produto-card {
+            width: 90mm;
+            height: 130mm;
+            box-shadow: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin: 0;
+            margin-right: 5mm;
+            margin-bottom: 5mm;
+            float: left;
+            page-break-inside: avoid;
+        }
+
+        .produto-card:nth-child(2n) {
+            margin-right: 0;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="menu-lateral">
+    <h2>Categorias</h2>
+    <ul>
+        <li><a href="catalogo.html">DEFENSIVOS</a></li>
+        <li><a href="FERTeAdubos.html">FERTILIZANTES & ADUBOS</a></li>
+        <li><a href="#">SEMENTES</a></li>
+        <li><a href="#">FERRAMENTAS</a></li>
+    </ul>
+</div>
+
+<div class="conteudo-principal">
+    <a href="menu.html" id="back-to-menu-btn">← Voltar ao Catálogo</a>
+
+    <div class="logo-container">
+        <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa">
+    </div>
+    <h1 style="text-align: center;">Catálogo de Produtos</h1>
+
+    <div class="filtros-container">
+        <div class="filtro-group">
+            <label for="filtroFornecedor">Fornecedor:</label>
+            <select id="filtroFornecedor">
+                <option value="">Todos</option>
+                </select>
+        </div>
+        <div class="filtro-group">
+            <label for="filtroUnidade">Unidade:</label>
+            <select id="filtroUnidade">
+                <option value="">Todas</option>
+                <option value="1 L">1 L</option>
+                <option value="5 L">5 L</option>
+                <option value="20 L">20 L</option>
+                <option value="1 KG">1 KG</option>
+                <option value="3 KG">3 KG</option>
+                <option value="5 KG">5 KG</option>
+                <option value="6 KG">6 KG</option>
+                <option value="25 KG">25 KG</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="barra-pesquisa">
+        <input type="text" id="searchInput" placeholder="Buscar por nome ou código...">
+        <button id="searchButton">Pesquisar</button>
+    </div>
+
+<div class="catalogo">
+</div>
+
+<div id="paginacao"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // CORRIGIDO: Removido o array aninhado. Agora é um array direto de objetos.
+    const produtos = [
+        {
+            imagem: "https://imgs.search.brave.com/N4LhyDyGBF5mhdro2unDSj_fgx_-gAPPQqfroiWESlw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9OUV9OUF84/MjkwNDQtTUxCMjgx/MTgyNjMyNjNfMDky/MDE4LU8ud2VicA",
+            nome: "CAPTAN SC - 5 L",
+            codigo: "0000074",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://imgs.search.brave.com/JxfHjUFitUcdaIEBcijqAErwXho5k8mCDvShZyQGSeI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmluZHVzdHJ5/YnV5aW5nLmNvbS9w/cm9kdWN0cy9hZ3Jp/Y3VsdHVyZS1nYXJk/ZW4tbGFuZHNjYXBp/bmcvZmVydGlsaXpl/ci1hbmQtcGVzdC1j/b250cm9sL2luc2Vj/dGljaWRlcy9BR1Iu/SU5TLjMyMDIzODY1/OF8xNjg5NjU2MzQy/ODQ0LndlYnA",
+            nome: "PLETHORA BR - 1 L",
+            codigo: "0012730",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.imgur.com/1a9ZBU6.png",
+            nome: "PYRINEX 480 EC - 20 L",
+            codigo: "0000084",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TROP - 20 L",
+            codigo: "0000087",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALOP M - 20 L",
+            codigo: "0007073",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALOP M - 5 L",
+            codigo: "0007072",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ACROSS - 5 L",
+            codigo: "0014025",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AFALON SC - 1 L",
+            codigo: "0000067",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AZIMUT - 1 L",
+            codigo: "0010710",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AZIMUT - 20 L",
+            codigo: "0011235",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AZIMUT - 5 L",
+            codigo: "0011042",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BANZAI - 1 L",
+            codigo: "0010996",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BANZAI - 5 L",
+            codigo: "0011007",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CALARIS - 20L",
+            codigo: "0013926",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CAPTAN SC - 1 L",
+            codigo: "0000073",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALIGAN 240 EC - 1 L",
+            codigo: "0005850",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALIGAN 240 EC - 20 L",
+            codigo: "0013592",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALIGAN 240 EC - 5 L",
+            codigo: "0011727",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALIL SC - 5 L",
+            codigo: "0012229",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "HEXARON WG - 5KG",
+            codigo: "0013913",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MAGNUM - 5 KG",
+            codigo: "0012063",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NIMITZ EC - 1 L",
+            codigo: "0010957",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NIMITZ EC - 5 L",
+            codigo: "0010840",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PATROL SL - 20 L",
+            codigo: "0010861",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PATROL SL - 5 L",
+            codigo: "0010862",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "POQUER - 1 L",
+            codigo: "0004690",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "POQUER - 20 L",
+            codigo: "0012488",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "POQUER - 5 L",
+            codigo: "0011682",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RUMBA - 5 L",
+            codigo: "0012140",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SEIZER 100 EC - 5 L",
+            codigo: "0011504",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRIVOR - 5 L",
+            codigo: "0011503",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADAMA BRASIL S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "JOINER - 5 L",
+            codigo: "0013529",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ADUBOS REAL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INNER OIL - 20 L",
+            codigo: "0013706",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROALLIANZ S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MAX GRAVIS - 1 L",
+            codigo: "0013973",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROALLIANZ S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ZIEL - 1 L",
+            codigo: "0013978",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROALLIANZ S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MULTIBACTER 15 KG",
+            codigo: "0012624",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MULTIBACTER PRO - KIT 6 L",
+            codigo: "0012625",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MULTIBACTER PRO-KIT 10 L",
+            codigo: "0012626",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MULTIFUNGI KIT 10 L",
+            codigo: "0012627",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SOLUCOES NATURAIS LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ALAABO - 25 L",
+            codigo: "0013049",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "APTUR-PF - 25 L",
+            codigo: "0012621",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ASSERTIVE - 25 L",
+            codigo: "0013843",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ATIALY - 25 L",
+            codigo: "0013042",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BACULO SHOCK - 1 KG",
+            codigo: "0013516",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DOBBEL - 25 L",
+            codigo: "0012622",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MITEKILL - 25 L",
+            codigo: "0012833",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NEMAKILL - 25 L",
+            codigo: "0013005",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SKUPA - 25 L",
+            codigo: "0012682",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SKUPA MITE - 10 L",
+            codigo: "0013669",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TORPENO - 1 KG",
+            codigo: "0013543",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TORPENO - 5 KG",
+            codigo: "0012623",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRIPPEL - 25 L",
+            codigo: "0013004",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROBIOLOGICA SUSTENTABILIDADE S A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PREMIO STAR - 1 L",
+            codigo: "0013647",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGRO-CENTER COMERCIAL DE HORTIFRUTIGRANJEIROS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AMINOL 806 - 20 L",
+            codigo: "0013877",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AGROLOGISTICA AGROPODAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ULTIMATO SC - 20 L",
+            codigo: "0011782",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ALBAUGH AGRO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ARGENFRUT - 20 L",
+            codigo: "0011643",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "AMVAC DO BRASIL 3P LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ATABRON 50 EC - 1 L",
+            codigo: "0010975",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ARYSTA LIFESCIENCE DO BRASIL INDUSTRIA QUIMICA AGROPECUARIA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KASUMIN - 1 L",
+            codigo: "0000158",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ARYSTA LIFESCIENCE DO BRASIL INDUSTRIA QUIMICA AGROPECUARIA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OMITE 720 EC - 1 L",
+            codigo: "0009696",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ARYSTA LIFESCIENCE DO BRASIL INDUSTRIA QUIMICA E AGROPECUARIA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RANMAN 400 SC 1L",
+            codigo: "0009388",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ARYSTA LIFESCIENCE DO BRASIL INDUSTRIA QUIMICA E AGROPECUARIA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CLOUD BR - 400 ML",
+            codigo: "0013896",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ASCENZA BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MELTAN BR - 5L",
+            codigo: "0013989",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "ASCENZA BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BASAGRAN 600 - 1 L",
+            codigo: "0000105",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BASAGRAN 600 - 5 L",
+            codigo: "0012346",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BRIGHT - 5 KG",
+            codigo: "0013800",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Removido espaço extra no nome
+            nome: "CABRIO TOP - 6 KG", 
+            codigo: "0010597",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CABRIO TOP - 1 KG",
+            codigo: "0011177",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CARAMBA 90 - 1 L",
+            codigo: "0011582",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "COLLIS - 1 L",
+            codigo: "0010598",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Adicionado espaço no nome
+            nome: "COMET - 1L",
+            codigo: "0010761",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Adicionado espaço no nome
+            nome: "COMET - 5L",
+            codigo: "0010594",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DORMEX - 1 L",
+            codigo: "0000128",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DORMEX - 20 L",
+            codigo: "0010591",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DURAVEL - 500 G",
+            codigo: "0011740",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FASTAC 100 - 1 L",
+            codigo: "0010595",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FASTAC 100 - 5 L",
+            codigo: "0011260",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Adicionado espaço no nome
+            nome: "FORUM - 1KG",
+            codigo: "0010593",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FORUM - 225 G",
+            codigo: "0002040",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "HEAT - 350 G",
+            codigo: "0010673",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "IMUNIT - 1 L",
+            codigo: "0011296",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KUMULUS DF - 25 KG",
+            codigo: "0010592",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MIBELYA - 1 L",
+            codigo: "0013763",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MIBELYA - 5 L",
+            codigo: "0013702",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NOMOLT 150 - 1 L",
+            codigo: "0007231",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NOMOLT 150 - 5 L",
+            codigo: "0011575",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ORKESTRA SC - 1 L",
+            codigo: "0011131",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ORKESTRA SC - 5 L",
+            codigo: "0011797",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PIRATE - 1 L",
+            codigo: "0009633",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PROWL H2O - 1 L",
+            codigo: "0013066",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PROWL H2O - 10 L",
+            codigo: "0011841",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TUTOR - 25 KG",
+            codigo: "0010767",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERISMO - 1 L",
+            codigo: "0011132",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERISMO - 5 L",
+            codigo: "0011525",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ZAMPRO 1 L",
+            codigo: "0012829",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VINQUO - 5 L",
+            codigo: "0013725",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BASF S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ALIETTE 80 WP - 1 KG",
+            codigo: "0005679",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ALION - 500 ML",
+            codigo: "0010702",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ALION SC 500 - 1 L",
+            codigo: "0010997",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ALION SC 500 - 5 L",
+            codigo: "0012697",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ANTRACOL 700 WP - 5 KG",
+            codigo: "0010389",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AUREO - 5 L",
+            codigo: "0005655",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BELT 480 SC- 250 ML",
+            codigo: "0005682",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BELT SC 480 - 1 L",
+            codigo: "0005751",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BULLDOCK 125 SC - 1 L",
+            codigo: "0010388",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CALYPSO - 1 L",
+            codigo: "0000117",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CENSOR SC500 - 1 L",
+            codigo: "0007186",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CERTERO 480 SC - 1 L",
+            codigo: "0010387",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CONNECT - 1 L",
+            codigo: "0005658",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CONNECT - 20 L",
+            codigo: "0012035",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CONSENTO 450 SC - 1 L",
+            codigo: "0010391",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DECIS 25 EC - 1 L",
+            codigo: "0005667",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DECIS 25 EC - 250 ML",
+            codigo: "0005668",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ETHREL 720 SL - 20 L",
+            codigo: "0005660",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ETHREL 720 SL - 5 L",
+            codigo: "0005659",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "EVIDENCE 700 WG - 1 KG",
+            codigo: "0006094",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "EVIDENCE 700 WG - 30 G",
+            codigo: "0005674",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GLADIUM 60 WG - 250 G",
+            codigo: "0007806",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INFINITO 87,5 SC - 1 L",
+            codigo: "0005675",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Adicionado espaço no nome
+            nome: "MYTHOS 300 SC - 1 L",
+            codigo: "0005678",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NATIVO 300 SC - 1 L",
+            codigo: "0005664",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NATIVO 300 SC - 20 L",
+            codigo: "0007149",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NATIVO 300 SC - 5 L",
+            codigo: "0006096",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OBERON SC - 1 L",
+            codigo: "0005654",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OBERON SC - 5 L",
+            codigo: "0009993",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PODIUM 110 EW - 1 L",
+            codigo: "0005680",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PODIUM 110 EW - 5 L",
+            codigo: "0005681",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PREMIER 70 WG - 1 KG",
+            codigo: "0005657",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PROVADO 200 SC - 1 L",
+            codigo: "0005670",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PROVADO 200 SC - 5 L",
+            codigo: "0005669",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RONSTAR 250 BR - 1 L",
+            codigo: "0007476",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SENCOR 480 SC - 1 L",
+            codigo: "0005672",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SENCOR 480 SC - 5 L",
+            codigo: "0005673",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SERENADE SC - 1 L",
+            codigo: "0009917",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SERENADE SC - 5 L",
+            codigo: "0009661",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SIVANTO PRIME 200 SL - 1 L",
+            codigo: "0011172",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SIVANTO PRIME 200 SL - 5 L",
+            codigo: "0011032",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SOBERAN SC630 - 1L",
+            codigo: "0007176",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERANGO PRIME SC500 - 1 L",
+            codigo: "0013002",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VALPURA - 1 L",
+            codigo: "0013762",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BAYER S.A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOEXOS - 1 L",
+            codigo: "0012199",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BIOTROP SOLUCOES BIOLOGICAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOEXOS - 5 L",
+            codigo: "0011798",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BIOTROP SOLUCOES BIOLOGICAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SIMETRIA - 1 L",
+            codigo: "0013222",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BIOTROP SOLUCOES BIOLOGICAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SIMETRIA - 5 L",
+            codigo: "0013247",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "BIOTROP SOLUCOES BIOLOGICAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TARGA MAX - 5 L",
+            codigo: "0013956",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CAMPO TOTAL ATACADO LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ELEITTO - 1 L",
+            codigo: "0013908",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CAMPO TOTAL ATACADO LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INEX-A - 5 L",
+            codigo: "0013265",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INEX-A 1 L",
+            codigo: "0013264",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "COSMOCEL DO BRASIL NUTRICAO VEGETAL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ABADIN 72 EC - 1 L",
+            codigo: "0010834",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CROPCHEM LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ABADIN 72 EC - 5 L",
+            codigo: "0011558",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CROPCHEM LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KYRON 40 SC - 5L",
+            codigo: "0012388",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CROPCHEM LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRIGGER 240 SC - 5 L",
+            codigo: "0013660",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CROPCHEM LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CURATHANE WP - 1 KG",
+            codigo: "0010279",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CURZATE - 1 KG",
+            codigo: "0008611",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CURZATE - 5 KG",
+            codigo: "0008612",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DELEGATE - 120 G",
+            codigo: "0010293",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DELEGATE - 500 G",
+            codigo: "0009809",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DITHANE NT - 2 KG",
+            codigo: "0007856",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DITHANE NT - 25 KG",
+            codigo: "0000123",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "EQUATION - 1 KG",
+            codigo: "0008749",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "EXPEDITION - 5 L",
+            codigo: "0012826",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FIDELE - 1 L",
+            codigo: "0013830",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GLIZMAX PRIME - 20 L",
+            codigo: "0010039",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GOAL BR - 1 L",
+            codigo: "0000152",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GOAL BR - 5 L",
+            codigo: "0008614",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INTREPID 240 SC - 1 L",
+            codigo: "0005511",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INTREPID 240 SC - 5 L",
+            codigo: "0011668",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KOCIDE WDG - 10 KG",
+            codigo: "0007767",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KOCIDE WDG BIOACTIVE - 1 KG",
+            codigo: "0007766",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "LANNATE BR - 1 L",
+            codigo: "0002779",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "LANNATE BR - 10 L",
+            codigo: "0007762",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MICENE - 1KG",
+            codigo: "0009676",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SAVEY WP - 30G",
+            codigo: "0012653",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SUCCESS 0.02 CB CX - 10 L",
+            codigo: "0000215",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TALENTO - 30 G",
+            codigo: "0007765",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRACER - 1 L",
+            codigo: "0000209",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRACER - 250 ML",
+            codigo: "0000210",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERDICT MAX - 20 L",
+            codigo: "0013662",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERDICT ULTRA - 1 L",
+            codigo: "0014041",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERTER SC - 1 L",
+            codigo: "0011540",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERTER SC - 5 L",
+            codigo: "0011221",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ZORVEC ENCANTIA BTLHPE BR 1 L",
+            codigo: "0012784",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ZORVEC ENCANTIA JUG BR - 5 L",
+            codigo: "0012783",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ZORVEC ENTIDO - 1 L",
+            codigo: "0013831",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ZORVEC VINABEL 1 L",
+            codigo: "0013960",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "CTVA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KASUMIN GL 5 LT",
+            codigo: "0012560",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "DEDEAGRO COM E REPRES DE PROD AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FACILITY - 1 L",
+            codigo: "0011800",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FACILITY - 5 L",
+            codigo: "0011801",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "DVA BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DITHANE NT - 1 KG",
+            codigo: "0013967",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "EMIS COMERCIO E REPRESENTACOES LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DITHANE NT - 10 KG",
+            codigo: "0013968",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "EMIS COMERCIO E REPRESENTACOES LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "LI 700 - 5L",
+            codigo: "0009871",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FERRARI, ZAGATTO E CIA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AVATAR 150 EC - 1L",
+            codigo: "0010836",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AVATAR 150 EC - 5 L",
+            codigo: "0011543",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BENEVIA 10 OD BR - 1 L",
+            codigo: "0010102",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BENEVIA 10 OD BR - 200 ML",
+            codigo: "0011140",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DIMEXION 400 EC - 1 L",
+            codigo: "0011038",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DIMEXION 400 EC - 5 L",
+            codigo: "0011037",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALBEN - M - 1 KG",
+            codigo: "0008807",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MALATHION 1000 EC - 1 L",
+            codigo: "0011039",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MALATHION 1000 EC - 5 L",
+            codigo: "0011631",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MUSTANG 350 EC - 5 L",
+            codigo: "0005633",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TALISMAN - 5 L",
+            codigo: "0011990",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TALSTAR 100 EC - 1L",
+            codigo: "0006511",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TALSTAR 100 EC - 5 L",
+            codigo: "0006516",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERIMARK - 200 ML",
+            codigo: "0010686",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERIMARK 20S C - 1 L",
+            codigo: "0010213",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AVATAR 150 EC - 200 ML",
+            codigo: "0010832",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PREMIO 20 SC - 1 L",
+            codigo: "0010695",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PREMIO 20 SC - 200 ML",
+            codigo: "0010696",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "REGALIA MAXX - 1 L",
+            codigo: "0009894",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FMC QUIMICA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DRIVE - 5L",
+            codigo: "0011794",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "LI 700 - 5L",
+            codigo: "0008840",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TOP ZERO - 1 L",
+            codigo: "0011880",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "FORTGREEN COMERCIAL AGRICOLA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DICARZOL 500 SP - 500 G",
+            codigo: "0005384",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "HARPON WG - 300 G",
+            codigo: "0003595",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SEVIN 480 SC - 1 L",
+            codigo: "0011416",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRIGARD 750 WP - 120 G",
+            codigo: "0013692",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRIGARD 750 WP - 15 G",
+            codigo: "0000061",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BOTRAN 750 20 X 1 KG",
+            codigo: "0012585",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CENSOR - 1 L",
+            codigo: "0013902",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DIFCOR 250 EC - 1 L",
+            codigo: "0012739",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PERIMETER - 1L",
+            codigo: "0013872",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PERIMETER - 5 L",
+            codigo: "0013873",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GOWAN PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MEGA LIMP - 1L",
+            codigo: "0013945",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OLEOS TEXANO - 10 L",
+            codigo: "0014091",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VITAGAS - 5 L",
+            codigo: "0014089",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "GRANSOLLO ASSES COM E IMP LTDA - SP"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FUJIMITE 50 SC - 1 L",
+            codigo: "0013947",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "H & F NORDESTE AGRICOLA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "IMIDAGOLD 700 WG - 1 KG",
+            codigo: "0013636",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "H & F NORDESTE AGRICOLA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MANZATE WG - 1 KG",
+            codigo: "0013473",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "H & F NORDESTE AGRICOLA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MANZATE WG - 25 KG",
+            codigo: "0013434",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "H & F NORDESTE AGRICOLA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OPERA - 1L",
+            codigo: "0014072",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "H & F NORDESTE AGRICOLA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SPERTO - 1 KG",
+            codigo: "0013069",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "H & F NORDESTE AGRICOLA DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GALEAO - 1 KG",
+            codigo: "0007184",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "HELM DO BRASIL MERCANTIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "HELMOQUAT - 20 L",
+            codigo: "0011370",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "HELM DO BRASIL MERCANTIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "HELMOXONE - 5 L",
+            codigo: "0007188",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "HELM DO BRASIL MERCANTIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MOFOTIL - 5 L",
+            codigo: "0006623",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "HELM DO BRASIL MERCANTIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PRISMA PLUS - 5 L",
+            codigo: "0010626",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "HELM DO BRASIL MERCANTIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SENSEI - 1 L",
+            codigo: "0012220",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "HELM DO BRASIL MERCANTIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOS - 1 L",
+            codigo: "0010586",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "LABORATORIO DE BIO CONTROLE FARROUPILHA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ESCUDO - 5L",
+            codigo: "0012774",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "LUXEMBOURG BRASIL COMERCIO DE PRODUTOS QUIMICOS LTDA."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AGREX OIL VEGETAL - 1L",
+            codigo: "0001737",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AGREX OIL VEGETAL - 20L",
+            codigo: "0001701",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AGREX OIL VEGETAL - 5 L",
+            codigo: "0000440",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MICROQUIMICA INDUSTRIA QUIMICA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP ORIGINAL MAIS - 1 L",
+            codigo: "0011571",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MONSANTO DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP ORIGINAL MAIS - 20 L",
+            codigo: "0011570",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MONSANTO DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP ORIGINAL MAIS - 5 L",
+            codigo: "0011572",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MONSANTO DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP WG - 5 KG",
+            codigo: "0011903",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "MONSANTO DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CERCOBIN 875 WG - 1 KG",
+            codigo: "0013102",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "NORDESTE COMERCIO ATACADISTA DE ADUBOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KILLGGA - 1 L",
+            codigo: "0011972",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KILLGGA - 5 L",
+            codigo: "0013330",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PROPHYLEX - 1L",
+            codigo: "0011973",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VIGGA - 1L",
+            codigo: "0012993",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VIGGA - 5L",
+            codigo: "0012870",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OMEX AGRIFLUIDS DO BRASIL PRODUTOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AVIDOBR - 1 L",
+            codigo: "0011265",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CAPATAZ BR - 1 L",
+            codigo: "0010618",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CORONELBR - 5 L",
+            codigo: "0011952",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DEMOLIDOR BR - 1 KG",
+            codigo: "0011262",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ESTEIO 400 ML",
+            codigo: "0012709",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GOEMON - 1L",
+            codigo: "0012659",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MEGABR - 20 L",
+            codigo: "0011263",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OFF ROAD - 20L",
+            codigo: "0011951",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OFF ROAD - 5L",
+            codigo: "0012272",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PING BR - 1 L",
+            codigo: "0011232",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PREVER - 1 L",
+            codigo: "0011361",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "QUALLIS - 1 L",
+            codigo: "0011734",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "QUALLIS - 20 L",
+            codigo: "0011231",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "QUALLIS - 5 L",
+            codigo: "0011516",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RACIO- 3 KG",
+            codigo: "0011468",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TEBURAZ - 1 L",
+            codigo: "0012200",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VIVANTHA 5KG",
+            codigo: "0012647",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OURO FINO QUIMICA S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SUPERA - 1 L",
+            codigo: "0011450",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "OXIQUIMICA AGROCIENCIA LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AMINOL 806 - 5 L",
+            codigo: "0013173",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ASSIST - 5 L",
+            codigo: "0014019",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BASAGRAN 600 - 1 L",
+            codigo: "0013720",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CABRIO TOP - 1 KG",
+            codigo: "0013530",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CANTUS - 0,5 KG",
+            codigo: "0014049",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CARTAP BR 500 - 1 KG",
+            codigo: "0014095",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CONNECT - 20 L",
+            codigo: "0013602",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "COSAVET - SULPHUR 80% - 5 KG",
+            codigo: "0013622",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DECIS 25 EC - 1 L",
+            codigo: "0007756",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DELEGATE - 120 G",
+            codigo: "0011304",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DELEGATE - 500 G",
+            codigo: "0011317",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DITHANE NT - 2 KG",
+            codigo: "0011307",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "EVIDENCE 700 WG - 30 G",
+            codigo: "0008630",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GLADIUM 60 WG - 250 G",
+            codigo: "0013599",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "INFINITO 87,5 SC - 1 L",
+            codigo: "0013606",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "METILTIOFAN - 1 KG",
+            codigo: "0013177",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NATIVO 300 SC - 1 L",
+            codigo: "0013508",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NATIVO 300 SC - 20 L",
+            codigo: "0013593",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ORKESTRA SC - 1 L",
+            codigo: "0013583",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PREMIO 20 SC - 1 L",
+            codigo: "0011677",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP DI 48 - 20 L",
+            codigo: "0012869",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP ORIGINAL MAIS - 1 L",
+            codigo: "0012860",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP ORIGINAL MAIS - 20 L",
+            codigo: "0012859",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP ORIGINAL MAIS - 5 L",
+            codigo: "0012862",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ROUNDUP WG - 5 KG",
+            codigo: "0012866",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "STIMUTROP PREMIUM - 1 L",
+            codigo: "0014013",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "STIMUTROP PREMIUM - 5 L",
+            codigo: "0014014",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TALSTAR 100 EC - 1L",
+            codigo: "0013721",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERANGO PRIME SC500 - 5 L",
+            codigo: "0013598",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERTER SC - 1 L",
+            codigo: "0013271",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "PLANTEBEM COMERCIO IMPORT E EXPORT DE PROD AGRÍCOLAS EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DUX - 1 KG",
+            codigo: "0013395",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "REGALIA MAXX - 5 L",
+            codigo: "0013394",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOSPRAY EXTREMO - 10 L",
+            codigo: "0010503",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOSPRAY EXTREMO - 1L",
+            codigo: "0010501",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOSPRAY EXTREMO - 20 L",
+            codigo: "0013854",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOSPRAY SILICONADO - 1L",
+            codigo: "0011774",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOSPRAY SILICONADO - 5 L",
+            codigo: "0011773",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIZOWET - 1L",
+            codigo: "0011016",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SILWET AG - 1L",
+            codigo: "0006092",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SILWET AG - 5 L",
+            codigo: "0006853",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SILWET ECO - 1L",
+            codigo: "0010502",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SILWET STIK - 1 L",
+            codigo: "0012842",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "RIZOBACTER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRIBALANCE - 1 L",
+            codigo: "0011840",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SATIS INDUSTRIA E COMERCIO LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BEAUVECONTROL - 1 KG",
+            codigo: "0010939",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIMBIOSE AGROTECNOLOGIA BIOLOGICA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "STIMUCONTROL - 1 L",
+            codigo: "0010940",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIMBIOSE AGROTECNOLOGIA BIOLOGICA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GLIFORTE - 5KG",
+            codigo: "0012475",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KITTER - 10 L",
+            codigo: "0012564",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RAPEL - 3KG",
+            codigo: "0009585",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "GAMONIUM - 20 L",
+            codigo: "0011435",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KITTER - 5 L",
+            codigo: "0012608",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "POTENZA SINON - 5 L",
+            codigo: "0009881",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRULYMAX - 1 KG",
+            codigo: "0009808",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SINON DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SPARVIERO 50 - 1 L",
+            codigo: "0011136",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM NICHINO BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DOMARK 100 EC - 1 L",
+            codigo: "0007213",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DOMARK 100 EC - 5 L",
+            codigo: "0007928",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FUJIMITE 50 SC - 1 L",
+            codigo: "0011137",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "METILTIOFAN - 1 KG",
+            codigo: "0007714",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "OHKAMI 10 EW - 1 L",
+            codigo: "0012474",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SUPPORT WG - 2 KG",
+            codigo: "0012473",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TREBON 100 SC - 5 L",
+            codigo: "0007782",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SIPCAM UPL BRASIL S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "COSAVET - SULPHUR 80% - 1 KG",
+            codigo: "0013979",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "COSAVET - SULPHUR 80% - 25 KG",
+            codigo: "0013619",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "COSAVET - SULPHUR 80% - 5 KG",
+            codigo: "0013618",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SM AGROCARE BRASIL IMPORTACAO COMERCIO E SERVICOS AGRICOLAS"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NUVEM - 25 KG",
+            codigo: "0014076",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SMARTTEC AGROBUSINESS E CONSULTORIA - EIRELI"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TRINITY 250 SC - 5 L",
+            codigo: "0011673",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "STOCKTON-AGRIMOR DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ADJUST PLATINUM - 5 L",
+            codigo: "0013730",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "STOLLER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "STIMULATE - 20 L",
+            codigo: "0013746",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "STOLLER DO BRASIL LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "ABAMEX - 5 L",
+            codigo: "0007452",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Adicionado espaço no nome
+            nome: "ABAMEX MAXX - 1 L",
+            codigo: "0013421",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            // CORRIGIDO: Adicionado espaço no nome
+            nome: "ABAMEX MAXX - 5 L",
+            codigo: "0013422",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CRETA - 20 L",
+            codigo: "0013809",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CRUCIAL - 20 L",
+            codigo: "0007152",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CYPTRIN 250 CE - 1 L",
+            codigo: "0006807",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CYPTRIN PRIME - 5 L",
+            codigo: "0010419",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KAISO 250 CS - 1 L",
+            codigo: "0007787",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KLORPAN 480 EC - 1 L",
+            codigo: "0007777",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "KLORPAN 480 EC - 10 L",
+            codigo: "0007778",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NUFOSATE - 1 L",
+            codigo: "0010336",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NUPRID 700 WG - 1 KG",
+            codigo: "0003596",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PIQUE 240 SL - 5 L",
+            codigo: "0013792",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIVAL 200 EC - 5 L",
+            codigo: "0007151",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SIALEX 500 - 1 KG",
+            codigo: "0007976",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SNIPER - 20 L",
+            codigo: "0013814",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SUMIRODY 300 - 5 L",
+            codigo: "0013161",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SUMYZIN 500 SC - 1L",
+            codigo: "0011143",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SUMYZIN 500 SC - 5 L",
+            codigo: "0013248",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TENAZ 250 SC - 5 L",
+            codigo: "0010579",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "THIOBEL 500 - 1 KG",
+            codigo: "0012763",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TROIA 800 WP - 10 KG",
+            codigo: "0013533",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VERLON SL - 20 L",
+            codigo: "0013806",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VOLNA 250 EC - 5 L",
+            codigo: "0011087",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SUMITOMO CHEMICAL BRASIL INDUSTRIA QUIMICA S.A."
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AMISTAR TOP - 1 L",
+            codigo: "0002770",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SYNGENTA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BRAVONIL ULTREX - 5 KG",
+            codigo: "0000020",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "SYNGENTA PROTECAO DE CULTIVOS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOKATO - 3 L",
+            codigo: "0013224",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BOMBARDEIRO - 1 L",
+            codigo: "0013223",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BOMBARDEIRO 5 L",
+            codigo: "0012389",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NATUCONTROL - 1 KG",
+            codigo: "0013992",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TAKOTROP - 3 L",
+            codigo: "0013650",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOOLIMPO - 1 KG",
+            codigo: "0013976",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOBREV FULL - 1 L",
+            codigo: "0013789",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOBREV FULL - 5 L",
+            codigo: "0013649",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIOMAGNO - 5 L",
+            codigo: "0013225",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "V-CORE - 5 L",
+            codigo: "0013089",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TOTAL BIOTECNOLOGIA INDUSTRIA E COMERCIO S/A"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AZOX 250 SC - 1 L",
+            codigo: "0013486",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "AZOX 250 SC - 5 L",
+            codigo: "0013532",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BITRIN 100 EC - 5 L",
+            codigo: "0013237",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BIVACK - 1 L",
+            codigo: "0012949",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BLADE - 5 L",
+            codigo: "0011366",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BORDALO PRO - 1L",
+            codigo: "0013001",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BORDALO PRO - 5L",
+            codigo: "0012946",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "BOVENEXT - 1 KG",
+            codigo: "0013412",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CERIMONIA - 1L",
+            codigo: "0012850",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CERIMONIA - 20L",
+            codigo: "0013046",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CERIMONIA - 5L",
+            codigo: "0012947",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CLAQUE (BRL) - 1 L",
+            codigo: "0012571",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CLAQUE (BRL) - 5 L",
+            codigo: "0012297",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CORAZA - 1 L",
+            codigo: "0012871",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CORAZA - 250 ML",
+            codigo: "0012872",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "CUPRITAL 700 - 5 L",
+            codigo: "0011367",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DAVOS - 1 L",
+            codigo: "0011454",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DAVOS - 5 L",
+            codigo: "0013048",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "DEFLEXO - 20 L",
+            codigo: "0013430",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FALGRO 4SL - 1 L",
+            codigo: "0012519",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "FIDALGO - 5L",
+            codigo: "0012945",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "LYRA - 5LT",
+            codigo: "0013047",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MEDEIRO 80 WG (BR) - 1KG",
+            codigo: "0013673",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "NICOPEC - 5 L",
+            codigo: "0012375",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PACLO BR - 1 L",
+            codigo: "0013664",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PACLO BR - 20 L",
+            codigo: "0011066",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "PACLO BR - 5 L",
+            codigo: "0011069",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIKOLTO - 100 GR",
+            codigo: "0012799",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "RIKOLTO BRL C - 1 KG",
+            codigo: "0012857",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "SQUAD BR C - 5 L",
+            codigo: "0013644",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TORERO - 1 KG",
+            codigo: "0012138",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TORERO - 10 KG",
+            codigo: "0012376",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TORERO - 5 KG",
+            codigo: "0011335",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "VIRIATO - 30 G",
+            codigo: "0011988",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "MILARUM - 1L",
+            codigo: "0013863",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+        {
+            imagem: "https://i.ibb.co/dsQr83jk/image.png",
+            nome: "TUVAL - 5 L",
+            codigo: "0001774",
+            qrcode: "https://i.ibb.co/ycZkBLT1/sxhvQXv.png",
+            fornecedor: "TRADECORP DO BRASIL COMERCIO DE INSUMOS AGRICOLAS LTDA"
+        },
+    ];
+    // CORRIGIDO: Esta variável deve receber o array 'produtos' diretamente, não o array aninhado.
+    let produtosFiltrados = produtos;
+
+    const catalogo = document.querySelector('.catalogo');
+    const paginacaoDiv = document.getElementById('paginacao');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const filtroFornecedor = document.getElementById('filtroFornecedor');
+    const filtroUnidade = document.getElementById('filtroUnidade');
+
+    const produtosPorPagina = 8;
+    
+    let paginaAtual = 1;
+
+
+    function preencherFiltros() {
+        // 1. Preencher Fornecedores
+        const fornecedores = [...new Set(produtos.map(p => p.fornecedor))].sort();
+        fornecedores.forEach(fornecedor => {
+            if (fornecedor) {
+                const option = document.createElement('option');
+                option.value = fornecedor;
+                option.innerText = fornecedor;
+                filtroFornecedor.appendChild(option);
+            }
+        });
+    }
+    
+    function aplicarFiltros() {
+        const termoPesquisa = searchInput.value.toLowerCase().trim();
+        const fornecedorSelecionado = filtroFornecedor.value;
+        const unidadeSelecionada = filtroUnidade.value;
+
+        produtosFiltrados = produtos.filter(produto => {
+            
+            // Filtro por Nome/Código/Fornecedor (Pesquisa)
+            const correspondePesquisa = !termoPesquisa || 
+                (produto.nome.toLowerCase().includes(termoPesquisa) || 
+                produto.codigo.includes(termoPesquisa) ||
+                (produto.fornecedor && produto.fornecedor.toLowerCase().includes(termoPesquisa)));
+            
+            // Filtro por Fornecedor
+            const correspondeFornecedor = !fornecedorSelecionado || produto.fornecedor === fornecedorSelecionado;
+
+            // Filtro por Unidade (Verifica se o nome do produto CONTÉM a unidade selecionada)
+            // A lógica de filtragem continua a mesma e suporta as novas unidades (ex: ' - 5 KG')
+            const correspondeUnidade = !unidadeSelecionada || produto.nome.includes(`- ${unidadeSelecionada}`);
+            
+            return correspondePesquisa && correspondeFornecedor && correspondeUnidade;
+        });
+
+        paginaAtual = 1;
+        renderizarProdutos(produtosFiltrados, paginaAtual);
+        setupPaginacao(produtosFiltrados);
+    }
+    
+    // Adiciona ouvintes de evento para os novos filtros
+    filtroFornecedor.addEventListener('change', aplicarFiltros);
+    filtroUnidade.addEventListener('change', aplicarFiltros);
+    // Associa a função `aplicarFiltros` aos botões e eventos de pesquisa existentes
+    searchButton.addEventListener('click', aplicarFiltros);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            aplicarFiltros();
+        }
+    });
+    
+
+    function renderizarProdutos(listaDeProdutos, pagina) {
+        catalogo.innerHTML = '';
+        const inicio = (pagina - 1) * produtosPorPagina;
+        const fim = inicio + produtosPorPagina;
+        const produtosDaPagina = listaDeProdutos.slice(inicio, fim);
+        
+        if (produtosDaPagina.length === 0) {
+            catalogo.innerHTML = '<p style="text-align: center; width: 100%;">Nenhum produto encontrado.</p>';
+            return;
+        }
+
+        produtosDaPagina.forEach(produto => {
+            const card = document.createElement('div');
+            card.className = 'produto-card';
+            card.innerHTML = `
+                <img class="produto-imagem" src="${produto.imagem}" alt="Imagem do ${produto.nome}">
+                <h3>${produto.nome}</h3>
+                <p class="fornecedor">Fornecedor: <strong>${produto.fornecedor || 'N/A'}</strong></p>
+                <p class="preco">Cod. Siagri: ${produto.codigo}</p>
+                <img class="qr-code" src="${produto.qrcode}" alt="QR Code ${produto.nome}">
+            `;
+            catalogo.appendChild(card);
+        });
+    }
+
+function setupPaginacao(listaDeProdutos) {
+    paginacaoDiv.innerHTML = '';
+    const totalPaginas = Math.ceil(listaDeProdutos.length / produtosPorPagina);
+
+    if (totalPaginas <= 1) {
+        return;
+    }
+
+    const maxBotoesNumericos = 5; 
+    
+    let inicioLoop = Math.max(1, paginaAtual - Math.floor(maxBotoesNumericos / 2));
+    let fimLoop = Math.min(totalPaginas, inicioLoop + maxBotoesNumericos - 1);
+
+    if (fimLoop === totalPaginas) {
+        inicioLoop = Math.max(1, totalPaginas - maxBotoesNumericos + 1);
+    }
+
+    // Botão "Anterior"
+    if (paginaAtual > 1) {
+        const prevBtn = criarBotaoPaginacao('Anterior', paginaAtual - 1, listaDeProdutos);
+        paginacaoDiv.appendChild(prevBtn);
+    }
+
+    // Botão da primeira página (se não estiver visível)
+    if (inicioLoop > 1) {
+        const firstBtn = criarBotaoPaginacao(1, 1, listaDeProdutos);
+        paginacaoDiv.appendChild(firstBtn);
+        if (inicioLoop > 2) {
+            adicionarEllipsis();
+        }
+    }
+
+    // Botões numéricos limitados
+    for (let i = inicioLoop; i <= fimLoop; i++) {
+        const btn = criarBotaoPaginacao(i, i, listaDeProdutos);
+        if (i === paginaAtual) {
+            btn.classList.add('ativo');
+        }
+        paginacaoDiv.appendChild(btn);
+    }
+
+    // Ellipsis (...)
+    if (fimLoop < totalPaginas) {
+        if (fimLoop < totalPaginas - 1) {
+            adicionarEllipsis();
+        }
+        // Botão da última página
+        const lastBtn = criarBotaoPaginacao(totalPaginas, totalPaginas, listaDeProdutos);
+        paginacaoDiv.appendChild(lastBtn);
+    }
+
+    // Botão "Próximo"
+    if (paginaAtual < totalPaginas) {
+        const nextBtn = criarBotaoPaginacao('Próximo', paginaAtual + 1, listaDeProdutos);
+        paginacaoDiv.appendChild(nextBtn);
+    }
+}
+
+function criarBotaoPaginacao(texto, paginaDestino, listaDeProdutos) {
+    const btn = document.createElement('button');
+    btn.innerText = texto;
+    btn.addEventListener('click', () => {
+        paginaAtual = paginaDestino;
+        renderizarProdutos(listaDeProdutos, paginaAtual);
+        setupPaginacao(listaDeProdutos);
+    });
+    return btn;
+}
+
+function adicionarEllipsis() {
+    const ellipsis = document.createElement('span');
+    ellipsis.innerText = '...';
+    ellipsis.style.padding = '0 5px';
+    ellipsis.style.color = '#555';
+    paginacaoDiv.appendChild(ellipsis);
+}
+
+    preencherFiltros();
+    renderizarProdutos(produtosFiltrados, paginaAtual);
+    setupPaginacao(produtosFiltrados);
+});
+</script>
+</body>
+</html>

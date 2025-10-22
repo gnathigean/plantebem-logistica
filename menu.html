@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Plantebem</title>
+  
+  <link rel="stylesheet" href="/menu.css">
+  
+  <style>
+    /* ✅ ESTILOS PARA BOTÕES DE ADMIN */
+    .btn-admin-cadastro, .btn-admin-gerenciar {
+      display: block;
+      padding: 15px 30px;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+    
+    .btn-admin-cadastro {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-admin-cadastro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn-admin-gerenciar {
+      background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+      box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+    }
+    
+    .btn-admin-gerenciar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
+    }
+    
+    /* ✅ ESTILO PARA BOTÃO DE ACESSAR LOJA */
+    .btn-acessar-loja {
+      display: block;
+      padding: 20px 30px;
+      margin-top: 20px;
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1.2em;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .btn-acessar-loja:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(46, 204, 113, 0.5);
+      background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="fixed-nav">
+    <a href="menu.html" class="botao-menu">Menu</a>
+    <button id="logout-button">Sair</button>
+  </div>
+
+
+  <div class="logo-container">
+    <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+  </div>
+
+
+  <div class="menu-container">
+    <div class="menu-header">Menu Principal</div>
+    <ul class="menu-list">
+      <li class="menu-list-item"><a href="menu.html">Início</a></li>
+      <li class="menu-list-item"><a href="dashboard.html">DASHBOARD (KPls e Insights)</a></li>
+      <li class="menu-list-item"><a href="mapa-estoque.html">MAPA ESTOQUE MATRIZ (EM PRODUÇÃO)</a></li>
+    </ul>
+    
+    <!-- ✅ ÁREA ADMINISTRATIVA - SÓ ADMIN VÊ -->
+    <div id="admin-section" style="display: none; margin-top: 30px;">
+      <div class="loja-selecao-container">
+        <label style="color: #667eea; font-weight: bold; display: block; margin-bottom: 15px;">⚙️ Área Administrativa:</label>
+        
+        <a href="cadastro.html" class="btn-admin-cadastro">
+          👥 Cadastrar Novo Usuário
+        </a>
+        
+        <a href="gerenciar-usuarios.html" class="btn-admin-gerenciar">
+          🗑️ Gerenciar Usuários
+        </a>
+      </div>
+    </div>
+
+
+    <div class="loja-selecao-container">
+      <label for="seletor-loja" id="loja-label">Recebimento de Mercadorias:</label>
+      <select id="seletor-loja">
+        <option value="" data-url="null">-- Selecione uma Loja --</option>
+        <option value="Matriz" data-loja-key="matriz" data-url="recebimento_petrolina.html">Matriz</option>
+        <option value="Juazeiro" data-loja-key="juazeiro" data-url="recebimento_juazeiro.html">Filial Juazeiro</option>
+        <option value="Loteamento" data-loja-key="loteamento" data-url="recebimento_loteamento.html">Filial Loteamento</option>
+        <option value="Irece" data-loja-key="irece" data-url="recebimento_irece.html">Filial Irecê</option>
+        <option value="Rio Real" data-loja-key="rioreal" data-url="recebimento_rioreal.html">Filial Rio Real</option>
+        <option value="Agroexpress" data-loja-key="agroexpress" data-url="recebimento_agroexpress.html">Agroexpress</option>
+        <option value="Grande Safra" data-loja-key="grandesafra" data-url="recebimento_grandesafra.html">Grande Safra</option>
+      </select>
+    </div>
+
+
+    <div id="botao-loja-container"></div>
+  </div>
+  
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+  import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+    authDomain: "login-com-dados.firebaseapp.com",
+    projectId: "login-com-dados",
+    storageBucket: "login-com-dados.firebasestorage.app",
+    messagingSenderId: "75556023458",
+    appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+    measurementId: "G-W9LRT99579"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2";
+  
+  const logoutButton = document.getElementById('logout-button');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        console.error("Erro ao deslogar:", error);
+        alert("Erro ao sair. Tente novamente.");
+      });
+    });
+  }
+  
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
+    }
+    
+    if (logoutButton) {
+      logoutButton.style.display = 'inline-block';
+    }
+    
+    // ✅ VERIFICA SE É ADMIN (por UID ou por campo no Firestore)
+    let isAdmin = (user.uid === ADMIN_UID);
+    
+    try {
+      const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        // ✅ VERIFICA SE TEM isAdmin: true OU tipo: 'admin'
+        if (userData.isAdmin === true || userData.tipo === 'admin') {
+          isAdmin = true;
+        }
+        
+        // ✅ SE FOR ADMIN, MOSTRA ÁREA ADMINISTRATIVA
+        if (isAdmin) {
+          const adminSection = document.getElementById('admin-section');
+          if (adminSection) {
+            adminSection.style.display = 'block';
+          }
+          console.log('✅ Admin logado - acesso total');
+          return; // Admin não precisa de filtros
+        }
+        
+        // ✅ USUÁRIO COMUM - FILTRAR LOJAS
+        const lojasPermitidas = userData.lojasPermitidas || [];
+        
+        if (lojasPermitidas.length === 0) {
+          alert('❌ Você não tem permissão para acessar nenhuma loja.\n\nEntre em contato com o administrador.');
+          signOut(auth).then(() => window.location.href = 'index.html');
+          return;
+        }
+        
+        const seletorLoja = document.getElementById('seletor-loja');
+        
+        if (seletorLoja) {
+          const options = Array.from(seletorLoja.querySelectorAll('option'));
+          let opcoesRemovidas = 0;
+          
+          options.forEach(option => {
+            const lojaKey = option.getAttribute('data-loja-key');
+            
+            if (lojaKey && !lojasPermitidas.includes(lojaKey)) {
+              option.remove();
+              opcoesRemovidas++;
+            }
+          });
+          
+          console.log(`✅ Filtro aplicado para ${userData.nome || user.email}`);
+          console.log(`📋 Lojas permitidas:`, lojasPermitidas.map(l => l.toUpperCase()).join(', '));
+          console.log(`🚫 Opções removidas: ${opcoesRemovidas}`);
+          
+          const opcoesRestantes = seletorLoja.querySelectorAll('option[data-loja-key]');
+          if (opcoesRestantes.length === 1) {
+            seletorLoja.value = opcoesRestantes[0].value;
+            console.log(`🎯 Seleção automática: ${opcoesRestantes[0].textContent}`);
+          }
+        }
+        
+      } else {
+        console.warn('⚠️ Usuário sem permissões cadastradas no Firestore');
+        
+        // ✅ SE FOR O ADMIN_UID, MOSTRA ÁREA ADMIN MESMO SEM DADOS
+        if (isAdmin) {
+          const adminSection = document.getElementById('admin-section');
+          if (adminSection) {
+            adminSection.style.display = 'block';
+          }
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Erro ao buscar permissões:', error);
+      alert('Erro ao carregar permissões. Entre em contato com o administrador.');
+    }
+  });
+  
+  // ✅ FUNCIONALIDADE PARA CRIAR BOTÃO DE ACESSO À LOJA
+  const seletorLoja = document.getElementById('seletor-loja');
+  const botaoLojaContainer = document.getElementById('botao-loja-container');
+
+  if (seletorLoja && botaoLojaContainer) {
+    seletorLoja.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      const url = selectedOption.getAttribute('data-url');
+      const lojaName = selectedOption.value;
+      
+      // Limpa o container
+      botaoLojaContainer.innerHTML = '';
+      
+      // Se selecionou uma loja válida, cria o botão
+      if (url && url !== 'null' && lojaName) {
+        const botao = document.createElement('a');
+        botao.href = url;
+        botao.className = 'btn-acessar-loja';
+        botao.textContent = `📦 Acessar ${lojaName}`;
+        botaoLojaContainer.appendChild(botao);
+      }
+    });
+  }
+  
+</script>
+</body>
+</html>

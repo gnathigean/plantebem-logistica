@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Plantebem</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER SUPERIOR ===== */
+    .top-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 1000;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #667eea;
+      transition: transform 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .logo-header {
+      height: 50px;
+    }
+
+    .header-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn-home, .btn-logout {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-home {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-home:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-logout {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-logout:hover {
+      background: #d32f2f;
+      transform: translateY(-2px);
+    }
+
+    /* ===== MENU LATERAL ===== */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 70px;
+      width: 280px;
+      height: calc(100vh - 70px);
+      background: white;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      z-index: 999;
+      overflow-y: auto;
+    }
+
+    .sidebar.closed {
+      transform: translateX(-280px);
+    }
+
+    .sidebar-header {
+      padding: 25px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.3em;
+      margin-bottom: 5px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+
+    .menu-section {
+      margin-bottom: 10px;
+    }
+
+    .menu-section-title {
+      padding: 15px 20px 10px;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      color: #999;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .menu-item {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #333;
+      text-decoration: none;
+      border-left: 4px solid transparent;
+    }
+
+    .menu-item:hover {
+      background: #f5f7fa;
+      border-left-color: #667eea;
+    }
+
+    .menu-item.active {
+      background: #e8eaf6;
+      border-left-color: #667eea;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .menu-item-icon {
+      font-size: 1.3em;
+      width: 25px;
+      text-align: center;
+    }
+
+    .menu-item-text {
+      flex: 1;
+    }
+
+    /* ===== CONTEÚDO PRINCIPAL ===== */
+    .main-content {
+      margin-left: 280px;
+      margin-top: 70px;
+      padding: 30px;
+      transition: margin-left 0.3s ease;
+      min-height: calc(100vh - 70px);
+    }
+
+    .main-content.expanded {
+      margin-left: 0;
+    }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    .section-header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .metric-card-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+
+    .metric-card-title {
+      font-size: 0.9em;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .metric-card-value {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .metric-card-change {
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+
+    .metric-card-change.positive {
+      color: #2ecc71;
+    }
+
+    .metric-card-change.negative {
+      color: #f44336;
+    }
+
+    /* ===== RESPONSIVO ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-280px);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .header-title {
+        display: none;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== LOADING ===== */
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: white;
+      font-size: 1.2em;
+    }
+
+    .loading-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER SUPERIOR ===== -->
+  <div class="top-header">
+    <div class="header-left">
+      <button class="menu-toggle" id="menu-toggle">☰</button>
+      <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo" class="logo-header">
+      <h1 class="header-title">Dashboard Analytics</h1>
+    </div>
+    <div class="header-right">
+      <a href="menu.html" class="btn-home">🏠 Menu</a>
+      <button class="btn-logout" id="logout-button">Sair</button>
+    </div>
+  </div>
+
+  <!-- ===== MENU LATERAL ===== -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>📊 Métricas</h2>
+      <p>Análises e Insights</p>
+    </div>
+
+    <div class="sidebar-menu">
+      <div class="menu-section">
+        <div class="menu-section-title">Visão Geral</div>
+        <a class="menu-item active" data-section="overview">
+          <span class="menu-item-icon">📈</span>
+          <span class="menu-item-text">Dashboard Principal</span>
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section-title">Vendas & Receita</div>
+        <a class="menu-item" data-section="vendas">
+          <span class="menu-item-icon">💰</span>
+          <span class="menu-item-text">Análise de Vendas</span>
+        </a>
+        <a class="menu-item" data-section="produtos">
+          <span class="menu-item-icon">📦</span>
+          <span class="menu-item-text">Produtos Mais Vendidos</span>
+        </a>
+        <a class="menu-item" data-section="ticket">
+          <span class="menu-item-icon">🎫</span>
+          <span class="menu-item-text">Ticket Médio</span>
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section-title">Operações</div>
+        <a class="menu-item" data-section="recebimento">
+          <span class="menu-item-icon">📥</span>
+          <span class="menu-item-text">Recebimento de Mercadorias</span>
+        </a>
+        <a class="menu-item" data-section="estoque">
+          <span class="menu-item-icon">📊</span>
+          <span class="menu-item-text">Gestão de Estoque</span>
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section-title">Lojas & Regiões</div>
+        <a class="menu-item" data-section="lojas">
+          <span class="menu-item-icon">🏪</span>
+          <span class="menu-item-text">Performance por Loja</span>
+        </a>
+        <a class="menu-item" data-section="comparativo">
+          <span class="menu-item-icon">📊</span>
+          <span class="menu-item-text">Comparativo Regional</span>
+        </a>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section-title">Relatórios</div>
+        <a class="menu-item" data-section="financeiro">
+          <span class="menu-item-icon">💵</span>
+          <span class="menu-item-text">Relatório Financeiro</span>
+        </a>
+        <a class="menu-item" data-section="metas">
+          <span class="menu-item-icon">🎯</span>
+          <span class="menu-item-text">Metas e KPIs</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+  <div class="main-content" id="main-content">
+    
+    <!-- SEÇÃO: OVERVIEW -->
+    <div class="content-section active" id="section-overview">
+      <div class="section-header">
+        <h2 class="section-title">📈 Dashboard Principal</h2>
+        <p class="section-subtitle">Visão geral das principais métricas do negócio</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="metric-card">
+          <div class="metric-card-icon">💰</div>
+          <div class="metric-card-title">Receita Total</div>
+          <div class="metric-card-value">R$ 1.234.567</div>
+          <div class="metric-card-change positive">↑ 12,5% vs mês anterior</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-icon">📦</div>
+          <div class="metric-card-title">Produtos Vendidos</div>
+          <div class="metric-card-value">8.456</div>
+          <div class="metric-card-change positive">↑ 8,3% vs mês anterior</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-icon">🎫</div>
+          <div class="metric-card-title">Ticket Médio</div>
+          <div class="metric-card-value">R$ 146,00</div>
+          <div class="metric-card-change positive">↑ 4,1% vs mês anterior</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-icon">🏪</div>
+          <div class="metric-card-title">Lojas Ativas</div>
+          <div class="metric-card-value">7</div>
+          <div class="metric-card-change">100% operando</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>📊 Iframe do Power BI</h3>
+        <p>Adicione aqui o iframe do seu relatório Power BI</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: VENDAS -->
+    <div class="content-section" id="section-vendas">
+      <div class="section-header">
+        <h2 class="section-title">💰 Análise de Vendas</h2>
+        <p class="section-subtitle">Métricas detalhadas de performance de vendas</p>
+      </div>
+      <div class="cards-grid">
+        <div class="metric-card">
+          <div class="metric-card-icon">💵</div>
+          <div class="metric-card-title">Vendas Hoje</div>
+          <div class="metric-card-value">R$ 45.320</div>
+          <div class="metric-card-change positive">↑ 15,2%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: PRODUTOS -->
+    <div class="content-section" id="section-produtos">
+      <div class="section-header">
+        <h2 class="section-title">📦 Produtos Mais Vendidos</h2>
+        <p class="section-subtitle">Top produtos em vendas este mês</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: TICKET MÉDIO -->
+    <div class="content-section" id="section-ticket">
+      <div class="section-header">
+        <h2 class="section-title">🎫 Análise de Ticket Médio</h2>
+        <p class="section-subtitle">Evolução do ticket médio por período</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: RECEBIMENTO -->
+    <div class="content-section" id="section-recebimento">
+      <div class="section-header">
+        <h2 class="section-title">📥 Recebimento de Mercadorias</h2>
+        <p class="section-subtitle">Controle de entrada de produtos</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: ESTOQUE -->
+    <div class="content-section" id="section-estoque">
+      <div class="section-header">
+        <h2 class="section-title">📊 Gestão de Estoque</h2>
+        <p class="section-subtitle">Monitoramento de níveis de estoque</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: LOJAS -->
+    <div class="content-section" id="section-lojas">
+      <div class="section-header">
+        <h2 class="section-title">🏪 Performance por Loja</h2>
+        <p class="section-subtitle">Comparativo de desempenho entre lojas</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: COMPARATIVO -->
+    <div class="content-section" id="section-comparativo">
+      <div class="section-header">
+        <h2 class="section-title">📊 Comparativo Regional</h2>
+        <p class="section-subtitle">Análise por região geográfica</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: FINANCEIRO -->
+    <div class="content-section" id="section-financeiro">
+      <div class="section-header">
+        <h2 class="section-title">💵 Relatório Financeiro</h2>
+        <p class="section-subtitle">Demonstrações financeiras consolidadas</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO: METAS -->
+    <div class="content-section" id="section-metas">
+      <div class="section-header">
+        <h2 class="section-title">🎯 Metas e KPIs</h2>
+        <p class="section-subtitle">Acompanhamento de objetivos e indicadores</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+      authDomain: "login-com-dados.firebaseapp.com",
+      projectId: "login-com-dados",
+      storageBucket: "login-com-dados.firebasestorage.app",
+      messagingSenderId: "75556023458",
+      appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+      measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ✅ VERIFICAÇÃO DE AUTENTICAÇÃO
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    // ✅ LOGOUT
+    document.getElementById('logout-button').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      });
+    });
+
+    // ✅ TOGGLE DO MENU LATERAL
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('closed');
+      mainContent.classList.toggle('expanded');
+    });
+
+    // ✅ NAVEGAÇÃO ENTRE SEÇÕES
+    const menuItems = document.querySelectorAll('.menu-item');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    menuItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Remove active de todos
+        menuItems.forEach(i => i.classList.remove('active'));
+        contentSections.forEach(s => s.classList.remove('active'));
+        
+        // Adiciona active no clicado
+        item.classList.add('active');
+        const sectionId = 'section-' + item.getAttribute('data-section');
+        document.getElementById(sectionId).classList.add('active');
+
+        // Fecha menu em mobile
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add('closed');
+          mainContent.classList.add('expanded');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/tema.css" /> 
+    
+    <style>
+        /* [Estilos CSS omitidos para brevidade, mantidos no original] */
+        .checklist-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9; 
+        }
+        .checklist-item {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1em;
+            margin-bottom: 0;
+            cursor: pointer; 
+        }
+        .checklist-header legend {
+            font-weight: bold;
+            color: #333;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+        .checklist-options {
+            display: flex;
+            gap: 15px; 
+        }
+        .checklist-options label {
+            font-weight: normal;
+            margin: 0;
+            cursor: pointer;
+        }
+        .checklist-options input[type="radio"] {
+            margin-right: 5px;
+        }
+        .descricao-problema {
+            margin-top: 10px;
+            width: calc(100% - 10px);
+            border-radius: 4px;
+            border: 1px solid #f44336; 
+            padding: 8px;
+            box-sizing: border-box;
+            background-color: #fffafa;
+            color: #333;
+        }
+        .descricao-problema::placeholder {
+            color: #f44336;
+        }
+    </style>
+        <title>FORMULARIO DE RECEBIMENTO - IRECÊ</title>
+
+</head>
+
+<body>
+    
+    <div class="fixed-nav">
+        <a href="menu.html" class="botao-menu">← Menu</a> 
+        <button id="logout-button">Sair</button>
+    </div>
+
+    <div class="logo-container">
+        <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
+    </div>
+
+    <div id="main-content" class="container">
+        <h2>FORMULARIO DE RECEBIMENTO - <span style="color: red;">IRECÊ</span></h2>
+        <form id="meu-formulario">
+            <div class="date-container">
+                <label for="dataderecebimento">Data de Recebimento:</label>
+                <input
+                    type="datetime-local"
+                    name="dataderecebimento"
+                    id="dataderecebimento"
+                    required
+                />
+            </div>
+            <label for="fornecedor">Fornecedor:</label>
+            <input type="text" name="fornecedor" id="fornecedor" required />
+            <label for="nf">Nota Fiscal:</label>
+            <input type="text" name="nf" id="nf" required />
+            <label for="produto">Produto:</label>
+            <input type="text" name="produto" id="produto" required />
+            <label for="quantidade">Embalagem Secundária:</label>
+            <input type="text" name="quantidade" id="quantidade" required />
+            <label for="quantidade2">Embalagem Primária:</label>
+            <input type="text" name="quantidade2" id="quantidade2" required />
+            <label for="lote">Lote:</label>
+            <input type="text" name="lote" id="lote" required />
+            <div class="date-container">
+                <label for="fabricacao">Fabricação:</label>
+                <input type="date" name="fabricacao" id="fabricacao" required />
+            </div>
+            <div class="date-container">
+                <label for="validade">Validade:</label>
+                <input type="date" name="validade" id="validade" required />
+            </div>
+            <label for="file">Escolha uma Imagem:</label>
+            <input type="file" name="file" id="file" accept="image/*" capture /> 
+
+            <label for="local">Local de Armazenamento:</label>
+            <select id="local" name="local" required>
+                <option value="">Selecione...</option>
+                <option value="01 - Matriz">01 - Matriz</option>
+                <option value="03 - Redistribuicao">03 - Redistribuicao</option>
+                <option value="04 - DP. Kasinski">04 - DP. Kasinski</option>
+                <option value="05 - Irece">05 - Irece</option>
+                <option value="08 - Agroexpress">08 - Agroexpress</option>
+                <option value="10 - Juazeiro">10 - Juazeiro</option>
+                <option value="12 - Grande Safra">12 - Grande Safra</option>
+                <option value="13 - Loteamento Recife">13 - Loteamento Recife</option>
+                <option value="14 - DP. Quati">14 - DP. Quati</option>
+                <option value="15 - DP Irece 01">15 - DP Irece 01</option>
+                <option value="16 - DP Irece 02">16 - DP Irece 02</option>
+                <option value="18 - Rio Real">18 - Rio Real</option>
+            </select>
+
+            <label>CheckList de Recebimento:</label>
+            <div class="checklist-container" id="checklist-recusa">
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>FALTA</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="faltaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="faltaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="faltaDescricao" name="faltaDescricao" placeholder="Descreva o problema de FALTA..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>AVARIA</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="avariaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="avariaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="avariaDescricao" name="avariaDescricao" placeholder="Descreva o problema de AVARIA..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>VENCIMENTO CURTO</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="vencimentoCurtoCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="vencimentoCurtoCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="vencimentoCurtoDescricao" name="vencimentoCurtoDescricao" placeholder="Descreva o problema de VENCIMENTO CURTO..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>NF DIVERGENCIA / CARGA</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="nfDivergenciaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="nfDivergenciaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="nfDivergenciaDescricao" name="nfDivergenciaDescricao" placeholder="Descreva o problema de NF DIVERGENCIA / CARGA..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+                <fieldset class="checklist-item">
+                    <div class="checklist-header">
+                        <legend>PRODUTO RECUSADO</legend>
+                        <div class="checklist-options">
+                            <label><input type="radio" name="recusaCheck" value="Sim" required> Sim</label>
+                            <label><input type="radio" name="recusaCheck" value="Não" checked> Não</label>
+                        </div>
+                    </div>
+                    <textarea id="recusaDescricao" name="recusaDescricao" placeholder="Motivo geral da recusa..." rows="2" class="descricao-problema" style="display: none;"></textarea>
+                </fieldset>
+                
+            </div>
+            
+            <div class="opcoes-grupo">
+            </div>
+            
+            <label for="obs">Observações Adicionais:</label>
+            <textarea id="obs" name="observacoes" rows="4"></textarea>
+            <input type="submit" value="Enviar Dados" />
+        </form>
+        <br>
+        <a href="/pesquisajua.html" class="botao-site" target="_blank"> 
+            Pesquisa detalhada
+        </a>
+        <div id="status" class="mensagem-status"></div>
+    </div>
+
+    <script type="module">
+    // Importa as funções modulares necessárias do Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    // SUAS CONFIGURAÇÕES FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+        authDomain: "login-com-dados.firebaseapp.com",
+        projectId: "login-com-dados",
+        storageBucket: "login-com-dados.firebasestorage.app",
+        messagingSenderId: "75556023458",
+        appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+        measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIysDh6E0RgwMK4UJ8WwQTdxu2eL8qeZ9p_0jg1hUSuqmTpdrCyVA-yn_3qTAmEqVX/exec";
+    const CLOUDINARY_CLOUD_NAME = "diro90s1u";
+    const CLOUDINARY_UPLOAD_PRESET = "produtos";
+
+    const formulario = document.getElementById("meu-formulario");
+    const statusDiv = document.getElementById("status");
+    const mainContent = document.getElementById("main-content");
+    const logoutButton = document.getElementById("logout-button");
+    const fileInput = document.getElementById("file"); 
+    const checklistRecusa = document.getElementById('checklist-recusa');
+
+    let usuarioLogadoEmail = '';
+    let linksAcumulados = []; 
+
+    // --- FUNÇÃO PARA MOSTRAR/OCULTAR CAIXAS DE TEXTO ---
+    function toggleDescricao(radioName, descricaoId) {
+        const simRadio = document.querySelector(`input[name="${radioName}"][value="Sim"]`);
+        const descricaoTextarea = document.getElementById(descricaoId);
+
+        if (simRadio.checked) {
+            descricaoTextarea.style.display = 'block';
+            descricaoTextarea.required = true; // Torna obrigatório se "Sim" estiver selecionado
+        } else {
+            descricaoTextarea.style.display = 'none';
+            descricaoTextarea.required = false;
+            descricaoTextarea.value = ''; // Limpa o valor
+        }
+    }
+
+    // --- LISTENER GERAL PARA O CHECKLIST ---
+    if (checklistRecusa) {
+        checklistRecusa.addEventListener('change', function(event) {
+            const name = event.target.name;
+            let descricaoId = '';
+
+            // Mapeia o nome do radio button para o ID da caixa de texto
+            if (name === 'faltaCheck') {
+                descricaoId = 'faltaDescricao';
+            } else if (name === 'avariaCheck') {
+                descricaoId = 'avariaDescricao';
+            } else if (name === 'vencimentoCurtoCheck') {
+                descricaoId = 'vencimentoCurtoDescricao';
+            } else if (name === 'nfDivergenciaCheck') {
+                descricaoId = 'nfDivergenciaDescricao';
+            } else if (name === 'recusaCheck') { 
+                descricaoId = 'recusaDescricao';
+            }
+            
+            if (descricaoId) {
+                toggleDescricao(name, descricaoId);
+            }
+        });
+    }
+
+    // --- LÓGICA DE AUTENTICAÇÃO (MANTIDA) ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            usuarioLogadoEmail = user.email;
+            mainContent.style.display = 'block'; 
+            logoutButton.style.display = 'inline-block'; 
+        } else {
+            window.location.href = 'index.html'; 
+        }
+    });
+    
+    // FUNCIONALIDADE DO BOTÃO DE SAIR (MANTIDA)
+    logoutButton.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error("Erro ao deslogar:", error);
+        });
+    });
+
+    // --- NOVA FUNÇÃO: UPLOAD IMEDIATO DE FOTO (MANTIDA) ---
+    async function uploadFotoImediato(arquivo) {
+        if (!arquivo) return;
+
+        statusDiv.textContent = `Enviando 1 foto para o Cloudinary...`;
+        statusDiv.className = "mensagem-status";
+
+        const dadosImagem = new FormData();
+        dadosImagem.append("file", arquivo);
+        dadosImagem.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        
+        try {
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                {
+                    method: "POST",
+                    body: dadosImagem,
+                }
+            );
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Erro no upload para o Cloudinary: ${errorData.error.message}`);
+            }
+            
+            const data = await response.json();
+            
+            // Armazena o link na variável global
+            linksAcumulados.push(data.secure_url); 
+            
+            // Atualiza o status
+            statusDiv.textContent = `Foto salva! ${linksAcumulados.length} foto(s) prontas para envio. Clique novamente para mais fotos.`;
+            statusDiv.className = "mensagem-status sucesso";
+            
+        } catch (error) {
+            statusDiv.textContent = `Erro ao salvar foto: ${error.message}`;
+            statusDiv.className = "mensagem-status erro";
+            console.error("Erro de upload:", error);
+        }
+    }
+    
+    // --- LISTENER PARA O CAMPO DE ARQUIVO (MANTIDO) ---
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            // Envia o arquivo assim que ele é selecionado (tirado da câmera)
+            uploadFotoImediato(this.files[0]); 
+        }
+        
+        // Limpa o valor do campo para que o usuário possa clicar e tirar a próxima foto
+        this.value = ''; 
+    });
+
+    // --- FUNÇÃO PARA CONVERTER TEXTO PARA MAIÚSCULAS ---
+    function toUpperCaseSafe(value) {
+        return typeof value === 'string' ? value.toUpperCase() : value;
+    }
+
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO (CONVERSÃO PARA MAIÚSCULAS) ---
+    formulario.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+    
+        if (!usuarioLogadoEmail) {
+            statusDiv.textContent = "ERRO: NENHUM USUÁRIO LOGADO. POR FAVOR, FAÇA O LOGIN.";
+            statusDiv.className = "mensagem-status erro";
+            return;
+        }
+    
+        if (linksAcumulados.length === 0) {
+            statusDiv.textContent = "POR FAVOR, TIRE OU SELECIONE PELO MENOS UMA IMAGEM.";
+            statusDiv.className = "mensagem-status erro";
+            return;
+        }
+
+        statusDiv.textContent = `SALVANDO DADOS DE ${linksAcumulados.length} FOTO(S) NA PLANILHA...`;
+        statusDiv.className = "mensagem-status";
+
+        // Cria um objeto temporário para coletar e converter todos os dados
+        const dadosRaw = {
+            // Campos de texto e seleção que DEVEM SER CONVERTIDOS
+            fornecedor: document.getElementById("fornecedor").value,
+            nf: document.getElementById("nf").value,
+            produto: document.getElementById("produto").value,
+            quantidade: document.getElementById("quantidade").value,
+            quantidade2: document.getElementById("quantidade2").value,
+            lote: document.getElementById("lote").value,
+            local: document.getElementById("local").value,
+            obs: document.getElementById("obs").value, // Observações
+            
+            // Campos de data (não devem ser convertidos para maiúsculas)
+            dataderecebimento: document.getElementById("dataderecebimento").value,
+            fabricacao: document.getElementById("fabricacao").value,
+            validade: document.getElementById("validade").value,
+            
+            // Links e Usuário
+            linksDasImagens: linksAcumulados.join(', '),
+            usuario: usuarioLogadoEmail,
+            
+            // Valores Sim/Não (Radio Buttons)
+            faltaValue: document.querySelector('input[name="faltaCheck"]:checked').value,
+            faltaDescricao: document.getElementById("faltaDescricao").value,
+            avariaValue: document.querySelector('input[name="avariaCheck"]:checked').value,
+            avariaDescricao: document.getElementById("avariaDescricao").value,
+            vencimentoCurtoValue: document.querySelector('input[name="vencimentoCurtoCheck"]:checked').value,
+            vencimentoCurtoDescricao: document.getElementById("vencimentoCurtoDescricao").value,
+            nfDivergenciaValue: document.querySelector('input[name="nfDivergenciaCheck"]:checked').value,
+            nfDivergenciaDescricao: document.getElementById("nfDivergenciaDescricao").value,
+            recusaValue: document.querySelector('input[name="recusaCheck"]:checked').value,
+            recusaDescricao: document.getElementById("recusaDescricao").value
+        };
+
+        // Cria o FormData final
+        const dadosFormulario = new FormData();
+        
+        // Converte e anexa campos de texto para MAIÚSCULAS
+        for (const key in dadosRaw) {
+            const value = dadosRaw[key];
+            // Exceções: datas, links, email de usuário e status (SIM/NÃO)
+            if (key.includes('data') || key.includes('links') || key === 'usuario' || key.includes('Value')) {
+                dadosFormulario.append(key, value);
+            } else {
+                dadosFormulario.append(key, toUpperCaseSafe(value));
+            }
+        }
+        
+        // Combina e formata os CheckLists (já convertidos para MAIÚSCULAS)
+        const formatarCheckList = (statusKey, descKey, appendName) => {
+            const status = toUpperCaseSafe(dadosRaw[statusKey]);
+            const descricao = toUpperCaseSafe(dadosRaw[descKey]);
+            dadosFormulario.append(appendName, `${status}${status === 'SIM' ? `: ${descricao}` : ''}`);
+        };
+
+        // Adiciona os campos combinados no formato final para o Apps Script
+        formatarCheckList('faltaValue', 'faltaDescricao', 'falta');
+        formatarCheckList('avariaValue', 'avariaDescricao', 'avaria');
+        formatarCheckList('vencimentoCurtoValue', 'vencimentoCurtoDescricao', 'vencimento_curto');
+        formatarCheckList('nfDivergenciaValue', 'nfDivergenciaDescricao', 'nf_divergencia');
+        formatarCheckList('recusaValue', 'recusaDescricao', 'recusa');
+
+
+        // Remove os campos separados de status e descrição (para não duplicar no Apps Script)
+        dadosFormulario.delete('faltaValue');
+        dadosFormulario.delete('faltaDescricao');
+        dadosFormulario.delete('avariaValue');
+        dadosFormulario.delete('avariaDescricao');
+        dadosFormulario.delete('vencimentoCurtoValue');
+        dadosFormulario.delete('vencimentoCurtoDescricao');
+        dadosFormulario.delete('nfDivergenciaValue');
+        dadosFormulario.delete('nfDivergenciaDescricao');
+        dadosFormulario.delete('recusaValue');
+        dadosFormulario.delete('recusaDescricao');
+
+
+        // Envia para o Google Apps Script
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: dadosFormulario,
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.resultado === "sucesso") {
+                statusDiv.textContent = "DADOS E LINKS DAS IMAGENS SALVOS COM SUCESSO!";
+                statusDiv.className = "mensagem-status sucesso";
+                formulario.reset();
+                linksAcumulados = []; // Limpa os links após o envio
+                
+                // Reseta os radio buttons e oculta/limpa as descrições após o envio
+                document.querySelector('input[name="faltaCheck"][value="Não"]').checked = true;
+                toggleDescricao('faltaCheck', 'faltaDescricao');
+
+                document.querySelector('input[name="avariaCheck"][value="Não"]').checked = true;
+                toggleDescricao('avariaCheck', 'avariaDescricao');
+
+                document.querySelector('input[name="vencimentoCurtoCheck"][value="Não"]').checked = true;
+                toggleDescricao('vencimentoCurtoCheck', 'vencimentoCurtoDescricao');
+
+                document.querySelector('input[name="nfDivergenciaCheck"][value="Não"]').checked = true;
+                toggleDescricao('nfDivergenciaCheck', 'nfDivergenciaDescricao');
+                
+                // RESET: PRODUTO RECUSADO
+                document.querySelector('input[name="recusaCheck"][value="Não"]').checked = true;
+                toggleDescricao('recusaCheck', 'recusaDescricao');
+
+            } else {
+                throw new Error(data.mensagem || "ERRO AO SALVAR NA PLANILHA.");
+            }
+        })
+        .catch((error) => {
+            console.error("Erro geral:", error);
+            statusDiv.textContent = `ERRO: ${error.message}`;
+            statusDiv.className = "mensagem-status erro";
+        });
+    });
+</script>
+</body>
+</html>
