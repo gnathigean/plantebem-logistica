@@ -110,7 +110,7 @@ color: #f44336;
   <input type="date" name="validade" id="validade" required />
 </div>
 <label for="file">Escolha uma Imagem:</label>
-<input type="file" id="arquivoImagem2" accept="image/*" capture="environment">
+ <input type="file" id="arquivoImagem2" accept="image/*">
 
 <label for="local">Local de Armazenamento:</label>
 <select id="local" name="local" required>
@@ -202,24 +202,6 @@ Pesquisa detalhada
  </a>
  <div id="status" class="mensagem-status"></div>
   </div>
-<script>
-    // Você pode usar uma única função JavaScript para lidar com o arquivo
-    document.getElementById('arquivoImagem').addEventListener('change', function(event) {
-        const arquivo = event.target.files[0];
-        if (arquivo) {
-            // Lógica para processar o arquivo, seja ele da galeria ou da câmera
-            console.log("Arquivo selecionado/capturado:", arquivo.name, "Tipo:", arquivo.type);
-            
-            // Exemplo: Mostrar a imagem
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                // Aqui você pode exibir a imagem na tela
-                // Ex: document.getElementById('preview-img').src = e.target.result;
-            }
-            reader.readAsDataURL(arquivo);
-        }
-    });
-</script>
 
 <script type="module">
   // Importa as funções modulares necessárias do Firebase
