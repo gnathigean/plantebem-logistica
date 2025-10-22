@@ -110,7 +110,7 @@ color: #f44336;
   <input type="date" name="validade" id="validade" required />
 </div>
 <label for="file">Escolha uma Imagem:</label>
- <input type="file" id="arquivoImagem2" accept="image/*">
+<input type="file" name="file" id="file" accept="image/*"> 
 
 <label for="local">Local de Armazenamento:</label>
 <select id="local" name="local" required>
@@ -203,7 +203,7 @@ Pesquisa detalhada
  <div id="status" class="mensagem-status"></div>
   </div>
 
-<script type="module">
+  <script type="module">
   // Importa as funções modulares necessárias do Firebase
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
