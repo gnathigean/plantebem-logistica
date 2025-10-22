@@ -216,6 +216,26 @@
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .search-wrapper { flex-direction: column; }
     }
+    /* NOVO ESTILO PARA O SELETOR DE PÁGINAS */
+.warehouse-selector {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 44px; /* Garante alinhamento com os botões */
+}
+.warehouse-selector:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+/* E ajustei a propriedade align-items no .top-header-actions para alinhar: */
+.top-header-actions { display: flex; gap: 10px; align-items: center; }
   </style>
 </head>
 <body>
@@ -284,6 +304,16 @@
           <div class="page-title">🗺️ Mapa do Depósito - FERTILIZANTES</div>
         </div>
         <div class="top-header-actions">
+          <div class="top-header-actions">
+    
+    <select id="warehouse-selector" class="warehouse-selector" onchange="window.location.href=this.value">
+       <option value="#" selected disabled>📍 Selecionar Estoque</option>
+        <option value="mapa-estoque.html">Mapa Defensivos</option>
+        </select>
+
+    <div class="export-menu">
+        </div>
+    </div>
           <div class="export-menu">
             <button id="btn-export" class="btn-header btn-export">📥 Exportar</button>
             <div class="export-dropdown" id="export-dropdown">
