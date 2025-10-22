@@ -69,9 +69,9 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>🔍 Buscar Produtos - Deposito Defensivos</h1>
+      <h1>🔍 Buscar Produtos - Deposito Fertilizantes</h1>
       <div class="header-buttons">
-        <a href="mapa-estoque.html" class="btn btn-back">← Voltar ao Mapa</a>
+        <a href="mapa-deposito.html" class="btn btn-back">← Voltar ao Mapa</a>
         <button id="logout-button" class="btn btn-logout">Sair</button>
       </div>
     </div>
@@ -154,7 +154,7 @@ Sal Mineral"></textarea>
 
     async function carregarProdutos() {
       try {
-        const q = query(collection(db, 'estoque'), orderBy('criadoEm', 'desc'));
+        const q = query(collection(db, 'deposito'), orderBy('criadoEm', 'desc'));
         const snapshot = await getDocs(q);
         todosOsProdutos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         mostrarMensagemInicial();
