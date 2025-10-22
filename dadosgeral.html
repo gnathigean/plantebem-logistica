@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dados da Planilha - Visualização Organizada</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 15px;
+    min-height: 100vh;
+  }
+  
+  .container {
+    max-width: 95%;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  
+  /* CABEÇALHO */
+  .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    text-align: center;
+  }
+  
+  .header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  /* BUSCA */
+  .search-container {
+    padding: 20px 30px 10px 30px;
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+  }
+  
+  .search-wrapper {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .search-container input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    font-size: 15px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    transition: all 0.3s;
+    background: white;
+  }
+  
+  .search-container input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #667eea;
+    font-size: 18px;
+  }
+  
+  /* SISTEMA DE ABAS */
+  .tabs-container {
+    display: flex;
+    background: #f8f9fa;
+    padding: 10px 20px 0 20px;
+    overflow-x: auto;
+    border-bottom: 2px solid #dee2e6;
+    gap: 5px;
+  }
+  
+  .tabs-container::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .tabs-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .tabs-container::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+  }
+  
+  .tab-button {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-bottom: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+    border-radius: 8px 8px 0 0;
+    white-space: nowrap;
+    color: #495057;
+  }
+  
+  .tab-button:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+  }
+  
+  .tab-button.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    transform: translateY(0);
+  }
+  
+  /* CONTEÚDO DAS ABAS */
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-in;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  @keyframes fadeIn {
+    from { 
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* INFORMAÇÕES DA ABA */
+  .tab-info {
+    padding: 15px 30px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .tab-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #495057;
+  }
+  
+  .tab-info-item strong {
+    color: #667eea;
+  }
+  
+  /* TABELA */
+  .tabela-wrapper {
+    overflow-x: auto;
+    padding: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+  
+  .tabela-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .tabela-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .tabela-wrapper::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+    background: white;
+  }
+  
+  th {
+    background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+    color: white;
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
+    border-bottom: 2px solid #5a67d8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  th:first-child {
+    border-radius: 8px 0 0 0;
+  }
+  
+  th:last-child {
+    border-radius: 0 8px 0 0;
+  }
+  
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef;
+    color: #495057;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  td:hover {
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  
+  tr {
+    transition: background-color 0.2s;
+  }
+  
+  tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+  
+  tbody tr:nth-child(even):hover {
+    background-color: #f1f3f5;
+  }
+  
+  /* LINKS */
+  td a {
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  
+  td a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  /* LOADING E MENSAGENS */
+  #loading {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 16px;
+    color: #667eea;
+    font-weight: 500;
+  }
+  
+  .error-message {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  
+  .empty-message {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-size: 15px;
+  }
+  
+  /* BADGES E INDICADORES */
+  .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #667eea;
+    color: white;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  
+  /* RESPONSIVO */
+  @media (max-width: 768px) {
+    body {
+      padding: 10px;
+    }
+    
+    .header h1 {
+      font-size: 20px;
+    }
+    
+    .tabs-container {
+      padding: 10px 10px 0 10px;
+    }
+    
+    .tab-button {
+      font-size: 13px;
+      padding: 8px 15px;
+    }
+    
+    .tabela-wrapper {
+      padding: 10px;
+      max-height: 500px;
+    }
+    
+    table {
+      font-size: 12px;
+    }
+    
+    th, td {
+      padding: 8px 6px;
+      font-size: 12px;
+    }
+    
+    .tab-info {
+      padding: 10px 15px;
+      font-size: 12px;
+    }
+    
+    .search-container {
+      padding: 15px;
+    }
+  }
+  
+  /* ANIMAÇÃO DE CARREGAMENTO */
+  .spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- CABEÇALHO -->
+  <div class="header">
+    <h1>📊 Sistema de Visualização de Dados</h1>
+  </div>
+  
+  <!-- BUSCA -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <input type="text" id="searchInput" placeholder="Pesquisar em todos os campos...">
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+  
+  <!-- ABAS -->
+  <div class="tabs-container" id="tabsContainer">
+    <!-- Abas geradas dinamicamente -->
+  </div>
+  
+  <!-- LOADING -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Carregando dados da planilha...</p>
+  </div>
+  
+  <!-- CONTEÚDO DAS ABAS -->
+  <div id="tabsContent">
+    <!-- Conteúdo gerado dinamicamente -->
+  </div>
+</div>
+
+<script>
+  // ========================================
+  // CONFIGURAÇÃO
+  // ========================================
+  
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLStAEVzVTEQbBcy8_TCFscABUy5rM1n-CNM4fiABnQ3vGeB-4a_uss8P7rQm2iuUE/exec';
+  
+  // ========================================
+  // VARIÁVEIS GLOBAIS
+  // ========================================
+  
+  let allSheetsData = {};
+  let currentTab = '';
+  let currentFilteredData = [];
+  
+  const loadingMessage = document.getElementById('loading');
+  const searchInput = document.getElementById('searchInput');
+  const tabsContainer = document.getElementById('tabsContainer');
+  const tabsContent = document.getElementById('tabsContent');
+  
+  // ========================================
+  // BUSCAR DADOS DA PLANILHA
+  // ========================================
+  
+  async function fetchAllSheetsData() {
+    try {
+      const response = await fetch(APPS_SCRIPT_URL);
+      
+      if (!response.ok) {
+        throw new Error('Erro ao conectar com o servidor: ' + response.statusText);
+      }
+      
+      const data = await response.json();
+      allSheetsData = data;
+      
+      loadingMessage.style.display = 'none';
+      createTabs();
+      
+    } catch(error) {
+      loadingMessage.innerHTML = `
+        <div class="error-message">
+          ❌ <strong>Erro ao carregar dados:</strong><br>
+          ${error.message}<br><br>
+          Verifique se a URL do Apps Script está correta e se você tem permissão de acesso.
+        </div>
+      `;
+      console.error('Erro completo:', error);
+    }
+  }
+  
+  // ========================================
+  // CRIAR ABAS
+  // ========================================
+  
+  function createTabs() {
+    tabsContainer.innerHTML = '';
+    tabsContent.innerHTML = '';
+    
+    const sheetNames = Object.keys(allSheetsData);
+    
+    if (sheetNames.length === 0) {
+      tabsContent.innerHTML = '<div class="empty-message">Nenhuma aba encontrada na planilha.</div>';
+      return;
+    }
+    
+    sheetNames.forEach((sheetName, index) => {
+      // Criar botão da aba
+      const tabButton = document.createElement('button');
+      tabButton.className = 'tab-button';
+      tabButton.textContent = sheetName;
+      tabButton.onclick = () => switchTab(sheetName);
+      
+      if (index === 0) {
+        tabButton.classList.add('active');
+        currentTab = sheetName;
+      }
+      
+      tabsContainer.appendChild(tabButton);
+      
+      // Criar conteúdo da aba
+      const tabContentDiv = document.createElement('div');
+      tabContentDiv.className = 'tab-content';
+      tabContentDiv.id = `tab-${sanitizeId(sheetName)}`;
+      
+      if (index === 0) {
+        tabContentDiv.classList.add('active');
+      }
+      
+      tabContentDiv.innerHTML = `
+        <div class="tab-info" id="info-${sanitizeId(sheetName)}">
+          <div class="tab-info-item">
+            <span>📄</span>
+            <span><strong>Aba:</strong> ${sheetName}</span>
+          </div>
+          <div class="tab-info-item">
+            <span>📊</span>
+            <span><strong>Registros:</strong> <span class="badge" id="count-${sanitizeId(sheetName)}">0</span></span>
+          </div>
+        </div>
+        <div class="tabela-wrapper">
+          <table id="table-${sanitizeId(sheetName)}">
+            <thead><tr></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      `;
+      
+      tabsContent.appendChild(tabContentDiv);
+    });
+    
+    renderTable(currentTab);
+  }
+  
+  // ========================================
+  // TROCAR ABA
+  // ========================================
+  
+  function switchTab(sheetName) {
+    currentTab = sheetName;
+    searchInput.value = '';
+    
+    // Atualizar botões
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.textContent === sheetName) {
+        btn.classList.add('active');
+      }
+    });
+    
+    // Atualizar conteúdo
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    
+    const activeContent = document.getElementById(`tab-${sanitizeId(sheetName)}`);
+    if (activeContent) {
+      activeContent.classList.add('active');
+    }
+    
+    renderTable(sheetName);
+  }
+  
+  // ========================================
+  // RENDERIZAR TABELA
+  // ========================================
+  
+  function renderTable(sheetName, filterTerm = '') {
+    const data = allSheetsData[sheetName];
+    
+    if (!data || data.length === 0) {
+      const tableId = `table-${sanitizeId(sheetName)}`;
+      const table = document.getElementById(tableId);
+      if (table) {
+        table.parentElement.innerHTML = '<div class="empty-message">Nenhum dado disponível nesta aba.</div>';
+      }
+      return;
+    }
+    
+    const tableId = `table-${sanitizeId(sheetName)}`;
+    const table = document.getElementById(tableId);
+    
+    if (!table) return;
+    
+    const thead = table.querySelector('thead tr');
+    const tbody = table.querySelector('tbody');
+    
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+    
+    const headers = Object.keys(data[0]);
+    
+    // Criar cabeçalhos
+    headers.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      th.title = header;
+      thead.appendChild(th);
+    });
+    
+    // Filtrar dados
+    let dataToRender = data;
+    if (filterTerm) {
+      dataToRender = data.filter(row => {
+        return Object.values(row).some(value => {
+          return String(value).toLowerCase().includes(filterTerm.toLowerCase());
+        });
+      });
+    }
+    
+    currentFilteredData = dataToRender;
+    
+    // Atualizar contador
+    const countBadge = document.getElementById(`count-${sanitizeId(sheetName)}`);
+    if (countBadge) {
+      countBadge.textContent = dataToRender.length;
+    }
+    
+    // Criar linhas
+    if (dataToRender.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="' + headers.length + '" style="text-align: center; padding: 40px; color: #6c757d;">Nenhum resultado encontrado para a busca.</td></tr>';
+      return;
+    }
+    
+    dataToRender.forEach(rowData => {
+      const tr = document.createElement('tr');
+      
+      headers.forEach(header => {
+        const td = document.createElement('td');
+        let value = rowData[header];
+        
+        // Detectar e tratar valores vazios
+        if (value === null || value === undefined || value === '') {
+          td.textContent = '-';
+          td.style.color = '#adb5bd';
+        }
+        // Detectar URLs e criar links
+        else if (isURL(value)) {
+          const links = String(value).split(',').map(link => link.trim());
+          
+          links.forEach((link, index) => {
+            if (isURL(link)) {
+              const a = document.createElement('a');
+              a.href = link;
+              a.textContent = `📎 Arquivo ${links.length > 1 ? index + 1 : ''}`;
+              a.target = '_blank';
+              td.appendChild(a);
+            }
+          });
+        } 
+        // Formatar datas
+        else if (header.toLowerCase().includes('data') || 
+                 header.toLowerCase().includes('validade') ||
+                 header.toLowerCase().includes('fabricação')) {
+          value = formatDate(value);
+          td.textContent = value;
+        }
+        // Texto normal
+        else {
+          td.textContent = value;
+          td.title = value;
+        }
+        
+        tr.appendChild(td);
+      });
+      
+      tbody.appendChild(tr);
+    });
+  }
+  
+  // ========================================
+  // FUNÇÕES AUXILIARES
+  // ========================================
+  
+  function sanitizeId(str) {
+    return String(str).replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '');
+  }
+  
+  function isURL(str) {
+    try {
+      new URL(str);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString;
+    }
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  
+  // ========================================
+  // EVENTO: BUSCA
+  // ========================================
+  
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value;
+    renderTable(currentTab, searchTerm);
+  });
+  
+  // ========================================
+  // INICIALIZAR
+  // ========================================
+  
+  fetchAllSheetsData();
+</script>
+
+</body>
+</html>
