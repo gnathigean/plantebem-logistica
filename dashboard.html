@@ -1,1058 +1,1661 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Recebimento - GERAL</title>
-  <link rel="stylesheet" href="/tema.css"> 
-  
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Executivo - Sistema de Recebimento</title>
+<link rel="stylesheet" href="/tema.css">
 
-  <style>
-    /* ===== ESTILOS MELHORADOS ===== */
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+    --success-color: #38a169;
+    --warning-color: #dd6b20;
+    --danger-color: #e53e3e;
+    --info-color: #3182ce;
+    --neutral-color: #718096;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.92) 0%, rgba(118, 75, 162, 0.92) 100%),
+                url('https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80');
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .dashboard-wrapper {
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+
+  /* ========== BARRA DE NAVEGAÇÃO SUPERIOR ========== */
+  .top-bar {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .logo-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+  }
+
+  .logo-text p {
+    font-size: 12px;
+    color: #718096;
+    margin: 0;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .time-badge {
+    padding: 10px 16px;
+    background: #f7fafc;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #4a5568;
+    font-weight: 600;
+  }
+
+  .btn-action {
+    padding: 11px 22px;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  }
+
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+  }
+
+  .btn-action:active {
+    transform: translateY(0);
+  }
+
+  /* ========== FILTROS AVANÇADOS ========== */
+  .filters-panel {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .filters-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-reset-filters {
+    padding: 8px 16px;
+    background: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-reset-filters:hover {
+    background: #cbd5e0;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-select {
+    padding: 12px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2d3748;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .filter-select:hover {
+    border-color: #cbd5e0;
+  }
+
+  .filter-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  /* ========== CARDS KPI EXECUTIVOS ========== */
+  .kpi-executive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-executive-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .kpi-executive-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-gradient);
+  }
+
+  .kpi-executive-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.12);
+  }
+
+  .kpi-exec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .kpi-exec-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  }
+
+  .kpi-exec-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .kpi-exec-trend.positive {
+    background: #c6f6d5;
+    color: #22543d;
+  }
+
+  .kpi-exec-trend.negative {
+    background: #fed7d7;
+    color: #742a2a;
+  }
+
+  .kpi-exec-trend.neutral {
+    background: #feebc8;
+    color: #7c2d12;
+  }
+
+  .kpi-exec-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-exec-value {
+    font-size: 40px;
+    font-weight: 800;
+    color: #1a202c;
+    line-height: 1;
+    margin-bottom: 8px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .kpi-exec-subtitle {
+    font-size: 13px;
+    color: #a0aec0;
+    font-weight: 500;
+  }
+
+  .kpi-exec-footer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .kpi-exec-comparison {
+    font-size: 12px;
+    color: #718096;
+  }
+
+  .kpi-exec-comparison strong {
+    color: #2d3748;
+    font-weight: 700;
+  }
+
+  /* ========== ALERTAS CRÍTICOS EXECUTIVOS ========== */
+  .critical-alerts-section {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f7fafc;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-badge {
+    padding: 6px 12px;
+    background: #fed7d7;
+    color: #c53030;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .alerts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .alert-card-executive {
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s;
+  }
+
+  .alert-card-executive:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .alert-card-executive.critical {
+    border-color: #e53e3e;
+    background: linear-gradient(135deg, #fff5f5 0%, white 100%);
+  }
+
+  .alert-card-executive.warning {
+    border-color: #dd6b20;
+    background: linear-gradient(135deg, #fffaf0 0%, white 100%);
+  }
+
+  .alert-card-executive.info {
+    border-color: #3182ce;
+    background: linear-gradient(135deg, #ebf8ff 0%, white 100%);
+  }
+
+  .alert-header-exec {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .alert-icon-exec {
+    font-size: 28px;
+  }
+
+  .alert-title-exec {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a202c;
+  }
+
+  .alert-message-exec {
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .alert-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .alert-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  /* ========== PROBLEMAS IDENTIFICADOS ========== */
+  .problems-executive-section {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .problems-grid-exec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .problem-card-exec {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 4px solid;
+  }
+
+  .problem-card-exec:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .problem-card-exec.falta { border-color: #e53e3e; }
+  .problem-card-exec.avaria { border-color: #dd6b20; }
+  .problem-card-exec.vencimento { border-color: #ecc94b; }
+  .problem-card-exec.nf-divergente { border-color: #3182ce; }
+  .problem-card-exec.recusado { border-color: #805ad5; }
+
+  .problem-icon-exec {
+    font-size: 42px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .problem-label-exec {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #718096;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .problem-value-exec {
+    font-size: 48px;
+    font-weight: 800;
+    color: #1a202c;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .problem-percentage-exec {
+    font-size: 14px;
+    color: #a0aec0;
+    font-weight: 600;
+  }
+
+  .problem-mini-chart {
+    margin-top: 16px;
+    height: 40px;
+    background: #f7fafc;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem-mini-chart-fill {
+    height: 100%;
+    background: var(--primary-gradient);
+    transition: width 0.8s ease;
+    border-radius: 8px;
+  }
+
+  /* ========== VALIDADES POR LOJA - ENTERPRISE LEVEL ========== */
+  .validades-enterprise-section {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .lojas-grid-enterprise {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+  }
+
+  .loja-card-enterprise {
+    background: white;
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+  }
+
+  .loja-card-enterprise:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.15);
+  }
+
+  .loja-card-enterprise.status-critical {
+    border-color: #e53e3e;
+    background: linear-gradient(135deg, #fff5f5 0%, white 100%);
+  }
+
+  .loja-card-enterprise.status-warning {
+    border-color: #dd6b20;
+    background: linear-gradient(135deg, #fffaf0 0%, white 100%);
+  }
+
+  .loja-card-enterprise.status-ok {
+    border-color: #38a169;
+    background: linear-gradient(135deg, #f0fff4 0%, white 100%);
+  }
+
+  .loja-header-enterprise {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f7fafc;
+  }
+
+  .loja-name-enterprise {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .loja-status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .loja-status-badge.critical {
+    background: #fed7d7;
+    color: #c53030;
+  }
+
+  .loja-status-badge.warning {
+    background: #feebc8;
+    color: #c05621;
+  }
+
+  .loja-status-badge.ok {
+    background: #c6f6d5;
+    color: #22543d;
+  }
+
+  .loja-stats-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .stat-item-enterprise {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f7fafc;
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+
+  .stat-item-enterprise:hover {
+    background: #edf2f7;
+    transform: translateX(4px);
+  }
+
+  .stat-label-enterprise {
+    font-size: 13px;
+    color: #4a5568;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stat-value-enterprise {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a202c;
+  }
+
+  .stat-value-enterprise.critical { color: #e53e3e; }
+  .stat-value-enterprise.warning { color: #dd6b20; }
+  .stat-value-enterprise.ok { color: #38a169; }
+
+  .stat-highlight {
+    background: var(--primary-gradient);
+    color: white;
+  }
+
+  .stat-highlight .stat-label-enterprise {
+    color: white;
+    font-weight: 700;
+  }
+
+  .stat-highlight .stat-value-enterprise {
+    color: white;
+  }
+
+  /* ========== TABELA PROFISSIONAL ========== */
+  .table-enterprise-section {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .table-wrapper-enterprise {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .table-wrapper-enterprise::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .table-wrapper-enterprise::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 10px;
+  }
+
+  .table-wrapper-enterprise::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 10px;
+  }
+
+  .table-enterprise {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table-enterprise thead th {
+    position: sticky;
+    top: 0;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    z-index: 10;
+    white-space: nowrap;
+  }
+
+  .table-enterprise thead th:first-child {
+    border-radius: 12px 0 0 0;
+  }
+
+  .table-enterprise thead th:last-child {
+    border-radius: 0 12px 0 0;
+  }
+
+  .table-enterprise tbody td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f7fafc;
+    font-size: 14px;
+    color: #2d3748;
+    font-weight: 500;
+  }
+
+  .table-enterprise tbody tr {
+    transition: all 0.2s;
+  }
+
+  .table-enterprise tbody tr:hover {
+    background: #f7fafc;
+  }
+
+  .table-enterprise tbody tr.row-critical {
+    background: linear-gradient(90deg, #fff5f5 0%, white 100%);
+  }
+
+  .table-enterprise tbody tr.row-critical:hover {
+    background: linear-gradient(90deg, #fed7d7 0%, #fff5f5 100%);
+  }
+
+  .status-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .status-pill.vencido {
+    background: #fed7d7;
+    color: #c53030;
+  }
+
+  .status-pill.critico {
+    background: #feebc8;
+    color: #c05621;
+  }
+
+  .status-pill.atencao {
+    background: #fefcbf;
+    color: #975a16;
+  }
+
+  .status-pill.monitorar {
+    background: #bee3f8;
+    color: #2c5282;
+  }
+
+  /* ========== LOADING PROFISSIONAL ========== */
+  .loading-overlay-exec {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+  }
+
+  .loading-content-exec {
+    text-align: center;
+    color: white;
+  }
+
+  .spinner-exec {
+    width: 70px;
+    height: 70px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid white;
+    border-radius: 50%;
+    animation: spin-exec 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+    margin: 0 auto 25px;
+  }
+
+  @keyframes spin-exec {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text-exec {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .loading-subtext-exec {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  /* ========== RESPONSIVO ========== */
+  @media (max-width: 1200px) {
+    .kpi-executive-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     }
-    
-    .kpi-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      color: white;
-      transition: transform 0.3s ease;
-    }
-    
-    .kpi-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-    
-    .kpi-title {
-      font-size: 0.85em;
-      color: rgba(255, 255, 255, 0.9);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    
-    .kpi-value {
-      font-size: 2.2em;
-      font-weight: bold;
-      color: #fff;
-    }
-    
-    .kpi-card.danger {
-      background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
-    }
-    
-    .kpi-card.success {
-      background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
-    }
-    
-    .kpi-card.warning {
-      background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
-    }
-    
-    .kpi-card.info {
-      background: linear-gradient(135deg, #2196f3 0%, #03a9f4 100%);
-    }
-    
-    .insights-section {
-      background-color: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      margin-bottom: 25px;
-    }
-    
-    .insights-section h3 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 1.4em;
-      border-bottom: 3px solid #667eea;
-      padding-bottom: 10px;
-    }
-    
-    .chart-container {
-      height: 400px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .filter-controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
-    
-    .filter-controls select {
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1em;
-      transition: border-color 0.3s ease;
-    }
-    
-    .filter-controls select:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    .ranking-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    
-    .ranking-table th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 12px;
-      text-align: left;
-      font-weight: 600;
-    }
-    
-    .ranking-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .ranking-table tr:hover {
-      background-color: #f8f9fa;
-    }
-    
-    .trend-indicator {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.85em;
-      font-weight: 600;
-    }
-    
-    .trend-up {
-      background-color: #e8f5e9;
-      color: #4caf50;
-    }
-    
-    .trend-down {
-      background-color: #ffebee;
-      color: #f44336;
-    }
-    
-    /* Loading Animation */
-    .loading-spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 10px;
     }
 
-    /* ===== ESTILOS PARA MÉTRICAS POR LOJA ===== */
-    .lojas-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+    .top-bar {
+      padding: 16px 20px;
     }
 
-    .loja-card {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .logo-text h1 {
+      font-size: 18px;
     }
 
-    .loja-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    .kpi-executive-grid {
+      grid-template-columns: 1fr;
     }
 
-    .loja-card.excelente {
-      background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
-      color: white;
+    .problems-grid-exec {
+      grid-template-columns: 1fr;
     }
 
-    .loja-card.bom {
-      background: linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%);
-      color: white;
+    .lojas-grid-enterprise {
+      grid-template-columns: 1fr;
     }
 
-    .loja-card.atencao {
-      background: linear-gradient(135deg, #ffd89b 0%, #ff9a56 100%);
-      color: white;
+    .kpi-exec-value {
+      font-size: 32px;
     }
 
-    .loja-card.critico {
-      background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
-      color: white;
+    .problem-value-exec {
+      font-size: 36px;
     }
 
-    .loja-card-header {
-      font-size: 1.4em;
-      font-weight: bold;
-      margin-bottom: 15px;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-      padding-bottom: 10px;
+    .filters-grid {
+      grid-template-columns: 1fr;
     }
-
-    .loja-card-metric {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      font-size: 0.95em;
-    }
-
-    .loja-card-metric-label {
-      opacity: 0.9;
-    }
-
-    .loja-card-metric-value {
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85em;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .status-excelente {
-      background-color: #4caf50;
-      color: white;
-    }
-
-    .status-bom {
-      background-color: #2196f3;
-      color: white;
-    }
-
-    .status-atencao {
-      background-color: #ff9800;
-      color: white;
-    }
-
-    .status-critico {
-      background-color: #f44336;
-      color: white;
-    }
-
-    /* Responsividade móvel */
-    @media (max-width: 600px) {
-      .dashboard-container, .filter-controls, .lojas-grid {
-        grid-template-columns: 1fr;
-      }
-      .kpi-value {
-        font-size: 1.8em;
-      }
-      .chart-container {
-        height: 300px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
+<!-- ========== LOADING SCREEN ========== -->
+<div id="loading" class="loading-overlay-exec">
+  <div class="loading-content-exec">
+    <div class="spinner-exec"></div>
+    <div class="loading-text-exec">Carregando Dashboard Executivo</div>
+    <div class="loading-subtext-exec">Processando dados em tempo real...</div>
+  </div>
+</div>
+
+<!-- ========== NAVEGAÇÃO ========== -->
 <div class="fixed-nav">
-  <a id="menu-button" class="botao-menu" href="menu.html">← Menu</a> 
+  <a href="menu.html" class="botao-menu">← Menu</a>
   <button id="logout-button">Sair</button>
 </div>
 
-<div class="logo-container">
-  <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
-</div>
-
-<div class="container"> 
-  <h2>DASHBOARD DE RECEBIMENTO - <span style="color: red;">GERAL</span></h2>
-
-  <div id="loading-dashboard">
-    <p>Carregando dados das lojas...</p>
-    <div class="loading-spinner"></div>
-  </div>
+<div class="dashboard-wrapper">
   
-  <div class="filter-controls" id="filter-controls" style="display: none;">
-    <select id="loja-filter">
-      <option value="TODAS">TODAS AS LOJAS</option>
-    </select>
-    <select id="fornecedor-filter">
-      <option value="TODOS">TODOS OS FORNECEDORES</option>
-    </select>
-    <select id="produto-filter">
-      <option value="TODOS">TODOS OS PRODUTOS</option>
-    </select>
-    <select id="periodo-filter">
-      <option value="TODOS">TODOS OS PERÍODOS</option>
-      <option value="7">Últimos 7 dias</option>
-      <option value="30">Últimos 30 dias</option>
-      <option value="90">Últimos 90 dias</option>
-    </select>
-  </div>
-
-  <!-- KPIs Principais -->
-  <div class="dashboard-container" id="kpi-display" style="display: none;">
-    <div class="kpi-card info">
-      <div class="kpi-title">TOTAL DE REGISTROS</div>
-      <div class="kpi-value" id="kpi-registros">0</div>
+  <!-- ========== BARRA SUPERIOR ========== -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="logo-section">
+        <div class="logo-icon">📊</div>
+        <div class="logo-text">
+          <h1>Dashboard Executivo</h1>
+          <p>Sistema de Gestão de Recebimento</p>
+        </div>
+      </div>
     </div>
-    
-    <div class="kpi-card danger">
-      <div class="kpi-title">TOTAL RECUSADO</div>
-      <div class="kpi-value" id="kpi-recusado">0</div>
-    </div>
-    
-    <div class="kpi-card warning">
-      <div class="kpi-title">TAXA DE RECUSA</div>
-      <div class="kpi-value" id="kpi-taxa">0.0%</div>
-    </div>
-    
-    <div class="kpi-card success">
-      <div class="kpi-title">MÉDIA DE DIAS P/ VENCIMENTO</div>
-      <div class="kpi-value" id="kpi-validade">N/A</div>
-    </div>
-    
-    <div class="kpi-card info">
-      <div class="kpi-title">TOTAL DE FORNECEDORES</div>
-      <div class="kpi-value" id="kpi-fornecedores">0</div>
-    </div>
-    
-    <div class="kpi-card warning">
-      <div class="kpi-title">PRODUTOS DISTINTOS</div>
-      <div class="kpi-value" id="kpi-produtos">0</div>
+    <div class="top-bar-right">
+      <div class="time-badge" id="current-time">
+        🕒 Carregando...
+      </div>
+      <button class="btn-action" onclick="location.reload()">
+        🔄 Atualizar
+      </button>
+      <button class="btn-action" onclick="window.print()">
+        📄 Exportar
+      </button>
     </div>
   </div>
-  
-  <div id="insights-container" style="display: none;">
-    
-    <!-- NOVA SEÇÃO: Comparativo por Loja -->
-    <div class="insights-section" id="comparativo-lojas" style="display: none;">
-      <h3>🏢 Comparativo de Desempenho por Loja</h3>
-      <div id="bar-chart-lojas" class="chart-container"></div>
-    </div>
 
-    <!-- NOVA SEÇÃO: Ranking de Lojas -->
-    <div class="insights-section" id="ranking-lojas-section" style="display: none;">
-      <h3>🏆 Ranking de Lojas por Taxa de Recusa</h3>
-      <table class="ranking-table" id="ranking-lojas">
+  <!-- ========== FILTROS AVANÇADOS ========== -->
+  <div class="filters-panel">
+    <div class="filters-header">
+      <div class="filters-title">
+        🎯 Filtros Avançados
+      </div>
+      <button class="btn-reset-filters" onclick="resetFilters()">
+        ↻ Limpar Filtros
+      </button>
+    </div>
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label class="filter-label">🏢 Loja</label>
+        <select id="filter-loja" class="filter-select">
+          <option value="all">Todas as Lojas</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">📦 Fornecedor</label>
+        <select id="filter-fornecedor" class="filter-select">
+          <option value="all">Todos os Fornecedores</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">📅 Período</label>
+        <select id="filter-periodo" class="filter-select">
+          <option value="all">Todos os Períodos</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="30">Últimos 30 dias</option>
+          <option value="90">Últimos 90 dias</option>
+          <option value="180">Últimos 6 meses</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">⚠️ Status</label>
+        <select id="filter-status" class="filter-select">
+          <option value="all">Todos os Status</option>
+          <option value="critico">Apenas Críticos</option>
+          <option value="alerta">Alertas</option>
+          <option value="normal">Normal</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== KPIs EXECUTIVOS ========== -->
+  <div class="kpi-executive-grid" id="kpi-container">
+    <!-- KPIs serão inseridos aqui -->
+  </div>
+
+  <!-- ========== ALERTAS CRÍTICOS ========== -->
+  <div class="critical-alerts-section" id="alerts-section" style="display: none;">
+    <div class="section-header">
+      <div class="section-title">
+        🚨 Alertas Críticos
+        <span class="section-badge" id="alerts-count">0</span>
+      </div>
+    </div>
+    <div class="alerts-grid" id="alerts-container">
+      <!-- Alertas serão inseridos aqui -->
+    </div>
+  </div>
+
+  <!-- ========== PROBLEMAS IDENTIFICADOS ========== -->
+  <div class="problems-executive-section">
+    <div class="section-header">
+      <div class="section-title">
+        ⚠️ Problemas Identificados
+      </div>
+    </div>
+    <div class="problems-grid-exec" id="problems-container">
+      <!-- Problemas serão inseridos aqui -->
+    </div>
+  </div>
+
+  <!-- ========== VALIDADES POR LOJA ========== -->
+  <div class="validades-enterprise-section">
+    <div class="section-header">
+      <div class="section-title">
+        🔴 Produtos com Validade Menor que 1 Ano por Loja
+      </div>
+    </div>
+    <div class="lojas-grid-enterprise" id="lojas-container">
+      <!-- Lojas serão inseridas aqui -->
+    </div>
+  </div>
+
+  <!-- ========== TABELA DETALHADA ========== -->
+  <div class="table-enterprise-section">
+    <div class="section-header">
+      <div class="section-title">
+        📋 Detalhamento Completo de Produtos com Validade < 1 Ano
+      </div>
+    </div>
+    <div class="table-wrapper-enterprise">
+      <table class="table-enterprise">
         <thead>
           <tr>
-            <th>Posição</th>
             <th>Loja</th>
-            <th>Total de Registros</th>
-            <th>Total Recusado</th>
-            <th>Taxa de Recusa</th>
+            <th>Produto</th>
+            <th>Fornecedor</th>
+            <th>Lote</th>
+            <th>Fabricação</th>
+            <th>Validade</th>
+            <th>Dias Restantes</th>
             <th>Status</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="table-body">
+          <!-- Dados serão inseridos aqui -->
+        </tbody>
       </table>
     </div>
-
-    <!-- NOVA SEÇÃO: Cards Individuais por Loja -->
-    <div class="insights-section" id="cards-lojas" style="display: none;">
-      <h3>📍 Métricas Detalhadas por Loja</h3>
-      <div class="lojas-grid" id="lojas-grid-container"></div>
-    </div>
-    
-    <!-- Gráfico de Pizza -->
-    <div class="insights-section">
-      <h3>📊 Distribuição dos Problemas</h3>
-      <div id="pie-chart-problemas" class="chart-container"></div>
-    </div>
-    
-    <!-- Gráfico de Barras -->
-    <div class="insights-section">
-      <h3>📈 Problemas por Fornecedor (Top 10)</h3>
-      <div id="bar-chart-fornecedores" class="chart-container"></div>
-    </div>
-    
-    <!-- Gráfico de Linha (Tendência Temporal) -->
-    <div class="insights-section">
-      <h3>📉 Tendência de Recusas ao Longo do Tempo</h3>
-      <div id="line-chart-temporal" class="chart-container"></div>
-    </div>
-    
-    <!-- Ranking de Problemas -->
-    <div class="insights-section">
-      <h3>🏆 Ranking de Produtos com Mais Problemas</h3>
-      <table class="ranking-table" id="ranking-produtos">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Produto</th>
-            <th>Ocorrências</th>
-            <th>Taxa de Recusa</th>
-            <th>Tendência</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    
-    <!-- Detalhes dos Problemas -->
-    <div class="insights-section">
-      <h3>🔍 Detalhamento dos Problemas</h3>
-      <div id="detalhe-problemas"></div>
-    </div>
-    
   </div>
-  
+
 </div>
 
 <script type="module">
-    // --- FIREBASE IMPORTS ---
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-    
-    const firebaseConfig = { 
-        apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4", 
-        authDomain: "login-com-dados.firebaseapp.com",
-        projectId: "login-com-dados",
-        storageBucket: "login-com-dados.firebasestorage.app",
-        messagingSenderId: "75556023458",
-        appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
-        measurementId: "G-W9LRT99579"
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    
-    // ⚠️ SUBSTITUA ESTA URL PELA SUA URL DO GOOGLE APPS SCRIPT!
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2Ty2Z_UM74Czl29ZSD_8_HFubBq8qYzBNRHAMpg7R1nJhWa-PeG81jD7BNi9_vCvk/exec'; 
-    
-    const loadingMessage = document.getElementById('loading-dashboard');
-    const kpiDisplay = {
-        registros: document.getElementById('kpi-registros'),
-        recusado: document.getElementById('kpi-recusado'),
-        taxa: document.getElementById('kpi-taxa'),
-        validade: document.getElementById('kpi-validade'),
-        fornecedores: document.getElementById('kpi-fornecedores'),
-        produtos: document.getElementById('kpi-produtos'),
-    };
-    const insightsContainer = document.getElementById('insights-container');
-    const filterControls = document.getElementById('filter-controls');
-    
-    const lojaFilter = document.getElementById('loja-filter');
-    const fornecedorFilter = document.getElementById('fornecedor-filter');
-    const produtoFilter = document.getElementById('produto-filter');
-    const periodoFilter = document.getElementById('periodo-filter');
-    
-    let allData = [];
-    let currentData = [];
-
-    const LOJAS_MAP = {
-        'matriz': 'Matriz',
-        'juazeiro': 'Filial Juazeiro',
-        'loteamento': 'Filial Loteamento',
-        'irece': 'Filial Irecê',
-        'rioreal': 'Filial Rio Real',
-        'agroexpress': 'Agroexpress',
-        'grandesafra': 'Grande Safra'
-    };
-    const LOJAS_KEYS = Object.keys(LOJAS_MAP);
-
-    // ===== FUNÇÕES AUXILIARES =====
-    
-    function formatNumber(num) {
-        return num.toLocaleString('pt-BR');
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+    authDomain: "login-com-dados.firebaseapp.com",
+    projectId: "login-com-dados",
+    storageBucket: "login-com-dados.firebasestorage.app",
+    messagingSenderId: "7.5556023458e+10",
+    appId: "1:7.5556023458e+10:web:9f1362d0597603c0f37bfb",
+    measurementId: "G-W9LRT99579"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLStAEVzVTEQbBcy8_TCFscABUy5rM1n-CNM4fiABnQ3vGeB-4a_uss8P7rQm2iuUE/exec';
+  
+  let allData = [];
+  let filteredData = [];
+  
+  // ========================================
+  // AUTENTICAÇÃO
+  // ========================================
+  
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
     }
-
-    function getCaseInsensitiveValue(item, keyName) {
-        if (!item || !keyName) return null;
-        const lowerKey = keyName.toLowerCase(); 
-        for (const key in item) {
-            if (key.toLowerCase() === lowerKey) {
-                return item[key];
-            }
-        }
-        return null;
-    }
-
-    function getDaysDifference(date1, date2) {
-        const MS_PER_DAY = 1000 * 60 * 60 * 24;
-        const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
-        const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
-        return Math.floor((utc2 - utc1) / MS_PER_DAY);
-    }
-
-    // ===== CÁLCULO DE KPIs AVANÇADOS =====
     
-    function calcularKpis(data) {
-        const totalRegistros = data.length;
+    document.getElementById('logout-button').style.display = 'inline-block';
+    initDashboard();
+  });
+  
+  document.getElementById('logout-button').addEventListener('click', () => {
+    signOut(auth).then(() => window.location.href = 'index.html');
+  });
+  
+  // ========================================
+  // ATUALIZAR RELÓGIO
+  // ========================================
+  
+  function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    document.getElementById('current-time').textContent = `🕒 ${timeStr}`;
+  }
+  
+  setInterval(updateClock, 1000);
+  updateClock();
+  
+  // ========================================
+  // RESET FILTROS
+  // ========================================
+  
+  window.resetFilters = function() {
+    document.getElementById('filter-loja').value = 'all';
+    document.getElementById('filter-fornecedor').value = 'all';
+    document.getElementById('filter-periodo').value = 'all';
+    document.getElementById('filter-status').value = 'all';
+    applyFilters();
+  }
+  
+  // ========================================
+  // INICIALIZAR
+  // ========================================
+  
+  async function initDashboard() {
+    try {
+      await fetchData();
+      populateFilters();
+      applyFilters();
+      hideLoading();
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao carregar: ' + error.message);
+      hideLoading();
+    }
+  }
+  
+  async function fetchData() {
+    const response = await fetch(APPS_SCRIPT_URL);
+    if (!response.ok) throw new Error('Erro ao buscar dados');
+    
+    const data = await response.json();
+    allData = [];
+    
+    for (const [sheetName, records] of Object.entries(data)) {
+      records.forEach(record => {
+        allData.push({ ...record, _loja: sheetName });
+      });
+    }
+    
+    filteredData = [...allData];
+  }
+  
+  function populateFilters() {
+    const lojas = [...new Set(allData.map(r => r._loja))].sort();
+    const filterLoja = document.getElementById('filter-loja');
+    lojas.forEach(loja => {
+      const option = document.createElement('option');
+      option.value = loja;
+      option.textContent = loja;
+      filterLoja.appendChild(option);
+    });
+    
+    const fornecedores = [...new Set(allData.map(r => r.FORNECEDOR).filter(Boolean))].sort();
+    const filterFornecedor = document.getElementById('filter-fornecedor');
+    fornecedores.forEach(fornecedor => {
+      const option = document.createElement('option');
+      option.value = fornecedor;
+      option.textContent = fornecedor;
+      filterFornecedor.appendChild(option);
+    });
+    
+    ['filter-loja', 'filter-fornecedor', 'filter-periodo', 'filter-status'].forEach(id => {
+      document.getElementById(id).addEventListener('change', applyFilters);
+    });
+  }
+  
+  function applyFilters() {
+    const filterLoja = document.getElementById('filter-loja').value;
+    const filterFornecedor = document.getElementById('filter-fornecedor').value;
+    const filterPeriodo = document.getElementById('filter-periodo').value;
+    const filterStatus = document.getElementById('filter-status').value;
+    
+    filteredData = allData.filter(record => {
+      if (filterLoja !== 'all' && record._loja !== filterLoja) return false;
+      if (filterFornecedor !== 'all' && record.FORNECEDOR !== filterFornecedor) return false;
+      
+      if (filterPeriodo !== 'all') {
+        const dataRecebimento = new Date(record['DATA DE RECEBIMENTO']);
+        const hoje = new Date();
+        const diasAtras = parseInt(filterPeriodo);
+        const dataLimite = new Date();
+        dataLimite.setDate(hoje.getDate() - diasAtras);
         
-        if (totalRegistros === 0) {
-            return {
-                totalRegistros: 0, totalRecusado: 0, percentualRecusado: 0,
-                mediaDiasValidade: 'N/A', contagemProblemas: {}, detalhesProblemas: {},
-                totalFornecedores: 0, totalProdutos: 0, problemasPorFornecedor: {},
-                problemasPorProduto: {}, tendenciaTemporal: [], metricasPorLoja: {}
-            };
-        }
-
-        let totalRecusado = 0;
-        let totalDiasValidade = 0;
-        let contagemValidade = 0;
+        if (dataRecebimento < dataLimite) return false;
+      }
+      
+      if (filterStatus !== 'all' && record.VALIDADE) {
+        const dias = Math.floor((new Date(record.VALIDADE) - new Date()) / (1000 * 60 * 60 * 24));
         
-        const checklistKeys = ['FALTA', 'AVARIA', 'VENCIMENTO CURTO', 'NF DIVERGENCIA / CARGA', 'PRODUTO RECUSADO'];
-        let contagemProblemas = Object.fromEntries(checklistKeys.map(key => [key, 0]));
-        let detalhesProblemas = {};
-        let fornecedoresSet = new Set();
-        let produtosSet = new Set();
-        let problemasPorFornecedor = {};
-        let problemasPorProduto = {};
-        let tendenciaTemporal = {};
-        let metricasPorLoja = {};
-
-        data.forEach(item => {
-            const dataRecebimentoStr = getCaseInsensitiveValue(item, 'dataderecebimento');
-            const dataValidadeStr = getCaseInsensitiveValue(item, 'validade');
-            const produtoNome = getCaseInsensitiveValue(item, 'produto') || 'N/A';
-            const fornecedorNome = getCaseInsensitiveValue(item, 'fornecedor') || 'N/A';
-            const lote = getCaseInsensitiveValue(item, 'lote') || 'N/A';
-            const lojaKey = item.LOJA || 'desconhecida';
-            
-            // Inicializa métricas da loja
-            if (!metricasPorLoja[lojaKey]) {
-                metricasPorLoja[lojaKey] = {
-                    nome: LOJAS_MAP[lojaKey] || lojaKey,
-                    totalRegistros: 0,
-                    totalRecusado: 0,
-                    totalDiasValidade: 0,
-                    contagemValidade: 0,
-                    problemas: 0
-                };
-            }
-            
-            metricasPorLoja[lojaKey].totalRegistros++;
-            
-            fornecedoresSet.add(fornecedorNome);
-            produtosSet.add(produtoNome);
-            
-            const dataRecebimento = new Date(dataRecebimentoStr);
-            const dataValidade = new Date(dataValidadeStr);
-            
-            // Validade
-            if (dataRecebimentoStr && dataValidadeStr && !isNaN(dataRecebimento.getTime()) && !isNaN(dataValidade.getTime())) {
-                const diasRestantes = getDaysDifference(dataRecebimento, dataValidade);
-                totalDiasValidade += diasRestantes;
-                contagemValidade++;
-                
-                metricasPorLoja[lojaKey].totalDiasValidade += diasRestantes;
-                metricasPorLoja[lojaKey].contagemValidade++;
-            }
-            
-            // Recusa
-            const recusaValor = String(item['PRODUTO RECUSADO'] || 'Não');
-            const recusaStatus = recusaValor.startsWith('Sim');
-            if (recusaStatus) {
-                totalRecusado++;
-                metricasPorLoja[lojaKey].totalRecusado++;
-                
-                const mesAno = dataRecebimento.toISOString().substring(0, 7);
-                tendenciaTemporal[mesAno] = (tendenciaTemporal[mesAno] || 0) + 1;
-            }
-
-            // Problemas por tipo
-            checklistKeys.forEach(coluna => {
-                const valor = String(getCaseInsensitiveValue(item, coluna) || 'Não'); 
-
-                if (valor.startsWith('Sim')) {
-                    contagemProblemas[coluna]++;
-                    metricasPorLoja[lojaKey].problemas++;
-                    
-                    if (!problemasPorFornecedor[fornecedorNome]) {
-                        problemasPorFornecedor[fornecedorNome] = 0;
-                    }
-                    problemasPorFornecedor[fornecedorNome]++;
-                    
-                    if (!problemasPorProduto[produtoNome]) {
-                        problemasPorProduto[produtoNome] = { total: 0, registros: 0 };
-                    }
-                    problemasPorProduto[produtoNome].total++;
-                    
-                    if (valor.includes(':')) {
-                        const descricao = valor.split(':')[1].trim();
-                        if (descricao) {
-                            detalhesProblemas[coluna] = detalhesProblemas[coluna] || [];
-                            detalhesProblemas[coluna].push({
-                                produto: produtoNome,
-                                fornecedor: fornecedorNome,
-                                lote: lote,
-                                loja: LOJAS_MAP[lojaKey] || lojaKey,
-                                descricao: descricao
-                            });
-                        }
-                    }
-                }
-            });
-            
-            if (problemasPorProduto[produtoNome]) {
-                problemasPorProduto[produtoNome].registros++;
-            }
-        });
-
-        // Calcula percentuais por loja
-        Object.keys(metricasPorLoja).forEach(lojaKey => {
-            const loja = metricasPorLoja[lojaKey];
-            loja.percentualRecusado = loja.totalRegistros > 0 
-                ? ((loja.totalRecusado / loja.totalRegistros) * 100).toFixed(1) 
-                : 0;
-            loja.mediaDiasValidade = loja.contagemValidade > 0
-                ? Math.round(loja.totalDiasValidade / loja.contagemValidade)
-                : 'N/A';
-        });
-
-        const percentualRecusado = totalRegistros > 0 
-            ? ((totalRecusado / totalRegistros) * 100).toFixed(1) 
-            : 0;
-            
-        const mediaDiasValidade = contagemValidade > 0
-            ? Math.round(totalDiasValidade / contagemValidade)
-            : 'N/A';
-
-        return {
-            totalRegistros, totalRecusado, percentualRecusado,
-            mediaDiasValidade, contagemProblemas, detalhesProblemas,
-            totalFornecedores: fornecedoresSet.size,
-            totalProdutos: produtosSet.size,
-            problemasPorFornecedor,
-            problemasPorProduto,
-            tendenciaTemporal,
-            metricasPorLoja
+        if (filterStatus === 'critico' && dias >= 90) return false;
+        if (filterStatus === 'alerta' && (dias < 90 || dias >= 365)) return false;
+        if (filterStatus === 'normal' && dias < 365) return false;
+      }
+      
+      return true;
+    });
+    
+    renderDashboard();
+  }
+  
+  function renderDashboard() {
+    renderKPIs();
+    renderAlerts();
+    renderProblems();
+    renderLojas();
+    renderTable();
+  }
+  
+  // ========================================
+  // RENDERIZAR KPIs
+  // ========================================
+  
+  function renderKPIs() {
+    const total = filteredData.length;
+    const totalRecusado = filteredData.filter(r => isYes(r['PRODUTO RECUSADO'])).length;
+    const taxaRecusa = total > 0 ? ((totalRecusado / total) * 100).toFixed(1) : 0;
+    
+    const hoje = new Date();
+    const validadesValidas = filteredData
+      .filter(r => r.VALIDADE)
+      .map(r => Math.floor((new Date(r.VALIDADE) - hoje) / (1000 * 60 * 60 * 24)))
+      .filter(d => d > 0);
+    
+    const mediaValidade = validadesValidas.length > 0 
+      ? Math.round(validadesValidas.reduce((a, b) => a + b, 0) / validadesValidas.length)
+      : 0;
+    
+    const produtosComProblemas = filteredData.filter(r => 
+      isYes(r.FALTA) || isYes(r.AVARIA) || isYes(r['VENCIMENTO CURTO']) || isYes(r['PRODUTO RECUSADO'])
+    ).length;
+    
+    const validadeMenor1Ano = filteredData.filter(r => {
+      if (!r.VALIDADE) return false;
+      const dias = Math.floor((new Date(r.VALIDADE) - hoje) / (1000 * 60 * 60 * 24));
+      return dias < 365 && dias > 0;
+    }).length;
+    
+    const vencidos = filteredData.filter(r => {
+      if (!r.VALIDADE) return false;
+      const dias = Math.floor((new Date(r.VALIDADE) - hoje) / (1000 * 60 * 60 * 24));
+      return dias < 0;
+    }).length;
+    
+    const fornecedoresAtivos = new Set(filteredData.map(r => r.FORNECEDOR).filter(Boolean)).size;
+    
+    const kpis = [
+      {
+        icon: '📦',
+        label: 'Total de Registros',
+        value: total.toLocaleString('pt-BR'),
+        subtitle: 'Recebimentos processados',
+        trend: null,
+        comparison: null
+      },
+      {
+        icon: '❌',
+        label: 'Taxa de Recusa',
+        value: `${taxaRecusa}%`,
+        subtitle: `${totalRecusado} produtos recusados`,
+        trend: taxaRecusa > 5 ? 'negative' : taxaRecusa > 2 ? 'neutral' : 'positive',
+        comparison: `Meta: < 5%`
+      },
+      {
+        icon: '📅',
+        label: 'Média de Validade',
+        value: mediaValidade > 0 ? `${mediaValidade}d` : 'N/A',
+        subtitle: 'Dias até vencimento',
+        trend: mediaValidade > 365 ? 'positive' : mediaValidade > 180 ? 'neutral' : 'negative',
+        comparison: `Meta: > 365 dias`
+      },
+      {
+        icon: '⚠️',
+        label: 'Produtos com Problemas',
+        value: produtosComProblemas.toLocaleString('pt-BR'),
+        subtitle: `${((produtosComProblemas / total) * 100).toFixed(1)}% do total`,
+        trend: produtosComProblemas < total * 0.05 ? 'positive' : 'negative',
+        comparison: `Meta: < 5%`
+      },
+      {
+        icon: '🔴',
+        label: 'Validade < 1 Ano',
+        value: validadeMenor1Ano.toLocaleString('pt-BR'),
+        subtitle: 'Produtos com atenção',
+        trend: validadeMenor1Ano > 20 ? 'negative' : validadeMenor1Ano > 10 ? 'neutral' : 'positive',
+        comparison: `${((validadeMenor1Ano / total) * 100).toFixed(1)}% do total`
+      },
+      {
+        icon: '⚫',
+        label: 'Produtos Vencidos',
+        value: vencidos.toLocaleString('pt-BR'),
+        subtitle: 'Requer ação imediata',
+        trend: vencidos > 0 ? 'negative' : 'positive',
+        comparison: vencidos === 0 ? '✓ Tudo OK' : '! Ação Necessária'
+      }
+    ];
+    
+    const container = document.getElementById('kpi-container');
+    container.innerHTML = kpis.map(kpi => `
+      <div class="kpi-executive-card">
+        <div class="kpi-exec-header">
+          <div class="kpi-exec-icon">${kpi.icon}</div>
+          ${kpi.trend ? `
+            <div class="kpi-exec-trend ${kpi.trend}">
+              ${kpi.trend === 'positive' ? '↗' : kpi.trend === 'negative' ? '↘' : '→'}
+              ${kpi.trend === 'positive' ? 'Bom' : kpi.trend === 'negative' ? 'Atenção' : 'Neutro'}
+            </div>
+          ` : ''}
+        </div>
+        <div class="kpi-exec-label">${kpi.label}</div>
+        <div class="kpi-exec-value">${kpi.value}</div>
+        <div class="kpi-exec-subtitle">${kpi.subtitle}</div>
+        ${kpi.comparison ? `
+          <div class="kpi-exec-footer">
+            <div class="kpi-exec-comparison">${kpi.comparison}</div>
+          </div>
+        ` : ''}
+      </div>
+    `).join('');
+  }
+  
+  // ========================================
+  // RENDERIZAR ALERTAS
+  // ========================================
+  
+  function renderAlerts() {
+    const hoje = new Date();
+    const alerts = [];
+    
+    const vencendoEm30 = filteredData.filter(r => {
+      if (!r.VALIDADE) return false;
+      const dias = Math.floor((new Date(r.VALIDADE) - hoje) / (1000 * 60 * 60 * 24));
+      return dias > 0 && dias <= 30;
+    }).length;
+    
+    if (vencendoEm30 > 0) {
+      alerts.push({
+        type: 'critical',
+        icon: '⏰',
+        title: 'Validades Críticas Detectadas',
+        message: `${vencendoEm30} produto(s) vencem em menos de 30 dias. Ação imediata necessária para evitar perdas.`,
+        action: '#'
+      });
+    }
+    
+    const taxaRecusa = ((filteredData.filter(r => isYes(r['PRODUTO RECUSADO'])).length / filteredData.length) * 100);
+    if (taxaRecusa > 5) {
+      alerts.push({
+        type: 'warning',
+        icon: '⚠️',
+        title: 'Taxa de Recusa Acima da Meta',
+        message: `Taxa de recusa de ${taxaRecusa.toFixed(1)}% está ${(taxaRecusa - 5).toFixed(1)}% acima do limite recomendado.`,
+        action: '#'
+      });
+    }
+    
+    const vencidos = filteredData.filter(r => {
+      if (!r.VALIDADE) return false;
+      const dias = Math.floor((new Date(r.VALIDADE) - hoje) / (1000 * 60 * 60 * 24));
+      return dias < 0;
+    }).length;
+    
+    if (vencidos > 0) {
+      alerts.push({
+        type: 'critical',
+        icon: '🚨',
+        title: 'Produtos Vencidos em Estoque',
+        message: `${vencidos} produto(s) vencido(s) identificado(s). Remoção imediata necessária.`,
+        action: '#'
+      });
+    }
+    
+    const alertsSection = document.getElementById('alerts-section');
+    const alertsCount = document.getElementById('alerts-count');
+    const alertsContainer = document.getElementById('alerts-container');
+    
+    if (alerts.length > 0) {
+      alertsSection.style.display = 'block';
+      alertsCount.textContent = alerts.length;
+      
+      alertsContainer.innerHTML = alerts.map(alert => `
+        <div class="alert-card-executive ${alert.type}">
+          <div class="alert-header-exec">
+            <div class="alert-icon-exec">${alert.icon}</div>
+            <div class="alert-title-exec">${alert.title}</div>
+          </div>
+          <div class="alert-message-exec">${alert.message}</div>
+          <a href="${alert.action}" class="alert-action">
+            Ver Detalhes →
+          </a>
+        </div>
+      `).join('');
+    } else {
+      alertsSection.style.display = 'none';
+    }
+  }
+  
+  // ========================================
+  // RENDERIZAR PROBLEMAS
+  // ========================================
+  
+  function renderProblems() {
+    const total = filteredData.length;
+    
+    const problems = [
+      {
+        id: 'falta',
+        icon: '📦',
+        label: 'Falta',
+        count: filteredData.filter(r => isYes(r.FALTA)).length
+      },
+      {
+        id: 'avaria',
+        icon: '⚠️',
+        label: 'Avaria',
+        count: filteredData.filter(r => isYes(r.AVARIA)).length
+      },
+      {
+        id: 'vencimento',
+        icon: '⏰',
+        label: 'Vencimento Curto',
+        count: filteredData.filter(r => isYes(r['VENCIMENTO CURTO'])).length
+      },
+      {
+        id: 'nf-divergente',
+        icon: '📄',
+        label: 'NF Divergente',
+        count: filteredData.filter(r => isYes(r['NF DIVERGENCIA / CARGA'])).length
+      },
+      {
+        id: 'recusado',
+        icon: '🚫',
+        label: 'Recusado',
+        count: filteredData.filter(r => isYes(r['PRODUTO RECUSADO'])).length
+      }
+    ];
+    
+    const container = document.getElementById('problems-container');
+    container.innerHTML = problems.map(problem => {
+      const percentage = total > 0 ? ((problem.count / total) * 100).toFixed(1) : 0;
+      
+      return `
+        <div class="problem-card-exec ${problem.id}">
+          <span class="problem-icon-exec">${problem.icon}</span>
+          <div class="problem-label-exec">${problem.label}</div>
+          <div class="problem-value-exec">${problem.count}</div>
+          <div class="problem-percentage-exec">${percentage}% do total</div>
+          <div class="problem-mini-chart">
+            <div class="problem-mini-chart-fill" style="width: ${Math.min(percentage, 100)}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  // ========================================
+  // RENDERIZAR LOJAS
+  // ========================================
+  
+  function renderLojas() {
+    const hoje = new Date();
+    const lojaStats = {};
+    
+    filteredData.forEach(record => {
+      const loja = record._loja;
+      
+      if (!lojaStats[loja]) {
+        lojaStats[loja] = {
+          total: 0,
+          menorQue1Ano: 0,
+          menorQue6Meses: 0,
+          menorQue3Meses: 0,
+          vencidos: 0
         };
-    }
-
-    // ===== RENDERIZAÇÃO DE KPIs =====
-    
-    function renderKpis(kpis) {
-        kpiDisplay.registros.textContent = formatNumber(kpis.totalRegistros);
-        kpiDisplay.recusado.textContent = formatNumber(kpis.totalRecusado);
-        kpiDisplay.taxa.textContent = `${kpis.percentualRecusado}%`;
-        kpiDisplay.validade.textContent = kpis.mediaDiasValidade;
-        kpiDisplay.fornecedores.textContent = formatNumber(kpis.totalFornecedores);
-        kpiDisplay.produtos.textContent = formatNumber(kpis.totalProdutos);
+      }
+      
+      if (record.VALIDADE) {
+        const validade = new Date(record.VALIDADE);
+        const diasRestantes = Math.floor((validade - hoje) / (1000 * 60 * 60 * 24));
         
-        document.querySelector('.dashboard-container').style.display = 'grid';
-        insightsContainer.style.display = 'block';
-    }
-
-    // ===== RENDERIZAÇÃO DE MÉTRICAS POR LOJA =====
-    
-    function renderMetricasPorLoja(metricasPorLoja) {
-        // 1. Gráfico de Barras Comparativo
-        const lojasData = [['Loja', 'Total', 'Recusado']];
-        Object.entries(metricasPorLoja)
-            .sort((a, b) => b[1].totalRegistros - a[1].totalRegistros)
-            .forEach(([key, loja]) => {
-                lojasData.push([loja.nome, loja.totalRegistros, loja.totalRecusado]);
-            });
+        lojaStats[loja].total++;
         
-        if (lojasData.length > 1) {
-            google.charts.load('current', {'packages':['corechart']});
-            google.charts.setOnLoadCallback(() => {
-                const dataTable = google.visualization.arrayToDataTable(lojasData);
-                const options = {
-                    title: 'Registros vs Recusas por Loja',
-                    chartArea: {width: '70%', height: '70%'},
-                    colors: ['#2196f3', '#f44336'],
-                    legend: {position: 'bottom'},
-                    hAxis: {title: 'Quantidade'},
-                    vAxis: {title: 'Loja'},
-                    isStacked: false
-                };
-
-                const chart = new google.visualization.BarChart(document.getElementById('bar-chart-lojas'));
-                chart.draw(dataTable, options);
-            });
-            
-            document.getElementById('comparativo-lojas').style.display = 'block';
+        if (diasRestantes < 365) {
+          lojaStats[loja].menorQue1Ano++;
+          
+          if (diasRestantes < 0) {
+            lojaStats[loja].vencidos++;
+          } else if (diasRestantes < 90) {
+            lojaStats[loja].menorQue3Meses++;
+          } else if (diasRestantes < 180) {
+            lojaStats[loja].menorQue6Meses++;
+          }
         }
-        
-        // 2. Ranking de Lojas
-        const rankingBody = document.querySelector('#ranking-lojas tbody');
-        rankingBody.innerHTML = '';
-        
-        const lojasRanking = Object.entries(metricasPorLoja)
-            .map(([key, loja]) => loja)
-            .sort((a, b) => parseFloat(b.percentualRecusado) - parseFloat(a.percentualRecusado));
-        
-        lojasRanking.forEach((loja, index) => {
-            const taxa = parseFloat(loja.percentualRecusado);
-            let statusClass, statusText;
-            
-            if (taxa === 0) {
-                statusClass = 'status-excelente';
-                statusText = '✅ Excelente';
-            } else if (taxa < 5) {
-                statusClass = 'status-bom';
-                statusText = '👍 Bom';
-            } else if (taxa < 10) {
-                statusClass = 'status-atencao';
-                statusText = '⚠️ Atenção';
-            } else {
-                statusClass = 'status-critico';
-                statusText = '🚨 Crítico';
-            }
-            
-            rankingBody.innerHTML += `
-                <tr>
-                    <td><strong>${index + 1}º</strong></td>
-                    <td>${loja.nome}</td>
-                    <td>${formatNumber(loja.totalRegistros)}</td>
-                    <td>${formatNumber(loja.totalRecusado)}</td>
-                    <td><strong>${loja.percentualRecusado}%</strong></td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                </tr>
-            `;
-        });
-        
-        document.getElementById('ranking-lojas-section').style.display = 'block';
-        
-        // 3. Cards Individuais
-        const gridContainer = document.getElementById('lojas-grid-container');
-        gridContainer.innerHTML = '';
-        
-        Object.entries(metricasPorLoja)
-            .sort((a, b) => b[1].totalRegistros - a[1].totalRegistros)
-            .forEach(([key, loja]) => {
-                const taxa = parseFloat(loja.percentualRecusado);
-                let cardClass;
-                
-                if (taxa === 0) cardClass = 'excelente';
-                else if (taxa < 5) cardClass = 'bom';
-                else if (taxa < 10) cardClass = 'atencao';
-                else cardClass = 'critico';
-                
-                gridContainer.innerHTML += `
-                    <div class="loja-card ${cardClass}">
-                        <div class="loja-card-header">${loja.nome}</div>
-                        <div class="loja-card-metric">
-                            <span class="loja-card-metric-label">Total de Registros:</span>
-                            <span class="loja-card-metric-value">${formatNumber(loja.totalRegistros)}</span>
-                        </div>
-                        <div class="loja-card-metric">
-                            <span class="loja-card-metric-label">Total Recusado:</span>
-                            <span class="loja-card-metric-value">${formatNumber(loja.totalRecusado)}</span>
-                        </div>
-                        <div class="loja-card-metric">
-                            <span class="loja-card-metric-label">Taxa de Recusa:</span>
-                            <span class="loja-card-metric-value">${loja.percentualRecusado}%</span>
-                        </div>
-                        <div class="loja-card-metric">
-                            <span class="loja-card-metric-label">Média Validade:</span>
-                            <span class="loja-card-metric-value">${loja.mediaDiasValidade} dias</span>
-                        </div>
-                        <div class="loja-card-metric">
-                            <span class="loja-card-metric-label">Total de Problemas:</span>
-                            <span class="loja-card-metric-value">${formatNumber(loja.problemas)}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        
-        document.getElementById('cards-lojas').style.display = 'block';
-    }
-
-    // ===== RENDERIZAÇÃO DE GRÁFICOS AVANÇADOS =====
-    
-    function renderChartsAndDetails(kpis) {
-        google.charts.load('current', {'packages':['corechart', 'bar']});
-        google.charts.setOnLoadCallback(drawCharts);
-
-        function drawCharts() {
-            // 1. Gráfico de Pizza
-            const problemasData = [['Problema', 'Ocorrências']];
-            Object.entries(kpis.contagemProblemas).forEach(([nome, contagem]) => {
-                if (contagem > 0) {
-                    problemasData.push([nome, contagem]);
-                }
-            });
-            
-            const pieDataTable = google.visualization.arrayToDataTable(problemasData);
-            const pieOptions = {
-                title: 'Distribuição dos Tipos de Problemas',
-                pieHole: 0.4,
-                colors: ['#f44336', '#ff9800', '#2196f3', '#4caf50', '#9c27b0'],
-                chartArea: {width: '90%', height: '80%'},
-                legend: {position: 'bottom'}
-            };
-
-            const pieChart = new google.visualization.PieChart(document.getElementById('pie-chart-problemas'));
-            pieChart.draw(pieDataTable, pieOptions);
-
-            // 2. Gráfico de Barras (Top 10 Fornecedores)
-            const fornecedoresData = [['Fornecedor', 'Problemas']];
-            const topFornecedores = Object.entries(kpis.problemasPorFornecedor)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-            
-            topFornecedores.forEach(([forn, count]) => {
-                fornecedoresData.push([forn, count]);
-            });
-            
-            if (fornecedoresData.length > 1) {
-                const barDataTable = google.visualization.arrayToDataTable(fornecedoresData);
-                const barOptions = {
-                    title: 'Top 10 Fornecedores com Mais Problemas',
-                    chartArea: {width: '70%', height: '80%'},
-                    colors: ['#e74c3c'],
-                    legend: {position: 'none'},
-                    hAxis: {title: 'Número de Problemas'},
-                    vAxis: {title: 'Fornecedor'}
-                };
-
-                const barChart = new google.visualization.BarChart(document.getElementById('bar-chart-fornecedores'));
-                barChart.draw(barDataTable, barOptions);
-            }
-
-            // 3. Gráfico de Linha (Tendência Temporal)
-            const temporalData = [['Mês', 'Recusas']];
-            Object.entries(kpis.tendenciaTemporal)
-                .sort((a, b) => a[0].localeCompare(b[0]))
-                .forEach(([mes, count]) => {
-                    temporalData.push([mes, count]);
-                });
-            
-            if (temporalData.length > 1) {
-                const lineDataTable = google.visualization.arrayToDataTable(temporalData);
-                const lineOptions = {
-                    title: 'Tendência de Recusas ao Longo do Tempo',
-                    curveType: 'function',
-                    chartArea: {width: '85%', height: '70%'},
-                    colors: ['#e74c3c'],
-                    legend: {position: 'bottom'},
-                    hAxis: {title: 'Período'},
-                    vAxis: {title: 'Número de Recusas'}
-                };
-
-                const lineChart = new google.visualization.LineChart(document.getElementById('line-chart-temporal'));
-                lineChart.draw(lineDataTable, lineOptions);
-            }
-        }
-
-        // 4. Ranking de Produtos
-        const rankingBody = document.querySelector('#ranking-produtos tbody');
-        rankingBody.innerHTML = '';
-        
-        const topProdutos = Object.entries(kpis.problemasPorProduto)
-            .map(([prod, data]) => ({
-                produto: prod,
-                ocorrencias: data.total,
-                taxa: ((data.total / data.registros) * 100).toFixed(1)
-            }))
-            .sort((a, b) => b.ocorrencias - a.ocorrencias)
-            .slice(0, 10);
-        
-        topProdutos.forEach((item, index) => {
-            const trend = index % 2 === 0 ? 'up' : 'down';
-            const trendClass = trend === 'up' ? 'trend-down' : 'trend-up';
-            const trendText = trend === 'up' ? '▲ Alta' : '▼ Baixa';
-            
-            rankingBody.innerHTML += `
-                <tr>
-                    <td><strong>${index + 1}º</strong></td>
-                    <td>${item.produto}</td>
-                    <td>${item.ocorrencias}</td>
-                    <td>${item.taxa}%</td>
-                    <td><span class="trend-indicator ${trendClass}">${trendText}</span></td>
-                </tr>
-            `;
-        });
-
-        // 5. Detalhes dos Problemas
-        const detalheProblemasDiv = document.getElementById('detalhe-problemas');
-        let htmlDetalhe = '';
-
-        Object.keys(kpis.detalhesProblemas).forEach(problema => {
-            const ocorrencias = kpis.detalhesProblemas[problema];
-            if (ocorrencias.length > 0) {
-                htmlDetalhe += `
-                    <h4 style="color: #e74c3c; margin-top: 20px;">${problema} (${ocorrencias.length} Ocorrência${ocorrencias.length > 1 ? 's' : ''}):</h4>
-                    <ul style="list-style-type: none; padding-left: 0;">
-                `;
-                ocorrencias.slice(0, 5).forEach(detalhe => {
-                    htmlDetalhe += `
-                        <li style="margin-bottom: 10px; padding: 12px; border-left: 4px solid #f44336; background-color: #fff3f3; border-radius: 4px;">
-                            <strong>Loja:</strong> ${detalhe.loja}<br>
-                            <strong>Produto:</strong> ${detalhe.produto}<br>
-                            <strong>Fornecedor:</strong> ${detalhe.fornecedor}<br>
-                            <strong>Lote:</strong> ${detalhe.lote}<br>
-                            <strong>Descrição:</strong> ${detalhe.descricao}
-                        </li>
-                    `;
-                });
-                if (ocorrencias.length > 5) {
-                    htmlDetalhe += `<li style="color: #999; font-style: italic;">+ ${ocorrencias.length - 5} ocorrências adicionais...</li>`;
-                }
-                htmlDetalhe += `</ul>`;
-            }
-        });
-
-        detalheProblemasDiv.innerHTML = htmlDetalhe || '<p>Nenhum problema detalhado encontrado.</p>';
-    }
-
-    // ===== FILTRAGEM =====
-    
-    function populateFilters(data) {
-        const fornecedores = new Set();
-        const produtos = new Set();
-
-        data.forEach(item => {
-            const forn = getCaseInsensitiveValue(item, 'fornecedor');
-            const prod = getCaseInsensitiveValue(item, 'produto');
-            if (forn) fornecedores.add(forn);
-            if (prod) produtos.add(prod);
-        });
-
-        Object.entries(LOJAS_MAP).forEach(([key, name]) => {
-             if (!lojaFilter.querySelector(`option[value="${key}"]`)) {
-                 const option = document.createElement('option');
-                 option.value = key;
-                 option.textContent = name;
-                 lojaFilter.appendChild(option);
-             }
-        });
-
-        fornecedorFilter.innerHTML = '<option value="TODOS">TODOS OS FORNECEDORES</option>';
-        Array.from(fornecedores).sort().forEach(forn => {
-            fornecedorFilter.innerHTML += `<option value="${forn}">${forn}</option>`;
-        });
-
-        produtoFilter.innerHTML = '<option value="TODOS">TODOS OS PRODUTOS</option>';
-        Array.from(produtos).sort().forEach(prod => {
-            produtoFilter.innerHTML += `<option value="${prod}">${prod}</option>`;
-        });
-        
-        filterControls.style.display = 'grid';
-    }
-
-    function applyFilters() {
-        const lojaSelecionada = lojaFilter.value;
-        const fornecedorSelecionado = fornecedorFilter.value;
-        const produtoSelecionado = produtoFilter.value;
-        const periodoSelecionado = periodoFilter.value;
-
-        let filteredData = allData;
-        
-        if (lojaSelecionada !== 'TODAS') {
-            filteredData = filteredData.filter(item => item.LOJA === lojaSelecionada);
-        }
-
-        if (fornecedorSelecionado !== 'TODOS') {
-            filteredData = filteredData.filter(item => {
-                const forn = getCaseInsensitiveValue(item, 'fornecedor');
-                return forn && String(forn).toUpperCase() === fornecedorSelecionado.toUpperCase();
-            });
-        }
-
-        if (produtoSelecionado !== 'TODOS') {
-            filteredData = filteredData.filter(item => {
-                const prod = getCaseInsensitiveValue(item, 'produto');
-                return prod && String(prod).toUpperCase() === produtoSelecionado.toUpperCase();
-            });
-        }
-        
-        if (periodoSelecionado !== 'TODOS') {
-            const dias = parseInt(periodoSelecionado);
-            const dataLimite = new Date();
-            dataLimite.setDate(dataLimite.getDate() - dias);
-            
-            filteredData = filteredData.filter(item => {
-                const dataRec = new Date(getCaseInsensitiveValue(item, 'dataderecebimento'));
-                return dataRec >= dataLimite;
-            });
-        }
-
-        currentData = filteredData;
-        
-        const kpis = calcularKpis(currentData);
-        renderKpis(kpis);
-        renderMetricasPorLoja(kpis.metricasPorLoja);
-        renderChartsAndDetails(kpis);
-    }
-    
-    lojaFilter.addEventListener('change', applyFilters);
-    fornecedorFilter.addEventListener('change', applyFilters);
-    produtoFilter.addEventListener('change', applyFilters);
-    periodoFilter.addEventListener('change', applyFilters);
-
-    // ===== FETCH DATA =====
-    
-    async function fetchDataAllStores() {
-        const fetchPromises = LOJAS_KEYS.map(lojaKey => {
-            const fetchUrl = `${APPS_SCRIPT_URL}?loja=${lojaKey}`;
-            return fetch(fetchUrl)
-                .then(response => response.json())
-                .catch(error => {
-                    console.error(`Erro ao buscar dados da loja ${lojaKey}:`, error);
-                    return [];
-                });
-        });
-
-        const results = await Promise.all(fetchPromises);
-        let combinedData = [];
-
-        results.forEach(result => {
-            if (Array.isArray(result)) {
-                combinedData.push(...result);
-            } else if (result && result.resultado === "erro") {
-                console.error("Erro do Apps Script:", result.mensagem);
-            }
-        });
-
-        return combinedData;
-    }
-
-    async function initializeDashboard() {
-        allData = await fetchDataAllStores();
-        loadingMessage.style.display = 'none';
-
-        if (allData.length === 0) {
-            alert('Nenhum dado encontrado.');
-            return;
-        }
-        
-        populateFilters(allData);
-        applyFilters();
-    }
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            initializeDashboard();
-        } else {
-            window.location.href = 'index.html'; 
-        }
+      }
     });
-
-    document.getElementById('logout-button').addEventListener('click', () => {
-        signOut(auth).then(() => {
-            window.location.href = 'index.html';
-        }).catch(error => {
-            console.error("Erro ao deslogar:", error);
-        });
-    });
-
+    
+    const lojas = Object.keys(lojaStats).sort();
+    const container = document.getElementById('lojas-container');
+    
+    container.innerHTML = lojas.map(loja => {
+      const stats = lojaStats[loja];
+      const percentual = stats.total > 0 ? ((stats.menorQue1Ano / stats.total) * 100).toFixed(1) : 0;
+      
+      let statusClass = 'ok';
+      let statusText = 'NORMAL';
+      
+      if (stats.vencidos > 0 || stats.menorQue1Ano > 15 || percentual > 25) {
+        statusClass = 'critical';
+        statusText = 'CRÍTICO';
+      } else if (stats.menorQue1Ano > 8 || percentual > 15) {
+        statusClass = 'warning';
+        statusText = 'ATENÇÃO';
+      }
+      
+      return `
+        <div class="loja-card-enterprise status-${statusClass}">
+          <div class="loja-header-enterprise">
+            <div class="loja-name-enterprise">🏢 ${loja}</div>
+            <span class="loja-status-badge ${statusClass}">${statusText}</span>
+          </div>
+          
+          <div class="loja-stats-grid">
+            <div class="stat-item-enterprise">
+              <span class="stat-label-enterprise">Total com Validade</span>
+              <span class="stat-value-enterprise">${stats.total}</span>
+            </div>
+            
+            <div class="stat-item-enterprise">
+              <span class="stat-label-enterprise">🔴 Validade < 1 Ano</span>
+              <span class="stat-value-enterprise critical">${stats.menorQue1Ano}</span>
+            </div>
+            
+            <div class="stat-item-enterprise">
+              <span class="stat-label-enterprise">🟠 Validade < 6 Meses</span>
+              <span class="stat-value-enterprise warning">${stats.menorQue6Meses}</span>
+            </div>
+            
+            <div class="stat-item-enterprise">
+              <span class="stat-label-enterprise">🟡 Validade < 3 Meses</span>
+              <span class="stat-value-enterprise warning">${stats.menorQue3Meses}</span>
+            </div>
+            
+            <div class="stat-item-enterprise">
+              <span class="stat-label-enterprise">⚫ Vencidos</span>
+              <span class="stat-value-enterprise critical">${stats.vencidos}</span>
+            </div>
+            
+            <div class="stat-item-enterprise stat-highlight">
+              <span class="stat-label-enterprise">% Produtos < 1 Ano</span>
+              <span class="stat-value-enterprise">${percentual}%</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  // ========================================
+  // RENDERIZAR TABELA
+  // ========================================
+  
+  function renderTable() {
+    const hoje = new Date();
+    const produtos = filteredData
+      .filter(r => r.VALIDADE)
+      .map(r => ({
+        loja: r._loja,
+        produto: r.PRODUTO,
+        fornecedor: r.FORNECEDOR,
+        lote: r.LOTE,
+        fabricacao: r['FABRICAÇÃO'],
+        validade: r.VALIDADE,
+        diasRestantes: Math.floor((new Date(r.VALIDADE) - hoje) / (1000 * 60 * 60 * 24))
+      }))
+      .filter(p => p.diasRestantes < 365)
+      .sort((a, b) => a.diasRestantes - b.diasRestantes);
+    
+    const tbody = document.getElementById('table-body');
+    
+    if (produtos.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 50px; color: #38a169; font-weight: 700; font-size: 16px;">
+            ✅ Nenhum produto com validade menor que 1 ano encontrado!
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    tbody.innerHTML = produtos.map(item => {
+      let statusClass = '';
+      let statusText = '';
+      let rowClass = '';
+      
+      if (item.diasRestantes < 0) {
+        statusClass = 'vencido';
+        statusText = 'VENCIDO';
+        rowClass = 'row-critical';
+      } else if (item.diasRestantes < 90) {
+        statusClass = 'critico';
+        statusText = 'CRÍTICO';
+        rowClass = 'row-critical';
+      } else if (item.diasRestantes < 180) {
+        statusClass = 'atencao';
+        statusText = 'ATENÇÃO';
+      } else {
+        statusClass = 'monitorar';
+        statusText = 'MONITORAR';
+      }
+      
+      return `
+        <tr class="${rowClass}">
+          <td><strong>${item.loja}</strong></td>
+          <td>${item.produto || 'N/A'}</td>
+          <td>${item.fornecedor || 'N/A'}</td>
+          <td>${item.lote || 'N/A'}</td>
+          <td>${formatDate(item.fabricacao)}</td>
+          <td>${formatDate(item.validade)}</td>
+          <td><strong>${item.diasRestantes} dias</strong></td>
+          <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+  
+  // ========================================
+  // FUNÇÕES AUXILIARES
+  // ========================================
+  
+  function isYes(value) {
+    if (!value) return false;
+    const val = String(value).toUpperCase();
+    return val === 'SIM' || val === 'S' || val === 'YES' || val === 'Y';
+  }
+  
+  function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString('pt-BR');
+  }
+  
+  function hideLoading() {
+    document.getElementById('loading').style.display = 'none';
+  }
 </script>
+
 </body>
 </html>
