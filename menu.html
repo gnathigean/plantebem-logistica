@@ -8,8 +8,11 @@
   <link rel="stylesheet" href="/menu.css">
   
   <style>
-    /* ✅ ESTILOS PARA BOTÕES DE ADMIN */
-    .btn-admin-cadastro, .btn-admin-gerenciar {
+    /* ✅ ESTILOS PADRONIZADOS PARA TODOS OS BOTÕES ADMINISTRATIVOS */
+    .btn-admin-cadastro, 
+    .btn-admin-gerenciar, 
+    .btn-manutencao, 
+    .btn-deslogar-todos {
       display: block;
       padding: 15px 30px;
       color: white;
@@ -19,6 +22,11 @@
       text-align: center;
       transition: all 0.3s ease;
       margin-bottom: 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      width: 100%;
+      box-sizing: border-box;
     }
     
     .btn-admin-cadastro {
@@ -39,6 +47,32 @@
     .btn-admin-gerenciar:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
+    }
+
+    .btn-manutencao.ativado {
+      background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .btn-manutencao.desativado {
+      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-manutencao:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+    }
+
+    .btn-deslogar-todos {
+      background: linear-gradient(135deg, #ff5722 0%, #d32f2f 100%);
+      box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+    }
+
+    .btn-deslogar-todos:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 87, 34, 0.5);
+      background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
     }
     
     /* ✅ ESTILO PARA BOTÃO DE ACESSAR LOJA */
@@ -62,20 +96,192 @@
       box-shadow: 0 6px 25px rgba(46, 204, 113, 0.5);
       background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
     }
+
+    /* ✅ IDENTIFICADOR DE USUÁRIO */
+    .user-identifier {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      z-index: 999;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .user-identifier.admin {
+      background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .user-type {
+      font-size: 11px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ✅ TELA DE MANUTENÇÃO */
+    .maintenance-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .maintenance-screen.active {
+      display: flex;
+    }
+
+    .maintenance-icon {
+      font-size: 120px;
+      margin-bottom: 30px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .maintenance-title {
+      font-size: 3em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .maintenance-message {
+      font-size: 1.5em;
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .maintenance-footer {
+      font-size: 1em;
+      opacity: 0.8;
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .user-identifier {
+        top: 60px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 12px;
+      }
+
+      .user-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+      }
+
+      .user-name {
+        font-size: 13px;
+      }
+
+      .user-type {
+        font-size: 10px;
+      }
+
+      .maintenance-icon {
+        font-size: 80px;
+      }
+
+      .maintenance-title {
+        font-size: 2em;
+      }
+
+      .maintenance-message {
+        font-size: 1.2em;
+      }
+    }
   </style>
 </head>
 <body>
   
+  <!-- ✅ TELA DE MANUTENÇÃO -->
+  <div id="maintenance-screen" class="maintenance-screen">
+    <div class="maintenance-icon">🔧</div>
+    <h1 class="maintenance-title">Sistema em Manutenção</h1>
+    <p class="maintenance-message">
+      Estamos realizando melhorias no sistema para proporcionar uma melhor experiência.<br>
+      Por favor, tente novamente em alguns instantes.
+    </p>
+    <div class="maintenance-footer">
+      Agradecemos pela compreensão! 💙
+    </div>
+  </div>
+
   <div class="fixed-nav">
     <a href="menu.html" class="botao-menu">Menu</a>
     <button id="logout-button">Sair</button>
   </div>
 
+  <!-- ✅ IDENTIFICADOR DE USUÁRIO -->
+  <div id="user-identifier" class="user-identifier" style="display: none;">
+    <div class="user-avatar" id="user-avatar">
+      👤
+    </div>
+    <div class="user-info">
+      <div class="user-name" id="user-name">Carregando...</div>
+      <div class="user-type" id="user-type">Usuário</div>
+    </div>
+  </div>
 
   <div class="logo-container">
     <img src="https://contagem.plantebemtec.com.br/Logotipo%20com%20Simbolo%20padrao.png" alt="Logo da Empresa" class="logo-img">
   </div>
-
 
   <div class="menu-container">
     <div class="menu-header">Menu Principal</div>
@@ -98,9 +304,16 @@
         <a href="gerenciar-usuarios.html" class="btn-admin-gerenciar">
           🗑️ Gerenciar Usuários
         </a>
+
+        <button id="btn-manutencao" class="btn-manutencao desativado">
+          ⏳ Verificando modo manutenção...
+        </button>
+
+        <button id="btn-deslogar-todos" class="btn-deslogar-todos">
+          🚪 Deslogar Todos os Usuários
+        </button>
       </div>
     </div>
-
 
     <div class="loja-selecao-container">
       <label for="seletor-loja" id="loja-label">Recebimento de Mercadorias:</label>
@@ -116,22 +329,21 @@
       </select>
     </div>
 
-
     <div id="botao-loja-container"></div>
   </div>
   
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-  import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+  import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
   
   const firebaseConfig = {
     apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
     authDomain: "login-com-dados.firebaseapp.com",
     projectId: "login-com-dados",
     storageBucket: "login-com-dados.firebasestorage.app",
-    messagingSenderId: "75556023458",
-    appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+    messagingSenderId: "7.5556023458e+10",
+    appId: "1:7.5556023458e+10:web:9f1362d0597603c0f37bfb",
     measurementId: "G-W9LRT99579"
   };
   
@@ -142,6 +354,209 @@
   const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2";
   
   const logoutButton = document.getElementById('logout-button');
+  const userIdentifier = document.getElementById('user-identifier');
+  const userAvatar = document.getElementById('user-avatar');
+  const userName = document.getElementById('user-name');
+  const userType = document.getElementById('user-type');
+  const btnDeslogarTodos = document.getElementById('btn-deslogar-todos');
+  const btnManutencao = document.getElementById('btn-manutencao');
+  const maintenanceScreen = document.getElementById('maintenance-screen');
+
+  // ========================================
+  // FUNCIONALIDADE: BOTÃO DE ACESSO À LOJA
+  // ========================================
+
+  const seletorLoja = document.getElementById('seletor-loja');
+  const botaoLojaContainer = document.getElementById('botao-loja-container');
+
+  // ✅ Função para criar o botão de acesso
+  function criarBotaoAcesso() {
+    if (!seletorLoja || !botaoLojaContainer) return;
+    
+    const selectedOption = seletorLoja.options[seletorLoja.selectedIndex];
+    const url = selectedOption.getAttribute('data-url');
+    const lojaName = selectedOption.value;
+    
+    // Limpa o container
+    botaoLojaContainer.innerHTML = '';
+    
+    // Se selecionou uma loja válida, cria o botão
+    if (url && url !== 'null' && lojaName) {
+      const botao = document.createElement('a');
+      botao.href = url;
+      botao.className = 'btn-acessar-loja';
+      botao.textContent = `📦 Acessar ${lojaName}`;
+      botaoLojaContainer.appendChild(botao);
+    }
+  }
+
+  // Evento de mudança no seletor
+  if (seletorLoja) {
+    seletorLoja.addEventListener('change', criarBotaoAcesso);
+  }
+
+  // ========================================
+  // FUNÇÃO: VERIFICAR MODO MANUTENÇÃO
+  // ========================================
+
+  async function verificarModoManutencao(isAdmin) {
+    try {
+      const configDoc = await getDoc(doc(db, "config", "sistema"));
+      
+      if (configDoc.exists()) {
+        const config = configDoc.data();
+        const modoManutencao = config.modoManutencao || false;
+        
+        if (!isAdmin && modoManutencao) {
+          maintenanceScreen.classList.add('active');
+          return true;
+        }
+        
+        if (isAdmin && btnManutencao) {
+          atualizarBotaoManutencao(modoManutencao);
+        }
+      } else if (isAdmin) {
+        await setDoc(doc(db, "config", "sistema"), {
+          modoManutencao: false,
+          ultimaAtualizacao: new Date().toISOString()
+        });
+        atualizarBotaoManutencao(false);
+      }
+      
+      return false;
+      
+    } catch (error) {
+      console.error('Erro ao verificar modo manutenção:', error);
+      return false;
+    }
+  }
+
+  // ========================================
+  // FUNÇÃO: ATUALIZAR BOTÃO DE MANUTENÇÃO
+  // ========================================
+
+  function atualizarBotaoManutencao(modoAtivo) {
+    if (!btnManutencao) return;
+    
+    if (modoAtivo) {
+      btnManutencao.classList.remove('desativado');
+      btnManutencao.classList.add('ativado');
+      btnManutencao.textContent = '🔓 Desativar Modo Manutenção';
+    } else {
+      btnManutencao.classList.remove('ativado');
+      btnManutencao.classList.add('desativado');
+      btnManutencao.textContent = '🔒 Ativar Modo Manutenção';
+    }
+  }
+
+  // ========================================
+  // FUNÇÃO: ALTERNAR MODO MANUTENÇÃO
+  // ========================================
+
+  if (btnManutencao) {
+    btnManutencao.addEventListener('click', async function() {
+      try {
+        const configDoc = await getDoc(doc(db, "config", "sistema"));
+        const modoAtual = configDoc.exists() ? (configDoc.data().modoManutencao || false) : false;
+        const novoModo = !modoAtual;
+        
+        const mensagem = novoModo 
+          ? '⚠️ ATENÇÃO: Ao ativar o modo manutenção, todos os usuários comuns serão bloqueados e não conseguirão acessar o sistema.\n\nApenas administradores terão acesso.\n\nDeseja continuar?'
+          : '✅ Deseja liberar o acesso ao sistema para todos os usuários?';
+        
+        const confirmacao = confirm(mensagem);
+        
+        if (!confirmacao) return;
+        
+        btnManutencao.disabled = true;
+        btnManutencao.textContent = '⏳ Processando...';
+        
+        await setDoc(doc(db, "config", "sistema"), {
+          modoManutencao: novoModo,
+          ultimaAtualizacao: new Date().toISOString(),
+          atualizadoPor: auth.currentUser.email
+        });
+        
+        atualizarBotaoManutencao(novoModo);
+        
+        const statusMsg = novoModo 
+          ? '🔒 Modo Manutenção ATIVADO!\n\nUsuários comuns não conseguirão acessar o sistema.'
+          : '🔓 Modo Manutenção DESATIVADO!\n\nTodos os usuários podem acessar normalmente.';
+        
+        alert(statusMsg);
+        
+        btnManutencao.disabled = false;
+        
+      } catch (error) {
+        console.error('Erro ao alternar modo manutenção:', error);
+        alert('❌ Erro ao alterar modo manutenção: ' + error.message);
+        btnManutencao.disabled = false;
+      }
+    });
+  }
+
+  // ========================================
+  // FUNÇÃO: DESLOGAR TODOS OS USUÁRIOS
+  // ========================================
+  
+  if (btnDeslogarTodos) {
+    btnDeslogarTodos.addEventListener('click', async function() {
+      const confirmacao = confirm(
+        '⚠️ ATENÇÃO: Esta ação irá deslogar TODOS os usuários do sistema!\n\n' +
+        'Isso inclui você e todos os outros usuários conectados.\n\n' +
+        'Todos precisarão fazer login novamente.\n\n' +
+        'Deseja continuar?'
+      );
+
+      if (!confirmacao) return;
+
+      const confirmacaoFinal = prompt(
+        'Digite "DESLOGAR TODOS" para confirmar esta ação:'
+      );
+
+      if (confirmacaoFinal !== 'DESLOGAR TODOS') {
+        alert('❌ Ação cancelada.');
+        return;
+      }
+
+      btnDeslogarTodos.disabled = true;
+      btnDeslogarTodos.textContent = '⏳ Processando...';
+
+      try {
+        const usuariosSnapshot = await getDocs(collection(db, "usuarios"));
+        const timestamp = new Date().toISOString();
+        
+        const promises = [];
+        
+        usuariosSnapshot.forEach((userDoc) => {
+          promises.push(
+            updateDoc(doc(db, "usuarios", userDoc.id), {
+              forceLogout: true,
+              forceLogoutTimestamp: timestamp
+            })
+          );
+        });
+
+        await Promise.all(promises);
+
+        alert('✅ Todos os usuários foram deslogados com sucesso!\n\nVocê também será deslogado agora.');
+        
+        await signOut(auth);
+        window.location.href = 'index.html';
+
+      } catch (error) {
+        console.error('Erro ao deslogar todos:', error);
+        alert('❌ Erro ao deslogar usuários: ' + error.message);
+        btnDeslogarTodos.disabled = false;
+        btnDeslogarTodos.textContent = '🚪 Deslogar Todos os Usuários';
+      }
+    });
+  }
+
+  // ========================================
+  // FUNÇÃO: LOGOUT INDIVIDUAL
+  // ========================================
+  
   if (logoutButton) {
     logoutButton.addEventListener('click', () => {
       signOut(auth).then(() => {
@@ -152,6 +567,32 @@
       });
     });
   }
+
+  // ========================================
+  // FUNÇÃO: ATUALIZAR IDENTIFICADOR DE USUÁRIO
+  // ========================================
+  
+  function atualizarIdentificadorUsuario(nome, email, isAdmin) {
+    const nomeExibicao = nome || email.split('@')[0] || 'Usuário';
+    
+    userName.textContent = nomeExibicao;
+    
+    if (isAdmin) {
+      userType.textContent = '🔑 Administrador';
+      userIdentifier.classList.add('admin');
+      userAvatar.textContent = '🔑';
+    } else {
+      userType.textContent = '👤 Usuário';
+      userIdentifier.classList.remove('admin');
+      userAvatar.textContent = '👤';
+    }
+    
+    userIdentifier.style.display = 'flex';
+  }
+  
+  // ========================================
+  // AUTENTICAÇÃO E CONTROLE DE ACESSO
+  // ========================================
   
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -163,31 +604,48 @@
       logoutButton.style.display = 'inline-block';
     }
     
-    // ✅ VERIFICA SE É ADMIN (por UID ou por campo no Firestore)
     let isAdmin = (user.uid === ADMIN_UID);
+    let userData = null;
     
     try {
       const userDoc = await getDoc(doc(db, "usuarios", user.uid));
       
       if (userDoc.exists()) {
-        const userData = userDoc.data();
+        userData = userDoc.data();
         
-        // ✅ VERIFICA SE TEM isAdmin: true OU tipo: 'admin'
+        if (userData.forceLogout === true) {
+          alert('⚠️ Sua sessão foi encerrada pelo administrador.\n\nPor favor, faça login novamente.');
+          
+          await updateDoc(doc(db, "usuarios", user.uid), {
+            forceLogout: false
+          });
+          
+          await signOut(auth);
+          window.location.href = 'index.html';
+          return;
+        }
+        
         if (userData.isAdmin === true || userData.tipo === 'admin') {
           isAdmin = true;
         }
+
+        const emManutencao = await verificarModoManutencao(isAdmin);
         
-        // ✅ SE FOR ADMIN, MOSTRA ÁREA ADMINISTRATIVA
+        if (emManutencao) {
+          return;
+        }
+
+        atualizarIdentificadorUsuario(userData.nome, user.email, isAdmin);
+        
         if (isAdmin) {
           const adminSection = document.getElementById('admin-section');
           if (adminSection) {
             adminSection.style.display = 'block';
           }
           console.log('✅ Admin logado - acesso total');
-          return; // Admin não precisa de filtros
+          return;
         }
         
-        // ✅ USUÁRIO COMUM - FILTRAR LOJAS
         const lojasPermitidas = userData.lojasPermitidas || [];
         
         if (lojasPermitidas.length === 0) {
@@ -219,14 +677,19 @@
           if (opcoesRestantes.length === 1) {
             seletorLoja.value = opcoesRestantes[0].value;
             console.log(`🎯 Seleção automática: ${opcoesRestantes[0].textContent}`);
+            
+            // ✅ CRIAR BOTÃO AUTOMATICAMENTE APÓS SELEÇÃO
+            criarBotaoAcesso();
           }
         }
         
       } else {
+        atualizarIdentificadorUsuario(null, user.email, isAdmin);
+        
         console.warn('⚠️ Usuário sem permissões cadastradas no Firestore');
         
-        // ✅ SE FOR O ADMIN_UID, MOSTRA ÁREA ADMIN MESMO SEM DADOS
         if (isAdmin) {
+          await verificarModoManutencao(isAdmin);
           const adminSection = document.getElementById('admin-section');
           if (adminSection) {
             adminSection.style.display = 'block';
@@ -239,30 +702,6 @@
       alert('Erro ao carregar permissões. Entre em contato com o administrador.');
     }
   });
-  
-  // ✅ FUNCIONALIDADE PARA CRIAR BOTÃO DE ACESSO À LOJA
-  const seletorLoja = document.getElementById('seletor-loja');
-  const botaoLojaContainer = document.getElementById('botao-loja-container');
-
-  if (seletorLoja && botaoLojaContainer) {
-    seletorLoja.addEventListener('change', function() {
-      const selectedOption = this.options[this.selectedIndex];
-      const url = selectedOption.getAttribute('data-url');
-      const lojaName = selectedOption.value;
-      
-      // Limpa o container
-      botaoLojaContainer.innerHTML = '';
-      
-      // Se selecionou uma loja válida, cria o botão
-      if (url && url !== 'null' && lojaName) {
-        const botao = document.createElement('a');
-        botao.href = url;
-        botao.className = 'btn-acessar-loja';
-        botao.textContent = `📦 Acessar ${lojaName}`;
-        botaoLojaContainer.appendChild(botao);
-      }
-    });
-  }
   
 </script>
 </body>
