@@ -3,420 +3,568 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dados da Planilha - Visualização Organizada</title>
+<title>Dados da Planilha - Tema Harmonizado</title>
 <style>
+  :root {
+    /* 🎨 PALETA DE CORES PRINCIPAL - Ajuste estas cores conforme o background */
+    --cor-primaria: #2c3e50;        /* Azul escuro elegante */
+    --cor-secundaria: #3498db;      /* Azul médio */
+    --cor-destaque: #e74c3c;        /* Vermelho/coral para destaques */
+    --cor-sucesso: #27ae60;         /* Verde para status positivo */
+    --cor-alerta: #f39c12;          /* Laranja para alertas */
+    --cor-critica: #e74c3c;         /* Vermelho para crítico */
+    --cor-texto-escuro: #2c3e50;
+    --cor-texto-claro: #ecf0f1;
+    --cor-fundo-claro: rgba(255, 255, 255, 0.95);
+    --cor-fundo-card: rgba(255, 255, 255, 0.98);
+    --cor-borda: rgba(44, 62, 80, 0.1);
+    --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --sombra-media: 0 8px 16px rgba(0, 0, 0, 0.15);
+    --sombra-forte: 0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
-  
- body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* ✅ IMAGEM DE FUNDO */
-  background: 
-    url('/imagens/ptbfundo.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  padding: 15px;
-  min-height: 100vh;
-}
-  
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('/imagens/ptbfundo.png') no-repeat center center fixed;
+    background-size: cover;
+    padding: 15px;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Overlay sutil para melhorar legibilidade */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.05);
+    z-index: 0;
+    pointer-events: none;
+  }
+
   .container {
     max-width: 98%;
     margin: 0 auto;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    background: var(--cor-fundo-claro);
+    border-radius: 16px;
+    box-shadow: var(--sombra-forte);
     overflow: hidden;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
   }
-  
+
   /* CABEÇALHO */
   .header {
-    background: linear-gradient(135deg, #a9a9a9 0%, #f1f0f1 100%);
-    color: white;
-    padding: 20px 30px;
+    background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+    color: var(--cor-texto-claro);
+    padding: 25px 30px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-  
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse 15s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+    50% { transform: scale(1.1) rotate(180deg); opacity: 0.5; }
+  }
+
   .header h1 {
-    font-size: 26px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
   }
-  
+
+  .header p {
+    font-size: 14px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+
   /* BUSCA */
   .search-container {
-    padding: 20px 30px 10px 30px;
-    background: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
+    padding: 20px 30px;
+    background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 2px solid var(--cor-borda);
   }
-  
+
   .search-wrapper {
     position: relative;
     max-width: 600px;
     margin: 0 auto;
   }
-  
+
   .search-container input {
     width: 100%;
-    padding: 12px 45px 12px 15px;
+    padding: 14px 50px 14px 20px;
     font-size: 15px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    transition: all 0.3s;
+    border: 2px solid var(--cor-borda);
+    border-radius: 30px;
+    transition: all 0.3s ease;
     background: white;
+    box-shadow: var(--sombra-suave);
   }
-  
+
   .search-container input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--cor-secundaria);
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
   }
-  
+
   .search-icon {
     position: absolute;
-    right: 15px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
-    color: #667eea;
-    font-size: 18px;
+    color: var(--cor-secundaria);
+    font-size: 20px;
+    pointer-events: none;
   }
-  
+
   /* SISTEMA DE ABAS */
   .tabs-container {
     display: flex;
     background: #f8f9fa;
-    padding: 10px 20px 0 20px;
+    padding: 15px 20px 0 20px;
     overflow-x: auto;
-    border-bottom: 2px solid #dee2e6;
-    gap: 5px;
+    border-bottom: 3px solid var(--cor-borda);
+    gap: 8px;
   }
-  
+
   .tabs-container::-webkit-scrollbar {
-    height: 6px;
+    height: 8px;
   }
-  
+
   .tabs-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #e9ecef;
+    border-radius: 4px;
   }
-  
+
   .tabs-container::-webkit-scrollbar-thumb {
-    background: #667eea;
-    border-radius: 3px;
+    background: var(--cor-secundaria);
+    border-radius: 4px;
   }
-  
+
   .tab-button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: white;
-    border: 2px solid #dee2e6;
+    border: 2px solid var(--cor-borda);
     border-bottom: none;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s;
-    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 12px 12px 0 0;
     white-space: nowrap;
-    color: #495057;
+    color: var(--cor-texto-escuro);
+    position: relative;
   }
-  
+
   .tab-button:hover {
     background: #e9ecef;
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-suave);
   }
-  
+
   .tab-button.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
     color: white;
-    border-color: #667eea;
+    border-color: var(--cor-secundaria);
     transform: translateY(0);
+    box-shadow: var(--sombra-media);
   }
-  
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cor-primaria), var(--cor-secundaria));
+  }
+
   /* CONTEÚDO DAS ABAS */
   .tab-content {
     display: none;
-    animation: fadeIn 0.4s ease-in;
+    animation: fadeIn 0.5s ease-in;
   }
-  
+
   .tab-content.active {
     display: block;
   }
-  
+
   @keyframes fadeIn {
     from { 
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(15px);
     }
     to { 
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
+
   /* INFORMAÇÕES DA ABA */
   .tab-info {
-    padding: 15px 30px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    padding: 18px 30px;
+    background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid var(--cor-borda);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
   }
-  
+
   .tab-info-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 14px;
-    color: #495057;
+    color: var(--cor-texto-escuro);
+    font-weight: 500;
   }
-  
+
   .tab-info-item strong {
-    color: #667eea;
+    color: var(--cor-secundaria);
+    font-weight: 700;
   }
-  
+
   /* CONTAINER DE DADOS (CARDS) */
   .dados-container {
-    padding: 20px;
+    padding: 25px;
     max-height: 70vh;
     overflow-y: auto;
+    background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
   }
-  
+
   .dados-container::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
   }
-  
+
   .dados-container::-webkit-scrollbar-track {
     background: #f1f1f1;
+    border-radius: 5px;
   }
-  
+
   .dados-container::-webkit-scrollbar-thumb {
-    background: #667eea;
-    border-radius: 4px;
+    background: var(--cor-secundaria);
+    border-radius: 5px;
   }
-  
+
+  .dados-container::-webkit-scrollbar-thumb:hover {
+    background: var(--cor-primaria);
+  }
+
   /* CARD DE REGISTRO */
   .registro-card {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px;
-    transition: all 0.3s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    background: var(--cor-fundo-card);
+    border: 2px solid var(--cor-borda);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra-suave);
+    position: relative;
+    overflow: hidden;
   }
-  
+
+  .registro-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--cor-primaria), var(--cor-secundaria));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
   .registro-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
-    border-color: #667eea;
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-forte);
+    border-color: var(--cor-secundaria);
   }
-  
+
+  .registro-card:hover::before {
+    opacity: 1;
+  }
+
   .registro-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--cor-borda);
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
   }
-  
+
   .registro-titulo {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 700;
-    color: #667eea;
+    color: var(--cor-primaria);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  
+
+  .registro-titulo::before {
+    content: '📦';
+    font-size: 22px;
+  }
+
   .registro-data {
     font-size: 14px;
-    color: #6c757d;
-    font-weight: 500;
+    color: #7f8c8d;
+    font-weight: 600;
+    background: #ecf0f1;
+    padding: 6px 12px;
+    border-radius: 20px;
   }
-  
+
   .registro-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
+    gap: 18px;
   }
-  
+
   .registro-item {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.2s ease;
   }
-  
+
+  .registro-item:hover {
+    background: #e9ecef;
+    transform: translateX(3px);
+  }
+
   .registro-label {
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    color: #6c757d;
-    letter-spacing: 0.5px;
+    color: #7f8c8d;
+    letter-spacing: 0.8px;
   }
-  
+
   .registro-valor {
     font-size: 14px;
-    color: #495057;
+    color: var(--cor-texto-escuro);
     font-weight: 500;
     word-wrap: break-word;
   }
-  
+
   .registro-valor.vazio {
-    color: #adb5bd;
+    color: #bdc3c7;
     font-style: italic;
   }
-  
-  /* ✅ ESTILOS PARA VALIDADE */
+
+  /* ESTILOS PARA VALIDADE */
   .registro-valor.validade-critica {
-    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-    color: #c62828;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border-left: 5px solid #c62828;
+    background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+    color: var(--cor-critica);
+    padding: 12px 16px;
+    border-radius: 10px;
+    border-left: 5px solid var(--cor-critica);
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(198, 40, 40, 0.2);
+    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.2);
+    animation: pulseAlert 2s ease-in-out infinite;
   }
-  
+
+  @keyframes pulseAlert {
+    0%, 100% { box-shadow: 0 3px 10px rgba(231, 76, 60, 0.2); }
+    50% { box-shadow: 0 3px 15px rgba(231, 76, 60, 0.4); }
+  }
+
   .registro-valor.validade-alerta {
-    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
-    color: #f57f17;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border-left: 5px solid #f57f17;
+    background: linear-gradient(135deg, #fff4e6 0%, #ffe6cc 100%);
+    color: var(--cor-alerta);
+    padding: 12px 16px;
+    border-radius: 10px;
+    border-left: 5px solid var(--cor-alerta);
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(245, 127, 23, 0.2);
+    box-shadow: 0 3px 10px rgba(243, 156, 18, 0.2);
   }
-  
+
   .registro-valor.validade-ok {
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    color: #2e7d32;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border-left: 5px solid #2e7d32;
+    background: linear-gradient(135deg, #e6f7ed 0%, #ccf0dd 100%);
+    color: var(--cor-sucesso);
+    padding: 12px 16px;
+    border-radius: 10px;
+    border-left: 5px solid var(--cor-sucesso);
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+    box-shadow: 0 3px 10px rgba(39, 174, 96, 0.2);
   }
-  
+
   .registro-valor a {
     color: white;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--cor-secundaria) 0%, var(--cor-primaria) 100%);
     text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 5px;
+    padding: 8px 16px;
+    border-radius: 8px;
     display: inline-block;
-    margin: 2px 2px 2px 0;
+    margin: 3px 3px 3px 0;
     font-size: 12px;
-    font-weight: 500;
-    transition: all 0.3s;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra-suave);
   }
-  
+
   .registro-valor a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-media);
+    filter: brightness(1.1);
   }
-  
+
   /* LOADING E MENSAGENS */
   #loading {
     text-align: center;
-    padding: 60px 20px;
+    padding: 80px 20px;
     font-size: 16px;
-    color: #667eea;
-    font-weight: 500;
+    color: var(--cor-secundaria);
+    font-weight: 600;
   }
-  
+
   .error-message {
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+    border-left: 5px solid #ffc107;
     color: #856404;
-    padding: 20px;
-    margin: 20px;
-    border-radius: 8px;
+    padding: 25px;
+    margin: 25px;
+    border-radius: 12px;
     font-size: 14px;
+    box-shadow: var(--sombra-suave);
   }
-  
+
   .empty-message {
     text-align: center;
-    padding: 40px;
-    color: #6c757d;
-    font-size: 15px;
+    padding: 50px;
+    color: #7f8c8d;
+    font-size: 16px;
+    font-weight: 500;
   }
-  
+
   /* BADGES */
   .badge {
     display: inline-block;
-    padding: 4px 8px;
-    background: #667eea;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--cor-secundaria) 0%, var(--cor-primaria) 100%);
     color: white;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: var(--sombra-suave);
   }
-  
+
   /* RESPONSIVO */
   @media (max-width: 768px) {
     body {
-      padding: 10px;
+      padding: 8px;
     }
-    
+
     .header h1 {
-      font-size: 20px;
+      font-size: 22px;
     }
-    
+
     .tabs-container {
-      padding: 10px 10px 0 10px;
+      padding: 12px 12px 0 12px;
     }
-    
+
     .tab-button {
       font-size: 13px;
-      padding: 8px 15px;
+      padding: 10px 18px;
     }
-    
+
     .dados-container {
       padding: 15px;
     }
-    
+
     .registro-card {
-      padding: 15px;
+      padding: 18px;
     }
-    
+
     .registro-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .registro-titulo {
-      font-size: 16px;
+      font-size: 17px;
     }
-    
+
     .tab-info {
-      padding: 10px 15px;
+      padding: 12px 15px;
       font-size: 12px;
     }
-    
+
     .search-container {
       padding: 15px;
     }
   }
-  
+
   /* ANIMAÇÃO DE CARREGAMENTO */
   .spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #667eea;
+    border: 4px solid rgba(52, 152, 219, 0.1);
+    border-top: 4px solid var(--cor-secundaria);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     animation: spin 1s linear infinite;
-    margin: 20px auto;
+    margin: 25px auto;
   }
-  
+
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  /* EFEITOS ADICIONAIS */
+  .registro-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--cor-secundaria);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .registro-item:hover::before {
+    opacity: 1;
   }
 </style>
 </head>
@@ -425,29 +573,30 @@
 <div class="container">
   <div class="header">
     <h1>📊 Sistema de Visualização de Dados</h1>
+    <p>Gerenciamento e análise de informações em tempo real</p>
   </div>
-  
+
   <div class="search-container">
     <div class="search-wrapper">
       <input type="text" id="searchInput" placeholder="Pesquisar em todos os campos...">
       <span class="search-icon">🔍</span>
     </div>
   </div>
-  
+
   <div class="tabs-container" id="tabsContainer"></div>
-  
+
   <div id="loading">
     <div class="spinner"></div>
     <p>Carregando dados da planilha...</p>
   </div>
-  
+
   <div id="tabsContent"></div>
 </div>
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
   import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
-  
+
   const firebaseConfig = {
     apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
     authDomain: "login-com-dados.firebaseapp.com",
@@ -457,38 +606,38 @@
     appId: "1:7.5556023458e+10:web:9f1362d0597603c0f37bfb",
     measurementId: "G-W9LRT99579"
   };
-  
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  
+
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLStAEVzVTEQbBcy8_TCFscABUy5rM1n-CNM4fiABnQ3vGeB-4a_uss8P7rQm2iuUE/exec';
-  
+
   let allSheetsData = {};
   let currentTab = '';
   let currentFilteredData = [];
   let usuariosCache = {};
-  
+
   const loadingMessage = document.getElementById('loading');
   const searchInput = document.getElementById('searchInput');
   const tabsContainer = document.getElementById('tabsContainer');
   const tabsContent = document.getElementById('tabsContent');
-  
+
   async function buscarNomeUsuario(email) {
     if (!email) return 'N/A';
     if (usuariosCache[email]) return usuariosCache[email];
-    
+
     try {
       const usuariosRef = collection(db, "usuarios");
       const q = query(usuariosRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
         const nome = userData.nome || email.split('@')[0];
         usuariosCache[email] = nome;
         return nome;
       }
-      
+
       const nomeFallback = email.split('@')[0];
       usuariosCache[email] = nomeFallback;
       return nomeFallback;
@@ -497,28 +646,23 @@
       return email.split('@')[0];
     }
   }
-  
-  // ========================================
-  // ✅ FUNÇÃO CORRIGIDA: VERIFICAR VALIDADE
-  // ========================================
-  
+
   function verificarValidade(dataValidade) {
     if (!dataValidade) return null;
-    
+
     try {
       const validade = new Date(dataValidade);
       const hoje = new Date();
-      
+
       validade.setHours(0, 0, 0, 0);
       hoje.setHours(0, 0, 0, 0);
-      
+
       const diferencaMs = validade - hoje;
       const diferencaDias = Math.floor(diferencaMs / (1000 * 60 * 60 * 24));
-      
+
       const umAnoEmDias = 365;
       const diferencaAnos = diferencaDias / umAnoEmDias;
-      
-      // ✅ MENOR QUE 1 ANO - VERMELHO
+
       if (diferencaAnos < 1) {
         if (diferencaDias < 0) {
           return {
@@ -528,7 +672,7 @@
             texto: 'VENCIDO há ' + Math.abs(diferencaDias) + ' dias'
           };
         }
-        
+
         const mesesRestantes = Math.floor(diferencaDias / 30);
         return {
           status: 'critica',
@@ -537,7 +681,6 @@
           texto: mesesRestantes > 0 ? `${mesesRestantes} ${mesesRestantes === 1 ? 'mês' : 'meses'} restantes` : `${diferencaDias} dias restantes`
         };
       }
-      // ✅ IGUAL A 1 ANO (entre 1 ano e 1 ano e 1 mês) - AMARELO
       else if (diferencaAnos >= 1 && diferencaAnos < 1.08) {
         return {
           status: 'alerta',
@@ -546,16 +689,15 @@
           texto: '1 ano restante'
         };
       }
-      // ✅ MAIOR QUE 1 ANO - VERDE
       else {
         const anosCompletos = Math.floor(diferencaAnos);
         const mesesExtras = Math.floor((diferencaAnos - anosCompletos) * 12);
-        
+
         let textoTempo = `${anosCompletos} ${anosCompletos === 1 ? 'ano' : 'anos'}`;
         if (mesesExtras > 0) {
           textoTempo += ` e ${mesesExtras} ${mesesExtras === 1 ? 'mês' : 'meses'}`;
         }
-        
+
         return {
           status: 'ok',
           classe: 'validade-ok',
@@ -568,12 +710,12 @@
       return null;
     }
   }
-  
+
   async function fetchAllSheetsData() {
     try {
       const response = await fetch(APPS_SCRIPT_URL);
       if (!response.ok) throw new Error('Erro ao conectar com o servidor: ' + response.statusText);
-      
+
       const data = await response.json();
       allSheetsData = data;
       loadingMessage.style.display = 'none';
@@ -589,36 +731,36 @@
       console.error('Erro completo:', error);
     }
   }
-  
+
   function createTabs() {
     tabsContainer.innerHTML = '';
     tabsContent.innerHTML = '';
-    
+
     const sheetNames = Object.keys(allSheetsData);
     if (sheetNames.length === 0) {
       tabsContent.innerHTML = '<div class="empty-message">Nenhuma aba encontrada.</div>';
       return;
     }
-    
+
     sheetNames.forEach((sheetName, index) => {
       const tabButton = document.createElement('button');
       tabButton.className = 'tab-button';
       tabButton.textContent = sheetName;
       tabButton.onclick = () => switchTab(sheetName);
-      
+
       if (index === 0) {
         tabButton.classList.add('active');
         currentTab = sheetName;
       }
-      
+
       tabsContainer.appendChild(tabButton);
-      
+
       const tabContentDiv = document.createElement('div');
       tabContentDiv.className = 'tab-content';
       tabContentDiv.id = `tab-${sanitizeId(sheetName)}`;
-      
+
       if (index === 0) tabContentDiv.classList.add('active');
-      
+
       tabContentDiv.innerHTML = `
         <div class="tab-info">
           <div class="tab-info-item">
@@ -632,102 +774,102 @@
         </div>
         <div class="dados-container" id="dados-${sanitizeId(sheetName)}"></div>
       `;
-      
+
       tabsContent.appendChild(tabContentDiv);
     });
-    
+
     renderCards(currentTab);
   }
-  
+
   function switchTab(sheetName) {
     currentTab = sheetName;
     searchInput.value = '';
-    
+
     document.querySelectorAll('.tab-button').forEach(btn => {
       btn.classList.remove('active');
       if (btn.textContent === sheetName) btn.classList.add('active');
     });
-    
+
     document.querySelectorAll('.tab-content').forEach(content => {
       content.classList.remove('active');
     });
-    
+
     const activeContent = document.getElementById(`tab-${sanitizeId(sheetName)}`);
     if (activeContent) activeContent.classList.add('active');
-    
+
     renderCards(sheetName);
   }
-  
+
   async function renderCards(sheetName, filterTerm = '') {
     const data = allSheetsData[sheetName];
     const dadosContainer = document.getElementById(`dados-${sanitizeId(sheetName)}`);
-    
+
     if (!data || data.length === 0) {
       if (dadosContainer) dadosContainer.innerHTML = '<div class="empty-message">Nenhum dado disponível.</div>';
       return;
     }
-    
+
     if (!dadosContainer) return;
-    
+
     let dataToRender = data;
     if (filterTerm) {
       dataToRender = data.filter(row => {
         return Object.values(row).some(value => String(value).toLowerCase().includes(filterTerm.toLowerCase()));
       });
     }
-    
+
     const countBadge = document.getElementById(`count-${sanitizeId(sheetName)}`);
     if (countBadge) countBadge.textContent = dataToRender.length;
-    
+
     dadosContainer.innerHTML = '';
-    
+
     if (dataToRender.length === 0) {
       dadosContainer.innerHTML = '<div class="empty-message">Nenhum resultado encontrado.</div>';
       return;
     }
-    
+
     const COLUNAS_TEXTO = ['FALTA', 'AVARIA', 'VENCIMENTO CURTO', 'NF DIVERGENCIA / CARGA', 'PRODUTO RECUSADO'];
-    
+
     for (const rowData of dataToRender) {
       const card = document.createElement('div');
       card.className = 'registro-card';
-      
+
       const header = document.createElement('div');
       header.className = 'registro-header';
-      
+
       const titulo = document.createElement('div');
       titulo.className = 'registro-titulo';
       titulo.textContent = rowData['PRODUTO'] || rowData['NOTA FISCAL'] || 'Registro';
-      
+
       const dataRecebimento = document.createElement('div');
       dataRecebimento.className = 'registro-data';
       dataRecebimento.textContent = rowData['DATA DE RECEBIMENTO'] ? `📅 ${formatDate(rowData['DATA DE RECEBIMENTO'])}` : '';
-      
+
       header.appendChild(titulo);
       header.appendChild(dataRecebimento);
       card.appendChild(header);
-      
+
       const grid = document.createElement('div');
       grid.className = 'registro-grid';
-      
+
       for (const [key, value] of Object.entries(rowData)) {
         const item = document.createElement('div');
         item.className = 'registro-item';
-        
+
         const label = document.createElement('div');
         label.className = 'registro-label';
         label.textContent = key;
-        
+
         const valor = document.createElement('div');
         valor.className = 'registro-valor';
-        
+
         if (key.toUpperCase() === 'USUARIO' && value) {
           const nomeUsuario = await buscarNomeUsuario(value);
           valor.textContent = `👤 ${nomeUsuario}`;
         }
         else if (key.toUpperCase() === 'VALIDADE' && value) {
           const statusValidade = verificarValidade(value);
-          
+
           if (statusValidade) {
             valor.classList.add(statusValidade.classe);
             valor.textContent = `${statusValidade.icone} ${formatDate(value)} (${statusValidade.texto})`;
@@ -760,21 +902,21 @@
         else {
           valor.textContent = value;
         }
-        
+
         item.appendChild(label);
         item.appendChild(valor);
         grid.appendChild(item);
       }
-      
+
       card.appendChild(grid);
       dadosContainer.appendChild(card);
     }
   }
-  
+
   function sanitizeId(str) {
     return String(str).replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '');
   }
-  
+
   function isURL(str) {
     try {
       new URL(str);
@@ -783,7 +925,7 @@
       return false;
     }
   }
-  
+
   function formatDate(dateString) {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;
@@ -792,11 +934,11 @@
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
-  
+
   searchInput.addEventListener('input', function() {
     renderCards(currentTab, this.value);
   });
-  
+
   fetchAllSheetsData();
 </script>
 

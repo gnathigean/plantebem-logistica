@@ -204,175 +204,190 @@ Pesquisa detalhada
   </div>
 
   <script type="module">
-  // Importa as funções modulares necessárias do Firebase
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-  
-  // SUAS CONFIGURAÇÕES FIREBASE
-  const firebaseConfig = {
- apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
- authDomain: "login-com-dados.firebaseapp.com",
- projectId: "login-com-dados",
- storageBucket: "login-com-dados.firebasestorage.app",
- messagingSenderId: "75556023458",
- appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
- measurementId: "G-W9LRT99579"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznasM8YyVVOH3OeuSd92uY8ORPHJAEE8WIEMliIczKyEbhzob4BGWJqVsGSA1dewQB/exec";
-  const CLOUDINARY_CLOUD_NAME = "diro90s1u";
-  const CLOUDINARY_UPLOAD_PRESET = "produtos";
+    // Importa as funções modulares necessárias do Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+    
+    // SUAS CONFIGURAÇÕES FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+        authDomain: "login-com-dados.firebaseapp.com",
+        projectId: "login-com-dados",
+        storageBucket: "login-com-dados.firebasestorage.app",
+        messagingSenderId: "75556023458",
+        appId: "1:75556023458:web:9f1362d0597603c0f37bfb",
+        measurementId: "G-W9LRT99579"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznasM8YyVVOH3OeuSd92uY8ORPHJAEE8WIEMliIczKyEbhzob4BGWJqVsGSA1dewQB/exec";
+    const CLOUDINARY_CLOUD_NAME = "diro90s1u";
+    const CLOUDINARY_UPLOAD_PRESET = "produtos";
 
-  const formulario = document.getElementById("meu-formulario");
-  const statusDiv = document.getElementById("status");
-  const mainContent = document.getElementById("main-content");
-  const logoutButton = document.getElementById("logout-button");
-  const fileInput = document.getElementById("file"); 
-  const checklistRecusa = document.getElementById('checklist-recusa');
+    const formulario = document.getElementById("meu-formulario");
+    const statusDiv = document.getElementById("status");
+    const mainContent = document.getElementById("main-content");
+    const logoutButton = document.getElementById("logout-button");
+    const fileInput = document.getElementById("file"); 
+    const checklistRecusa = document.getElementById('checklist-recusa');
 
-  let usuarioLogadoEmail = '';
-  let linksAcumulados = []; 
+    let usuarioLogadoEmail = '';
+    let linksAcumulados = []; 
+    
+    // ✅ NOVA VARIÁVEL: PROTEÇÃO CONTRA MÚLTIPLOS ENVIOS
+    let enviandoDados = false;
+
+    // --- FUNÇÃO PARA MOSTRAR/OCULTAR CAIXAS DE TEXTO ---
+    function toggleDescricao(radioName, descricaoId) {
+        const simRadio = document.querySelector(`input[name="${radioName}"][value="Sim"]`);
+        const descricaoTextarea = document.getElementById(descricaoId);
+
+        if (simRadio.checked) {
+            descricaoTextarea.style.display = 'block';
+            descricaoTextarea.required = true;
+        } else {
+            descricaoTextarea.style.display = 'none';
+            descricaoTextarea.required = false;
+            descricaoTextarea.value = '';
+        }
+    }
+
+    // --- LISTENER GERAL PARA O CHECKLIST ---
+    if (checklistRecusa) {
+        checklistRecusa.addEventListener('change', function(event) {
+            const name = event.target.name;
+            let descricaoId = '';
+
+            if (name === 'faltaCheck') {
+                descricaoId = 'faltaDescricao';
+            } else if (name === 'avariaCheck') {
+                descricaoId = 'avariaDescricao';
+            } else if (name === 'vencimentoCurtoCheck') {
+                descricaoId = 'vencimentoCurtoDescricao';
+            } else if (name === 'nfDivergenciaCheck') {
+                descricaoId = 'nfDivergenciaDescricao';
+            } else if (name === 'recusaCheck') { 
+                descricaoId = 'recusaDescricao';
+            }
+            
+            if (descricaoId) {
+                toggleDescricao(name, descricaoId);
+            }
+        });
+    }
+
+    // --- LÓGICA DE AUTENTICAÇÃO ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            usuarioLogadoEmail = user.email;
+            mainContent.style.display = 'block'; 
+            logoutButton.style.display = 'inline-block'; 
+        } else {
+            window.location.href = 'index.html'; 
+        }
+    });
+    
+    // FUNCIONALIDADE DO BOTÃO DE SAIR
+    logoutButton.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error("Erro ao deslogar:", error);
+        });
+    });
+
+    // --- UPLOAD IMEDIATO DE FOTO ---
+    async function uploadFotoImediato(arquivo) {
+        if (!arquivo) return;
+
+        statusDiv.textContent = `Enviando 1 foto para o Cloudinary...`;
+        statusDiv.className = "mensagem-status";
+
+        const dadosImagem = new FormData();
+        dadosImagem.append("file", arquivo);
+        dadosImagem.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        
+        try {
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                {
+                    method: "POST",
+                    body: dadosImagem,
+                }
+            );
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Erro no upload para o Cloudinary: ${errorData.error.message}`);
+            }
+            
+            const data = await response.json();
+            linksAcumulados.push(data.secure_url); 
+            
+            statusDiv.textContent = `Foto salva! ${linksAcumulados.length} foto(s) prontas para envio. Clique novamente para mais fotos.`;
+            statusDiv.className = "mensagem-status sucesso";
+            
+        } catch (error) {
+            statusDiv.textContent = `Erro ao salvar foto: ${error.message}`;
+            statusDiv.className = "mensagem-status erro";
+            console.error("Erro de upload:", error);
+        }
+    }
+    
+    // --- LISTENER PARA O CAMPO DE ARQUIVO ---
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            uploadFotoImediato(this.files[0]); 
+        }
+        this.value = ''; 
+    });
 
     // --- FUNÇÃO PARA CONVERTER TEXTO PARA MAIÚSCULAS ---
     function toUpperCaseSafe(value) {
         return typeof value === 'string' ? value.toUpperCase() : value;
     }
 
-  // --- FUNÇÃO PARA MOSTRAR/OCULTAR CAIXAS DE TEXTO (MANTIDA) ---
-  function toggleDescricao(radioName, descricaoId) {
- const simRadio = document.querySelector(`input[name="${radioName}"][value="Sim"]`);
- const descricaoTextarea = document.getElementById(descricaoId);
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO (COM PROTEÇÃO CONTRA MÚLTIPLOS ENVIOS) ---
+    formulario.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+    
+        // ✅ PROTEÇÃO: VERIFICA SE JÁ ESTÁ ENVIANDO
+        if (enviandoDados) {
+            console.log('⚠️ Aguarde! Dados já estão sendo enviados...');
+            statusDiv.textContent = "⚠️ AGUARDE! DADOS JÁ ESTÃO SENDO ENVIADOS...";
+            statusDiv.className = "mensagem-status aviso";
+            return; // Bloqueia o envio
+        }
 
- if (simRadio.checked) {
-descricaoTextarea.style.display = 'block';
-descricaoTextarea.required = true;
- } else {
-descricaoTextarea.style.display = 'none';
-descricaoTextarea.required = false;
-descricaoTextarea.value = ''; 
- }
-  }
+        if (!usuarioLogadoEmail) {
+            statusDiv.textContent = "ERRO: NENHUM USUÁRIO LOGADO. POR FAVOR, FAÇA O LOGIN.";
+            statusDiv.className = "mensagem-status erro";
+            return;
+        }
+    
+        if (linksAcumulados.length === 0) {
+            statusDiv.textContent = "POR FAVOR, TIRE OU SELECIONE PELO MENOS UMA IMAGEM.";
+            statusDiv.className = "mensagem-status erro";
+            return;
+        }
 
-  // --- LISTENER GERAL PARA O CHECKLIST (MANTIDO) ---
-  if (checklistRecusa) {
- checklistRecusa.addEventListener('change', function(event) {
-const name = event.target.name;
-let descricaoId = '';
+        // ✅ MARCA COMO ENVIANDO
+        enviandoDados = true;
 
-if (name === 'faltaCheck') {
-  descricaoId = 'faltaDescricao';
-} else if (name === 'avariaCheck') {
-  descricaoId = 'avariaDescricao';
-} else if (name === 'vencimentoCurtoCheck') {
-  descricaoId = 'vencimentoCurtoDescricao';
-} else if (name === 'nfDivergenciaCheck') {
-  descricaoId = 'nfDivergenciaDescricao';
-} else if (name === 'recusaCheck') { 
-  descricaoId = 'recusaDescricao';
-}
+        // ✅ DESABILITA O BOTÃO DE ENVIO
+        const submitButton = formulario.querySelector('input[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.value = "ENVIANDO...";
+        }
 
-if (descricaoId) {
-  toggleDescricao(name, descricaoId);
-}
- });
-  }
+        statusDiv.textContent = `SALVANDO DADOS DE ${linksAcumulados.length} FOTO(S) NA PLANILHA...`;
+        statusDiv.className = "mensagem-status";
 
-  // --- LÓGICA DE AUTENTICAÇÃO (MANTIDA) ---
-  onAuthStateChanged(auth, (user) => {
- if (user) {
-usuarioLogadoEmail = user.email;
-mainContent.style.display = 'block'; 
-logoutButton.style.display = 'inline-block'; 
- } else {
-window.location.href = 'index.html'; 
- }
-  });
-  
-  // FUNCIONALIDADE DO BOTÃO DE SAIR (MANTIDA)
-  logoutButton.addEventListener('click', () => {
- signOut(auth).then(() => {
-window.location.href = 'index.html';
- }).catch((error) => {
-console.error("Erro ao deslogar:", error);
- });
-  });
-
-  // --- NOVA FUNÇÃO: UPLOAD IMEDIATO DE FOTO (MANTIDA) ---
-  async function uploadFotoImediato(arquivo) {
- if (!arquivo) return;
-
- statusDiv.textContent = `ENVIANDO 1 FOTO PARA O CLOUDINARY...`;
- statusDiv.className = "mensagem-status";
-
- const dadosImagem = new FormData();
- dadosImagem.append("file", arquivo);
- dadosImagem.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
- 
- try {
-const response = await fetch(
-  `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-  {
- method: "POST",
- body: dadosImagem,
-  }
-);
-
-if (!response.ok) {
-  const errorData = await response.json();
-  throw new Error(`ERRO NO UPLOAD PARA O CLOUDINARY: ${errorData.error.message}`);
-}
-
-const data = await response.json();
-
-// Armazena o link na variável global
-linksAcumulados.push(data.secure_url); 
-
-// Atualiza o status
-statusDiv.textContent = `FOTO SALVA! ${linksAcumulados.length} FOTO(S) PRONTAS PARA ENVIO. CLIQUE NOVAMENTE PARA MAIS FOTOS.`;
-statusDiv.className = "mensagem-status sucesso";
-
- } catch (error) {
-statusDiv.textContent = `ERRO AO SALVAR FOTO: ${error.message}`;
-statusDiv.className = "mensagem-status erro";
-console.error("Erro de upload:", error);
- }
-  }
-  
-  // --- LISTENER PARA O CAMPO DE ARQUIVO (MANTIDO) ---
-  fileInput.addEventListener('change', function() {
- if (this.files.length > 0) {
-uploadFotoImediato(this.files[0]); 
- }
- 
- // Limpa o valor do campo para que o usuário possa clicar e tirar a próxima foto
- this.value = ''; 
-  });
-
-    // --- ROTEAMENTO DE DADOS E CONVERSÃO PARA MAIÚSCULAS ---
-  formulario.addEventListener("submit", function (evento) {
- evento.preventDefault();
-  
- if (!usuarioLogadoEmail) {
-statusDiv.textContent = "ERRO: NENHUM USUÁRIO LOGADO. POR FAVOR, FAÇA O LOGIN.";
-statusDiv.className = "mensagem-status erro";
-return;
- }
-  
- if (linksAcumulados.length === 0) {
-statusDiv.textContent = "POR FAVOR, TIRE OU SELECIONE PELO MENOS UMA IMAGEM.";
-statusDiv.className = "mensagem-status erro";
-return;
- }
-
- statusDiv.textContent = `SALVANDO DADOS DE ${linksAcumulados.length} FOTO(S) NA PLANILHA...`;
- statusDiv.className = "mensagem-status";
-
- // Cria um objeto temporário para coletar e converter todos os dados
+        // Cria um objeto temporário para coletar e converter todos os dados
         const dadosRaw = {
-            // Campos de texto e seleção que DEVEM SER CONVERTIDOS
             fornecedor: document.getElementById("fornecedor").value,
             nf: document.getElementById("nf").value,
             produto: document.getElementById("produto").value,
@@ -381,17 +396,11 @@ return;
             lote: document.getElementById("lote").value,
             local: document.getElementById("local").value,
             obs: document.getElementById("obs").value,
-            
-            // Campos de data (não devem ser convertidos para maiúsculas)
             dataderecebimento: document.getElementById("dataderecebimento").value,
             fabricacao: document.getElementById("fabricacao").value,
             validade: document.getElementById("validade").value,
-            
-            // Links e Usuário
             linksDasImagens: linksAcumulados.join(', '),
             usuario: usuarioLogadoEmail,
-            
-            // Valores Sim/Não (Radio Buttons)
             faltaValue: document.querySelector('input[name="faltaCheck"]:checked').value,
             faltaDescricao: document.getElementById("faltaDescricao").value,
             avariaValue: document.querySelector('input[name="avariaCheck"]:checked').value,
@@ -404,20 +413,17 @@ return;
             recusaDescricao: document.getElementById("recusaDescricao").value
         };
 
-        // Cria o FormData final
- const dadosFormulario = new FormData();
+        const dadosFormulario = new FormData();
         
-        // Converte e anexa campos de texto para MAIÚSCULAS
         for (const key in dadosRaw) {
-            // Exceções: não converter datas, links ou email de usuário
+            const value = dadosRaw[key];
             if (key.includes('data') || key.includes('links') || key === 'usuario' || key.includes('Value')) {
-                dadosFormulario.append(key, dadosRaw[key]);
+                dadosFormulario.append(key, value);
             } else {
-                dadosFormulario.append(key, toUpperCaseSafe(dadosRaw[key]));
+                dadosFormulario.append(key, toUpperCaseSafe(value));
             }
         }
         
-        // Combina e formata os CheckLists (já convertidos para MAIÚSCULAS)
         const formatarCheckList = (statusKey, descKey, appendName) => {
             const status = toUpperCaseSafe(dadosRaw[statusKey]);
             const descricao = toUpperCaseSafe(dadosRaw[descKey]);
@@ -430,8 +436,6 @@ return;
         formatarCheckList('nfDivergenciaValue', 'nfDivergenciaDescricao', 'nf_divergencia');
         formatarCheckList('recusaValue', 'recusaDescricao', 'recusa');
 
-
-        // Remove os campos separados de status e descrição (para não duplicar no Apps Script)
         dadosFormulario.delete('faltaValue');
         dadosFormulario.delete('faltaDescricao');
         dadosFormulario.delete('avariaValue');
@@ -443,47 +447,56 @@ return;
         dadosFormulario.delete('recusaValue');
         dadosFormulario.delete('recusaDescricao');
 
+        // Envia para o Google Apps Script
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: dadosFormulario,
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.resultado === "sucesso") {
+                statusDiv.textContent = "✅ DADOS E LINKS DAS IMAGENS SALVOS COM SUCESSO!";
+                statusDiv.className = "mensagem-status sucesso";
+                formulario.reset();
+                linksAcumulados = [];
+                
+                // Reseta os radio buttons
+                document.querySelector('input[name="faltaCheck"][value="Não"]').checked = true;
+                toggleDescricao('faltaCheck', 'faltaDescricao');
 
- // Envia para o Google Apps Script
- fetch(APPS_SCRIPT_URL, {
-method: "POST",
-body: dadosFormulario,
- })
- .then((response) => response.json())
- .then((data) => {
-if (data.resultado === "sucesso") {
-  statusDiv.textContent = "DADOS E LINKS DAS IMAGENS SALVOS COM SUCESSO!";
-  statusDiv.className = "mensagem-status sucesso";
-  formulario.reset();
-  linksAcumulados = []; // Limpa os links após o envio
-  
-  // Reseta os radio buttons e oculta/limpa as descrições após o envio
-  document.querySelector('input[name="faltaCheck"][value="Não"]').checked = true;
-  toggleDescricao('faltaCheck', 'faltaDescricao');
+                document.querySelector('input[name="avariaCheck"][value="Não"]').checked = true;
+                toggleDescricao('avariaCheck', 'avariaDescricao');
 
-  document.querySelector('input[name="avariaCheck"][value="Não"]').checked = true;
-  toggleDescricao('avariaCheck', 'avariaDescricao');
+                document.querySelector('input[name="vencimentoCurtoCheck"][value="Não"]').checked = true;
+                toggleDescricao('vencimentoCurtoCheck', 'vencimentoCurtoDescricao');
 
-  document.querySelector('input[name="vencimentoCurtoCheck"][value="Não"]').checked = true;
-  toggleDescricao('vencimentoCurtoCheck', 'vencimentoCurtoDescricao');
+                document.querySelector('input[name="nfDivergenciaCheck"][value="Não"]').checked = true;
+                toggleDescricao('nfDivergenciaCheck', 'nfDivergenciaDescricao');
+                
+                document.querySelector('input[name="recusaCheck"][value="Não"]').checked = true;
+                toggleDescricao('recusaCheck', 'recusaDescricao');
 
-  document.querySelector('input[name="nfDivergenciaCheck"][value="Não"]').checked = true;
-  toggleDescricao('nfDivergenciaCheck', 'nfDivergenciaDescricao');
-  
-  // RESET: PRODUTO RECUSADO
-  document.querySelector('input[name="recusaCheck"][value="Não"]').checked = true;
-  toggleDescricao('recusaCheck', 'recusaDescricao');
-
-} else {
-  throw new Error(data.mensagem || "ERRO AO SALVAR NA PLANILHA.");
-}
- })
- .catch((error) => {
-console.error("Erro geral:", error);
-statusDiv.textContent = `ERRO: ${error.message}`;
-statusDiv.className = "mensagem-status erro";
- });
-  });
+            } else {
+                throw new Error(data.mensagem || "ERRO AO SALVAR NA PLANILHA.");
+            }
+        })
+        .catch((error) => {
+            console.error("Erro geral:", error);
+            statusDiv.textContent = `❌ ERRO: ${error.message}`;
+            statusDiv.className = "mensagem-status erro";
+        })
+        .finally(() => {
+            // ✅ SEMPRE REABILITA O BOTÃO E RESETA A FLAG
+            enviandoDados = false;
+            
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.value = "Enviar Dados";
+            }
+            
+            console.log('✅ Envio finalizado. Botão reabilitado.');
+        });
+    });
 </script>
 </body>
 </html>
