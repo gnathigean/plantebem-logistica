@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dados da Planilha - Tema Harmonizado</title>
+<link rel="stylesheet" href="/auth.js" /> 
+<title>Dados Gerais de Recebimento</title>
 <style>
   :root {
     /* 🎨 PALETA DE CORES PRINCIPAL - Ajuste estas cores conforme o background */
@@ -49,6 +50,33 @@
     background: rgba(0, 0, 0, 0.05);
     z-index: 0;
     pointer-events: none;
+  }
+
+  /* ✨ NOVO: BOTÃO DE MENU FIXO */
+  .fixed-nav {
+    position: fixed;
+    top: 50px;
+    right: 60px;
+    z-index: 1000; /* Garante que fique acima de outros elementos */
+  }
+
+  .botao-menu {
+    display: inline-block;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+    color: var(--cor-texto-claro);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 25px;
+    box-shadow: var(--sombra-media);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .botao-menu:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: var(--sombra-forte);
   }
 
   .container {
@@ -495,6 +523,16 @@
       padding: 8px;
     }
 
+    /* ✨ AJUSTE RESPONSIVO PARA O BOTÃO DE MENU */
+    .fixed-nav {
+      top: 15px;
+      right: 15px;
+    }
+    .botao-menu {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
     .header h1 {
       font-size: 22px;
     }
@@ -570,6 +608,10 @@
 </head>
 <body>
 
+<div class="fixed-nav">
+  <a href="menu.html" class="botao-menu">🏠 Menu</a>
+</div>
+
 <div class="container">
   <div class="header">
     <h1>📊 Sistema de Visualização de Dados</h1>
@@ -594,18 +636,6 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-  import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
-    authDomain: "login-com-dados.firebaseapp.com",
-    projectId: "login-com-dados",
-    storageBucket: "login-com-dados.firebasestorage.app",
-    messagingSenderId: "7.5556023458e+10",
-    appId: "1:7.5556023458e+10:web:9f1362d0597603c0f37bfb",
-    measurementId: "G-W9LRT99579"
-  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
