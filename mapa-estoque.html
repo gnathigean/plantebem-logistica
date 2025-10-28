@@ -131,12 +131,14 @@
     .product-detail { font-size: 0.9em; }
     .detail-label { color: #666; font-weight: 600; }
     .detail-value { color: #333; }
-    .product-actions { display: flex; gap: 10px; margin-top: 15px; }
+    .product-actions { display: flex; gap: 10px; margin-top: 15px; align-items: center;}
     .btn-small { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9em; }
     .btn-move { background: #2196f3; color: white; }
     .btn-move:hover { background: #1976d2; }
     .btn-remove { background: #f44336; color: white; }
     .btn-remove:hover { background: #d32f2f; }
+    .btn-count { background: #2ecc71; color: white; } /* NOVO ESTILO */
+    .btn-count:hover { background: #27ae60; } /* NOVO ESTILO */
     .modal-footer { padding: 20px 30px; background: #f8f9fa; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between; border-radius: 0 0 15px 15px; }
     .btn-add-product { background: #2ecc71; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
     .btn-add-product:hover { background: #27ae60; }
@@ -240,7 +242,6 @@
 </head>
 <body>
   <div class="layout-container">
-    <!-- SIDEBAR LATERAL -->
     <div class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">
@@ -295,9 +296,7 @@
       </div>
     </div>
     
-    <!-- CONTEÚDO PRINCIPAL -->
     <div class="main-content">
-      <!-- HEADER SUPERIOR -->
       <div class="top-header">
         <div class="top-header-left">
           <div class="page-title">🗺️ Mapa de Estoque - DEFENSIVOS</div>
@@ -322,7 +321,6 @@
         </div>
       </div>
       
-      <!-- BARRA DE BUSCA -->
       <div class="search-bar">
         <div class="search-wrapper">
           <input type="text" id="search-input" class="search-input" placeholder="🔍 Buscar produto no mapa (nome, lote, rua, vão...)">
@@ -332,7 +330,6 @@
         <div class="search-results" id="search-results"></div>
       </div>
       
-      <!-- ESTATÍSTICAS -->
       <div class="stats-bar">
         <div class="stats-grid">
           <div class="stat-card">
@@ -358,9 +355,7 @@
         </div>
       </div>
       
-      <!-- ÁREA DO MAPA -->
       <div class="map-container">
-        <!-- MODO MAPA -->
         <div id="view-mapa" class="view-container">
           <div class="map-tabs">
             <button class="tab-button active" data-rua="A1">🅰️ RUA A1 <span class="tab-badge" id="badge-A1">0</span></button>
@@ -476,7 +471,6 @@
           </div>
         </div>
         
-        <!-- MODO LISTA -->
         <div id="view-lista" class="view-container" style="display: none;">
           <div class="map-content">
             <h2 style="margin-bottom: 20px; color: #333;">📋 Visualização em Lista</h2>
@@ -500,7 +494,6 @@
           </div>
         </div>
         
-        <!-- MODO 3D -->
         <div id="view-3d" class="view-container" style="display: none;">
           <div class="map-content">
             <h2 style="margin-bottom: 20px; color: #333;">🎲 Visualização 3D do Depósito</h2>
@@ -516,8 +509,6 @@
     </div>
   </div>
 
-  <!-- MODAIS (mantidos iguais ao código anterior) -->
-  <!-- MODAL DETALHES -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -531,7 +522,6 @@
     </div>
   </div>
 
-  <!-- MODAL MOVER -->
   <div class="modal-move" id="modal-move">
     <div class="modal-move-content">
       <div class="modal-move-header">
@@ -587,7 +577,6 @@
     </div>
   </div>
 
-  <!-- MODAL DASHBOARD -->
   <div class="modal" id="modal-dashboard">
     <div class="modal-content" style="max-width: 1200px;">
       <div class="modal-header" style="background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);">
@@ -641,7 +630,6 @@
     </div>
   </div>
 
-  <!-- MODAL HISTÓRICO -->
   <div class="modal" id="modal-historico">
     <div class="modal-content" style="max-width: 1000px;">
       <div class="modal-header" style="background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);">
@@ -656,7 +644,6 @@
     </div>
   </div>
 
-  <!-- MODAL ANÁLISE DE GIRO -->
   <div class="modal" id="modal-analise">
     <div class="modal-content" style="max-width: 1200px;">
       <div class="modal-header" style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);">
@@ -685,7 +672,6 @@
     </div>
   </div>
 
-  <!-- MODAL ALERTAS -->
   <div class="modal" id="modal-alertas">
     <div class="modal-content" style="max-width: 1000px;">
       <div class="modal-header" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
@@ -700,37 +686,33 @@
     </div>
   </div>
 
-  <!-- MODAL INVENTÁRIO -->
   <div class="modal" id="modal-inventario">
-    <div class="modal-content" style="max-width: 1000px;">
-      <div class="modal-header" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);">
-        <h2>✅ Sistema de Inventário</h2>
-        <button class="modal-close" id="modal-inventario-close">&times;</button>
-      </div>
-      <div class="modal-body" style="padding: 40px;">
-        <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
-          <div style="font-size: 4em; margin-bottom: 15px;">📋</div>
-          <h3 style="font-size: 1.8em; color: #2e7d32; margin-bottom: 10px;">Sistema de Contagem em Desenvolvimento</h3>
-          <p style="color: #555; font-size: 1.1em;">Esta funcionalidade permitirá fazer inventários completos do depósito com checklist por rua e vão.</p>
+        <div class="modal-content" style="max-width: 1200px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);">
+                <h2>✅ Sistema de Inventário</h2>
+                <button class="modal-close" id="modal-inventario-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-inventario-body" style="padding: 40px;">
+                </div>
         </div>
-        <div style="background: white; border: 2px solid #4caf50; padding: 25px; border-radius: 12px;">
-          <h4 style="color: #333; margin-bottom: 15px;">🎯 Funcionalidades Planejadas:</h4>
-          <ul style="color: #666; line-height: 2; padding-left: 20px;">
-            <li>✅ Checklist de contagem por rua e vão</li>
-            <li>✅ Registro de divergências automáticas</li>
-            <li>✅ Status: Contado / Pendente / Divergente</li>
-            <li>✅ Relatório de inventário completo</li>
-            <li>✅ Histórico de inventários anteriores</li>
-          </ul>
-        </div>
-      </div>
     </div>
-  </div>
+
+    <div class="modal" id="modal-contagem-inventario">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
+                <h2 id="modal-contagem-title">✅ Contagem de Produto</h2>
+                <button class="modal-close" id="modal-contagem-inventario-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-contagem-inventario-body" style="padding: 30px;">
+                </div>
+        </div>
+    </div>
+
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, orderBy, addDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
     
     const firebaseConfig = {
       apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
@@ -758,10 +740,33 @@
     let todosOsProdutos = [];
     let produtoParaMover = null;
     let produtosDestacados = [];
+    let usuarioAtual = { nome: 'Visitante', role: 'user' }; // Objeto para guardar dados do usuário logado
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = 'index.html';
-      else carregarEstoque();
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = 'index.html';
+        } else {
+            try {
+                const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    usuarioAtual.nome = userData.nome || 'Usuário';
+                    usuarioAtual.role = userData.tipo || 'user';
+                } else {
+                    const emailParts = user.email.split('@')[0];
+                    usuarioAtual.nome = emailParts.replace(/[._]/g, ' ').split(' ').map(palavra =>
+                        palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase()
+                    ).join(' ');
+                    usuarioAtual.role = 'user';
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+                usuarioAtual.nome = user.email;
+                usuarioAtual.role = 'user';
+            }
+            await carregarDadosInventario();
+            carregarEstoque();
+        }
     });
 
     document.getElementById('logout-button').addEventListener('click', () => {
@@ -1369,14 +1374,358 @@
       document.getElementById('modal-alertas').classList.remove('active');
     });
 
-    // ========== INVENTÁRIO ==========
+    // ====================================================================
+    // ================== NOVO SISTEMA DE INVENTÁRIO ======================
+    // ====================================================================
+    let inventarioAtual = {};
+    let historicoInventarios = [];
+    let logContagensInventario = [];
+
+    async function carregarDadosInventario() {
+        inventarioAtual = JSON.parse(localStorage.getItem('plantebem_inventario_atual')) || { status: 'inativo' };
+        logContagensInventario = JSON.parse(localStorage.getItem('plantebem_inventario_log')) || [];
+        
+        try {
+            const q = query(collection(db, "inventarios"), orderBy("dataFim", "desc"));
+            const querySnapshot = await getDocs(q);
+            historicoInventarios = querySnapshot.docs.map(doc => ({ firebaseId: doc.id, ...doc.data() }));
+        } catch (error) {
+            console.error("Erro ao carregar histórico de inventários do Firebase:", error);
+            alert("Não foi possível carregar o histórico de inventários.");
+        }
+    }
+
     window.abrirInventario = function() {
-      document.getElementById('modal-inventario').classList.add('active');
+        if (!usuarioAtual || !usuarioAtual.nome) {
+            alert('❌ Usuário não identificado! Faça login novamente.');
+            return;
+        }
+        renderizarDashboardInventario();
+        document.getElementById('modal-inventario').classList.add('active');
     };
 
     document.getElementById('modal-inventario-close').addEventListener('click', () => {
-      document.getElementById('modal-inventario').classList.remove('active');
+        document.getElementById('modal-inventario').classList.remove('active');
     });
+
+    function renderizarDashboardInventario() {
+        const body = document.getElementById('modal-inventario-body');
+        const emAndamento = inventarioAtual.status === 'em_andamento';
+        let statsHtml = '';
+
+        if (emAndamento) {
+            const contagensDaSessao = logContagensInventario.filter(l => l.inventarioId === inventarioAtual.id);
+            const produtosContadosIds = new Set(contagensDaSessao.map(l => l.produtoId));
+            const totalProdutos = todosOsProdutos.length;
+            const totalContados = produtosContadosIds.size;
+            const totalPendente = totalProdutos - totalContados;
+            const percentualConcluido = totalProdutos > 0 ? ((totalContados / totalProdutos) * 100).toFixed(0) : 0;
+
+            statsHtml = `
+                <div style="background: #f8f9fa; border: 1px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                    <h3 style="font-size: 1.3em; margin-bottom: 20px; color: #333;">Progresso do Inventário Atual</h3>
+                    <div style="background: #e0e0e0; border-radius: 20px; height: 30px; overflow: hidden; position: relative; margin-bottom: 15px;">
+                        <div style="background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%); height: 100%; width: ${percentualConcluido}%; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                            ${percentualConcluido}%
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                        <div>
+                            <div style="font-size: 0.8em; color: #666; font-weight: 600;">CONTADOS</div>
+                            <div style="font-size: 1.8em; font-weight: 700; color: #2ecc71;">${totalContados}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.8em; color: #666; font-weight: 600;">PENDENTES</div>
+                            <div style="font-size: 1.8em; font-weight: 700; color: #e74c3c;">${totalPendente}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.8em; color: #666; font-weight: 600;">TOTAL</div>
+                            <div style="font-size: 1.8em; font-weight: 700; color: #34495e;">${totalProdutos}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        body.innerHTML = `
+            <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); color: #333; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h2 style="font-size: 1.8em; margin-bottom: 10px; color: #2e7d32;">📊 Dashboard do Inventário</h2>
+                        <div style="background: rgba(0,0,0,0.1); padding: 8px 15px; border-radius: 20px; display: inline-flex; gap: 8px; font-weight: 600;">
+                            <span>👤</span><span>${usuarioAtual.nome} ${usuarioAtual.role === 'admin' ? '(Admin)' : ''}</span>
+                        </div>
+                    </div>
+                    ${emAndamento ? `<div style="text-align: right;"><div style="font-size: 0.9em; opacity: 0.9;">Em Andamento</div><div style="font-size: 1.2em; font-weight: 700;">ID: ${inventarioAtual.id}</div></div>` : ''}
+                </div>
+            </div>
+            
+            ${statsHtml}
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                ${!emAndamento ? `
+                    <button onclick="iniciarNovoInventario()" style="padding: 20px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.1em;">✅ Iniciar Novo Inventário</button>
+                ` : `
+                    <button onclick="renderizarChecklistInventario()" style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.1em;">📋 Continuar Contagem</button>
+                    <button onclick="finalizarInventario()" style="padding: 20px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.1em;">🏁 Finalizar Inventário</button>
+                    <button onclick="cancelarInventario()" style="padding: 20px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.1em;">❌ Cancelar</button>
+                `}
+            </div>
+            ${renderizarHistoricoInventarios()}
+        `;
+    }
+    
+    window.iniciarNovoInventario = function() {
+        if (confirm(`🔔 Iniciar um novo inventário?\n\nO responsável será: ${usuarioAtual.nome}`)) {
+            inventarioAtual = {
+                id: 'INV-' + Date.now(),
+                dataInicio: new Date().toISOString(),
+                responsavel: usuarioAtual.nome,
+                status: 'em_andamento',
+            };
+            localStorage.setItem('plantebem_inventario_atual', JSON.stringify(inventarioAtual));
+            alert('✅ Inventário iniciado com sucesso!');
+            renderizarDashboardInventario();
+        }
+    };
+
+    function renderizarChecklistInventario(filtroRua = null) {
+        const body = document.getElementById('modal-inventario-body');
+        const ruas = [...new Set(todosOsProdutos.map(p => p.rua))].sort();
+        let produtosParaListar = todosOsProdutos;
+        if (filtroRua) {
+            produtosParaListar = todosOsProdutos.filter(p => p.rua === filtroRua);
+        }
+
+        body.innerHTML = `
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                <button onclick="renderizarDashboardInventario()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">← Voltar ao Dashboard</button>
+                <select id="filtro-rua-inventario" class="filter-select" onchange="renderizarChecklistInventario(this.value)">
+                    <option value="">Filtrar por Rua...</option>
+                    ${ruas.map(r => `<option value="${r}" ${filtroRua === r ? 'selected' : ''}>Rua ${r}</option>`).join('')}
+                </select>
+            </div>
+            <h3 style="margin-bottom: 20px;">📋 Checklist de Contagem ${filtroRua ? `- Rua ${filtroRua}` : ''}</h3>
+            <div id="lista-produtos-contagem" style="max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+            ${produtosParaListar.map(p => {
+                const contagem = logContagensInventario.find(l => l.inventarioId === inventarioAtual.id && l.produtoId === p.id);
+                const isContado = !!contagem;
+
+                let statusClass = isContado ? 'background: #e8f5e9; border-left-color: #2ecc71;' : '';
+                let statusText = isContado ? `✅ Contado: ${contagem.qtdContada}` : '⏳ Pendente';
+
+                return `
+                    <div style="background: #f8f9fa; border-left: 4px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-bottom: 10px; ${statusClass}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 700;">${p.nome}</div>
+                                <div style="color: #666; font-size: 0.9em; margin-top: 5px;">
+                                    Lote: ${p.lote} | 📍 RUA ${p.rua}, VÃO ${p.vao}, N${p.nivel}, P${p.pallet}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; margin-bottom: 10px;">${statusText}</div>
+                                <button onclick="abrirModalContagem('${p.id}')" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">${contagem ? 'Recontar' : 'Contar'}</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+            </div>
+        `;
+    }
+
+    window.abrirModalContagem = function(produtoId) {
+        const produto = todosOsProdutos.find(p => p.id === produtoId);
+        if (!produto) return;
+        const contagemAnterior = logContagensInventario.find(l => l.inventarioId === inventarioAtual.id && l.produtoId === produtoId);
+
+        const body = document.getElementById('modal-contagem-inventario-body');
+        body.innerHTML = `
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                <h3 style="margin-bottom: 15px;">📦 ${produto.nome} (Lote: ${produto.lote})</h3>
+                <p style="margin-bottom: 20px;">📍 RUA ${produto.rua} - VÃO ${produto.vao} - N${produto.nivel} - P${produto.pallet}</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <label for="qtd-contada" style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 1.2em;">🔢 Quantidade Contada *</label>
+                    <input type="number" id="qtd-contada" min="0" value="${contagemAnterior?.qtdContada ?? ''}" style="width: 50%; padding: 15px; border: 2px solid #ccc; border-radius: 8px; font-size: 1.8em; text-align: center;">
+                </div>
+                <div style="margin-top: 30px;">
+                    <label for="observacoes-contagem" style="font-weight: 600;">📝 Observações</label>
+                    <textarea id="observacoes-contagem" style="width: 100%; min-height: 70px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px;">${contagemAnterior?.observacoes ?? ''}</textarea>
+                </div>
+                <button onclick="confirmarContagem('${produto.id}')" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.1em; margin-top: 20px;">✅ Salvar Contagem</button>
+            </div>
+        `;
+
+        document.getElementById('modal-contagem-inventario').classList.add('active');
+        setTimeout(() => document.getElementById('qtd-contada').focus(), 100);
+    };
+    
+    window.confirmarContagem = function(produtoId) {
+        const qtdContadaInput = document.getElementById('qtd-contada');
+        if (qtdContadaInput.value === '') {
+            alert('❌ Por favor, informe a quantidade contada.');
+            return;
+        }
+        
+        const qtdContada = parseFloat(qtdContadaInput.value);
+        const observacoes = document.getElementById('observacoes-contagem').value;
+        const produto = todosOsProdutos.find(p => p.id === produtoId);
+
+        logContagensInventario = logContagensInventario.filter(l => !(l.inventarioId === inventarioAtual.id && l.produtoId === produtoId));
+
+        logContagensInventario.push({
+            logId: 'LOG-' + Date.now(),
+            inventarioId: inventarioAtual.id,
+            data: new Date().toISOString(),
+            produtoId: produto.id,
+            produtoNome: produto.nome,
+            lote: produto.lote,
+            localizacao: `R${produto.rua}-V${produto.vao}-N${produto.nivel}-P${produto.pallet}`,
+            qtdContada: qtdContada,
+            responsavel: usuarioAtual.nome,
+            observacoes: observacoes
+        });
+
+        localStorage.setItem('plantebem_inventario_log', JSON.stringify(logContagensInventario));
+        document.getElementById('modal-contagem-inventario').classList.remove('active');
+        renderizarChecklistInventario(document.getElementById('filtro-rua-inventario')?.value || null);
+    };
+
+    document.getElementById('modal-contagem-inventario-close').addEventListener('click', () => {
+        document.getElementById('modal-contagem-inventario').classList.remove('active');
+    });
+
+    window.finalizarInventario = async function() {
+        if (confirm('🏁 Tem certeza que deseja finalizar este inventário?')) {
+            inventarioAtual.dataFim = new Date().toISOString();
+            inventarioAtual.status = 'finalizado';
+            
+            const contagensDaSessao = logContagensInventario.filter(l => l.inventarioId === inventarioAtual.id);
+            const produtosContadosIds = new Set(contagensDaSessao.map(l => l.produtoId));
+
+            const relatorio = {
+                ...inventarioAtual,
+                resumo: {
+                    totalItensSistema: todosOsProdutos.length,
+                    itensContados: produtosContadosIds.size,
+                },
+                detalhes: contagensDaSessao
+            };
+            
+            try {
+                await addDoc(collection(db, "inventarios"), relatorio);
+                
+                logContagensInventario = logContagensInventario.filter(l => l.inventarioId !== inventarioAtual.id);
+                localStorage.setItem('plantebem_inventario_log', JSON.stringify(logContagensInventario));
+
+                inventarioAtual = { status: 'inativo' };
+                localStorage.setItem('plantebem_inventario_atual', JSON.stringify(inventarioAtual));
+                
+                alert('✅ Inventário finalizado e salvo com sucesso!');
+                await carregarDadosInventario();
+                renderizarDashboardInventario();
+
+            } catch (error) {
+                console.error("Erro ao salvar inventário no Firebase:", error);
+                alert("❌ Erro ao salvar o inventário. Verifique o console.");
+            }
+        }
+    };
+    
+    window.cancelarInventario = function() {
+        if (confirm('❌ Tem certeza? Todas as contagens desta sessão serão perdidas.')) {
+            logContagensInventario = logContagensInventario.filter(l => l.inventarioId !== inventarioAtual.id);
+            localStorage.setItem('plantebem_inventario_log', JSON.stringify(logContagensInventario));
+            
+            inventarioAtual = { status: 'inativo' };
+            localStorage.setItem('plantebem_inventario_atual', JSON.stringify(inventarioAtual));
+            
+            alert('Inventário cancelado.');
+            renderizarDashboardInventario();
+        }
+    };
+
+    function renderizarHistoricoInventarios() {
+        if (historicoInventarios.length === 0) {
+            return '<p style="text-align: center; padding: 20px; color: #999;">Nenhum inventário no histórico.</p>';
+        }
+        return `
+            <div style="background: white; border: 1px solid #e0e0e0; padding: 25px; border-radius: 12px;">
+                <h3 style="margin-bottom: 20px;">📜 Histórico de Inventários</h3>
+                ${historicoInventarios.slice(0, 5).map(inv => `
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #6c757d;">
+                        <div style="font-weight: 700;">ID: ${inv.id}</div>
+                        <div style="font-size: 0.9em; color: #555;">
+                            Iniciado em: ${new Date(inv.dataInicio).toLocaleString('pt-BR')} por ${inv.responsavel}
+                        </div>
+                        <div style="font-size: 0.9em; color: #555;">
+                            Finalizado em: ${new Date(inv.dataFim).toLocaleString('pt-BR')}
+                        </div>
+                        <div style="margin-top: 8px; font-weight: 600;">
+                             ${inv.resumo.itensContados} / ${inv.resumo.totalItensSistema} itens contados
+                        </div>
+                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
+                            <button onclick="gerarRelatorioInventario('${inv.id}')" style="padding: 6px 12px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">Ver Relatório</button>
+                            ${usuarioAtual.role === 'admin' ? `
+                            <button onclick="excluirHistoricoInventario('${inv.firebaseId}')" style="padding: 6px 12px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer;">Excluir</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    window.excluirHistoricoInventario = async function(firebaseId) {
+        if (!confirm('🗑️ TEM CERTEZA? Esta ação é irreversível e irá remover o registro deste inventário permanentemente.')) return;
+
+        if (usuarioAtual.role !== 'admin') {
+            alert('❌ Acesso negado. Você não tem permissão para realizar esta ação.');
+            return;
+        }
+        try {
+            await deleteDoc(doc(db, "inventarios", firebaseId));
+            alert('✅ Histórico de inventário removido com sucesso.');
+            await carregarDadosInventario();
+            renderizarDashboardInventario();
+        } catch (error) {
+            console.error("Erro ao excluir histórico:", error);
+            alert("❌ Falha ao remover o histórico. Verifique o console.");
+        }
+    }
+
+    window.gerarRelatorioInventario = function(inventarioId) {
+        const inventario = historicoInventarios.find(inv => inv.id === inventarioId);
+        if (!inventario) {
+            alert('Relatório não encontrado!');
+            return;
+        }
+
+        let relatorio = `RELATÓRIO DE CONTAGEM - ID: ${inventario.id}\n`;
+        relatorio += `====================================================\n`;
+        relatorio += `Responsável: ${inventario.responsavel}\n`;
+        relatorio += `Data: ${new Date(inventario.dataFim).toLocaleString('pt-BR')}\n\n`;
+        relatorio += `--- ITENS CONTADOS ---\n`;
+        
+        const itensContados = inventario.detalhes.filter(d => d.qtdContada !== null);
+
+        if (itensContados.length > 0) {
+            itensContados.forEach(d => {
+                relatorio += `\n- Produto: ${d.produtoNome} (Lote: ${d.lote})\n`;
+                relatorio += `  Local: ${d.localizacao}\n`;
+                relatorio += `  Quantidade Contada: ${d.qtdContada}\n`;
+            });
+        } else {
+            relatorio += `Nenhum item foi contado neste inventário.\n`;
+        }
+
+        const blob = new Blob([relatorio], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `relatorio_contagem_${inventario.id}.txt`;
+        link.click();
+    };
 
     // ========== SISTEMA DE ABAS ==========
     document.querySelectorAll('.tab-button').forEach(button => {
@@ -1432,6 +1781,14 @@
         const statusClass = statusValidade === 'vencido' ? 'danger' : statusValidade === 'proximo' ? 'warning' : '';
         const statusText = statusValidade === 'vencido' ? '❌ VENCIDO' : statusValidade === 'proximo' ? '⚠️ VENCIMENTO PRÓXIMO' : '✅ VALIDADE OK';
         
+        let contagemHtml = '';
+        if (inventarioAtual.status === 'em_andamento') {
+            const contagem = logContagensInventario.find(l => l.inventarioId === inventarioAtual.id && l.produtoId === produto.id);
+            if (contagem) {
+                contagemHtml = `<div style="color: #27ae60; font-weight: bold; margin-left: 10px; display: flex; align-items: center;">✅ Contado: ${contagem.qtdContada}</div>`;
+            }
+        }
+
         return `
           <div class="product-item ${statusClass}">
             <div class="product-name">${produto.nome}</div>
@@ -1449,8 +1806,10 @@
               </div>
             ` : ''}
             <div class="product-actions">
-              <button class="btn-small btn-move" onclick="abrirModalMover('${produto.id}', '${rua}', ${vao}, ${nivel}, ${pallet}, '${produto.nome.replace(/'/g, "\\'")}')">🔄 Mover</button>
-              <button class="btn-small btn-remove" onclick="removerProduto('${produto.id}')">🗑️ Remover</button>
+                <button class="btn-small btn-move" onclick="abrirModalMover('${produto.id}', '${rua}', ${vao}, ${nivel}, ${pallet}, '${produto.nome.replace(/'/g, "\\'")}')">🔄 Mover</button>
+                <button class="btn-small btn-remove" onclick="removerProduto('${produto.id}')">🗑️ Remover</button>
+                <button class="btn-small btn-count" onclick="abrirModalContagemInventarioFromMap('${produto.id}')">✅ Contar</button>
+                ${contagemHtml}
             </div>
           </div>
         `;
@@ -1464,6 +1823,19 @@
       btnAdd.onclick = () => window.location.href = `gerenciar-estoque.html?rua=${rua}&vao=${vao}&nivel=${nivel}&pallet=${pallet}`;
       modal.classList.add('active');
     }
+    
+    window.abrirModalContagemInventarioFromMap = function(produtoId) {
+        if (inventarioAtual.status !== 'em_andamento') {
+            if (confirm('⚠️ Nenhum inventário ativo.\n\nDeseja iniciar um novo inventário para registrar esta contagem?')) {
+                iniciarNovoInventario();
+                setTimeout(() => {
+                    abrirModalContagem(produtoId);
+                }, 500);
+            }
+        } else {
+            abrirModalContagem(produtoId);
+        }
+    };
 
     window.removerProduto = async function(produtoId) {
       if (!confirm('⚠️ TEM CERTEZA que deseja REMOVER este produto?')) return;

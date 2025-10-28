@@ -813,9 +813,73 @@
 
     let dataToRender = data;
     if (filterTerm) {
+      const searchTerm = filterTerm.trim();
+
+      // 🔍 DETECTAR SE É UMA BUSCA POR DATA
+      let dateSearchPattern = null;
+      let isDateSearch = false;
+
+      // Formato DD/MM/YYYY (ex: 24/10/2025)
+      const ddmmyyyyPattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+      // Formato YYYY-MM-DD (ex: 2025-10-24)
+      const yyyymmddPattern = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+      // Formato DD/MM (ex: 24/10)
+      const ddmmPattern = /^(\d{1,2})\/(\d{1,2})$/;
+
+      if (ddmmyyyyPattern.test(searchTerm)) {
+        const [, day, month, year] = searchTerm.match(ddmmyyyyPattern);
+        dateSearchPattern = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        isDateSearch = true;
+        console.log('📅 Busca por data DD/MM/YYYY:', dateSearchPattern);
+      } 
+      else if (yyyymmddPattern.test(searchTerm)) {
+        const [, year, month, day] = searchTerm.match(yyyymmddPattern);
+        dateSearchPattern = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        isDateSearch = true;
+        console.log('📅 Busca por data YYYY-MM-DD convertida para:', dateSearchPattern);
+      }
+      else if (ddmmPattern.test(searchTerm)) {
+        const [, day, month] = searchTerm.match(ddmmPattern);
+        dateSearchPattern = `${day.padStart(2, '0')}/${month.padStart(2, '0')}`;
+        isDateSearch = true;
+        console.log('📅 Busca por data parcial DD/MM:', dateSearchPattern);
+      }
+
       dataToRender = data.filter(row => {
-        return Object.values(row).some(value => String(value).toLowerCase().includes(filterTerm.toLowerCase()));
+        if (isDateSearch && dateSearchPattern) {
+          // 🎯 PRIORIZAR BUSCA NO CAMPO DATA DE RECEBIMENTO
+          const dataRecebimento = row['DATA DE RECEBIMENTO'];
+
+          if (dataRecebimento) {
+            // Formatar a data do registro
+            const dataFormatada = formatDate(dataRecebimento);
+            console.log('Comparando:', dataFormatada, 'com busca:', dateSearchPattern);
+
+            if (dataFormatada.includes(dateSearchPattern)) {
+              return true;
+            }
+          }
+
+          // Fallback: buscar em todos os campos de data
+          for (const [key, value] of Object.entries(row)) {
+            if (key.toLowerCase().includes('data') && value) {
+              const dataFormatada = formatDate(value);
+              if (dataFormatada.includes(dateSearchPattern)) {
+                return true;
+              }
+            }
+          }
+
+          return false;
+        }
+
+        // Busca normal por texto
+        return Object.values(row).some(value => 
+          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        );
       });
+
+      console.log(`✅ Filtro aplicado: ${dataToRender.length} de ${data.length} registros`);
     }
 
     const countBadge = document.getElementById(`count-${sanitizeId(sheetName)}`);

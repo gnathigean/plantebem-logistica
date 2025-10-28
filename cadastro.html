@@ -250,7 +250,7 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-    import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
     import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js';
     
     const firebaseConfig = {
@@ -267,7 +267,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     
-    const ADMIN_UID = "O02XwNu2KSNCCk0xCvdBE2YxW9G2";
+    const ADMIN_UID = "1Nu7iu3suFVRab5bJiSq7scMMV22";
+    
     
     const LOJAS = {
       'matriz': { nome: 'Matriz', url: 'recebimento_petrolina.html' },
