@@ -636,6 +636,18 @@
 </div>
 
 <script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+  import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8GjaS3tuDpSvBl2-bpa-QXIKTqq80Mn4",
+    authDomain: "login-com-dados.firebaseapp.com",
+    projectId: "login-com-dados",
+    storageBucket: "login-com-dados.firebasestorage.app",
+    messagingSenderId: "7.5556023458e+10",
+    appId: "1:7.5556023458e+10:web:9f1362d0597603c0f37bfb",
+    measurementId: "G-W9LRT99579"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
