@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f6f8fb; padding: 22px; }
     .container { max-width: 555px; margin: 0 auto; background: #fff; border-radius: 9px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 28px; }
@@ -30,6 +31,9 @@
   <div class="container">
     <div class="header">Central de Conferência de NF-e</div>
     <label for="chave-input">Escaneie/Digite a chave de acesso:</label>
+    <button id="btn-scan" type="button" style="background:#43a047;margin-bottom:13px;">Escanear com Câmera</button>
+    <div id="scanner" style="display:none;margin-bottom:10px;"></div>
+
     <input type="text" id="chave-input" placeholder="44 dígitos da NF-e" maxlength="44" autofocus autocomplete="off">
     <button id="btn-buscar">Buscar Nota</button>
 
@@ -235,6 +239,60 @@ function criarCardNF(dados) {
   `;
   return card;
 }
+
+// Adicione antes: let scannerActive = false;
+let scannerActive = false;
+
+const scannerDiv = document.getElementById("scanner");
+const btnScan = document.getElementById("btn-scan");
+
+btnScan.onclick = function() {
+  if (scannerActive) {
+    html5QrCode.stop().then(() => {
+      scannerDiv.style.display = "none";
+      scannerActive = false;
+    });
+    return;
+  }
+
+  scannerDiv.style.display = "block";
+  scannerDiv.innerHTML = ""; // Limpa se já tiver outro
+
+  const html5QrCode = new Html5Qrcode("scanner");
+  scannerActive = true;
+  btnScan.innerText = "Fechar Scanner";
+
+  // Preferência para câmera traseira
+  const config = { fps: 20, qrbox: 250, aspectRatio: 1.5, facingMode: { exact: "environment" } };
+
+  html5QrCode.start(
+    { facingMode: "environment" },
+    config,
+    (decodedText, decodedResult) => {
+      // Remove espaços e tudo que não é dígito
+      const chaveLida = decodedText.replace(/\D/g, '');
+      if (chaveLida.length >= 44) {
+        // Se for maior que 44, pega só os primeiros 44
+        chaveInput.value = chaveLida.substring(0, 44);
+        html5QrCode.stop().then(() => {
+          scannerDiv.style.display = "none";
+          scannerActive = false;
+          btnScan.innerText = "Escanear com Câmera";
+          // Foco no input, ou dispara busca direto
+          btnBuscar.click();
+        });
+      }
+    },
+    (errorMessage) => {
+      // Failures silenciosos de leitura (normal, nada precisa fazer)
+    }
+  ).catch(err => {
+    scannerDiv.innerHTML = "<span style='color:#d32f2f'>Não foi possível acessar a câmera.<br>"+err+"</span>";
+    scannerActive = false;
+    btnScan.innerText = "Escanear com Câmera";
+  });
+};
+
 </script>
 </body>
 </html>
