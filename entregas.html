@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Checagem NF-e - Confirmação Centralizada</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f6f8fb; padding: 22px; }
+    .container { max-width: 555px; margin: 0 auto; background: #fff; border-radius: 9px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 28px; }
+    .header { font-size:1.3em;margin-bottom:14px; color:#1976d2; font-weight:bold;}
+    label { font-weight: 600; }
+    input[type=text] { width: 100%; padding: 12px; font-size: 1.13em; border-radius: 7px; border: 1px solid #ccc; margin-bottom: 16px; }
+    button { background: #1976d2; color: #fff; border: none; padding: 10px 24px; font-size: 1.13em; border-radius: 7px; cursor: pointer; }
+    .msg { margin-top: 14px; font-size: 1.12em;}
+    .nf-cards { margin-top: 23px; }
+    .nf-card { background: #e3f2fd; border-radius: 13px; box-shadow: 0 2px 9px rgba(25,118,210,0.13); padding: 20px; margin-bottom: 23px; position: relative;}
+    .conferente-label { position:absolute; top:15px; right:12px; display:flex; align-items:center; gap:5px; background:#43a047; color:white; font-weight:700; border-radius:5px; padding:7px 14px; font-size:1.05em; }
+    .conferente-label svg {vertical-align: middle;}
+    .entregado{font-size:0.88em;opacity:0.8;display:block;margin-bottom:7px;}
+    .nf-card ul { max-height:120px; overflow:auto; padding-left:0;}
+    .nf-card li{background:#fff;padding:8px 10px;margin-bottom:7px;list-style:none;border-radius:7px;}
+    .nf-card .chave {font-size:0.97em;word-break:break-word;}
+    .pesquisa { margin:24px 0 12px 0;}
+    .pesquisa input{width:auto;min-width:250px;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Central de Conferência de NF-e</div>
+    <label for="chave-input">Escaneie/Digite a chave de acesso:</label>
+    <input type="text" id="chave-input" placeholder="44 dígitos da NF-e" maxlength="44" autofocus autocomplete="off">
+    <button id="btn-buscar">Buscar Nota</button>
+
+    <div class="pesquisa">
+      <label for="busca-nota">Pesquisar Notas Entregues: </label>
+      <input type="text" id="busca-nota" placeholder="Nome, NF, cliente, conferente, chave...">
+    </div>
+    <div id="msg-erro" class="msg" style="color:#d32f2f;"></div>
+    <div id="nota-info"></div>
+    <div class="nf-cards" id="nf-cards"></div>
+  </div>
+
+  <!-- Modal para nome do conferente -->
+  <div id="modal-conferente" style="
+        display:none;
+        position:fixed;top:0;left:0;width:100vw;height:100vh;
+        background:rgba(0,0,0,0.55);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#fff; border-radius:10px; padding:28px; max-width:380px; box-shadow:0 2px 10px rgba(0,0,0,0.18)">
+      <h2 style="color:#1976d2; margin-bottom:18px; font-size:1.19em">Informe o nome do conferente</h2>
+      <input type="text" id="input-conferente" placeholder="Conferente..." style="width:100%;padding:11px;font-size:1.08em; border-radius:7px; border:1px solid #aaa;">
+      <button id="btn-confirmar" style="margin-top:15px; width:100%; background:#43a047">Confirmar</button>
+    </div>
+  </div>
+
+<script>
+/* --- 1. CONFIG FIREBASE --- */
+const firebaseConfig = {
+  apiKey: "AIzaSyDLS8tWx-xFrhIHAOnU4kVQrP4CudDqYB0",
+  authDomain: "entregaslogistica-b1e61.firebaseapp.com",
+  projectId: "entregaslogistica-b1e61",
+  storageBucket: "entregaslogistica-b1e61.firebasestorage.app",
+  messagingSenderId: "674649327150",
+  appId: "1:674649327150:web:0d2410cd38f16386c141bf"
+};
+// Substitua acima pelos dados do seu projeto Firebase!!!
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const NF_COLLECTION = "nfs_entregues";
+
+/* --- 2. LÓGICA DO FRONTEND --- */
+const API = 'http://127.0.0.1:5000/api/notachave/';
+const chaveInput = document.getElementById('chave-input');
+const btnBuscar = document.getElementById('btn-buscar');
+const msgErro = document.getElementById('msg-erro');
+const notaInfo = document.getElementById('nota-info');
+const nfCards = document.getElementById('nf-cards');
+const inputPesquisa = document.getElementById('busca-nota');
+const modalConferente = document.getElementById('modal-conferente');
+const inputConferente = document.getElementById('input-conferente');
+const btnConfirmar = document.getElementById('btn-confirmar');
+
+let dadosNota = null;
+let dadosConferente = null;
+let nfsSalvas = []; // Estado local
+
+// --- Busca e renderiza em tempo real ---
+db.collection(NF_COLLECTION).orderBy("dt_entregue","desc").onSnapshot((snap) => {
+  nfsSalvas = [];
+  snap.forEach(doc=>{ nfsSalvas.push({...doc.data(),id:doc.id}) });
+  renderizarCards(nfsSalvas, inputPesquisa.value);
+});
+
+// --- Lançamento ---
+btnBuscar.onclick = async () => {
+  const chave = chaveInput.value.trim();
+  msgErro.innerText = '';
+  notaInfo.innerHTML = '';
+
+  if (chave.length !== 44 || !/^\d{44}$/.test(chave)) {
+    msgErro.innerText = "Chave de acesso deve conter 44 números.";
+    return;
+  }
+  if (nfsSalvas.some(nf => nf.chave_nfe === chave)) {
+    msgErro.innerText = "Esta nota já está registrada!";
+    return;
+  }
+  notaInfo.innerHTML = '<span style="color:#1976d2;">Buscando nota, aguarde...</span>';
+  try {
+    const res = await fetch(API + chave);
+    const dados = await res.json();
+    if (dados.erro) {
+      msgErro.innerText = dados.erro;
+      notaInfo.innerHTML = '';
+      return;
+    }
+    dadosNota = dados;
+    dadosConferente = null;
+    inputConferente.value = '';
+    modalConferente.style.display = 'flex';
+    inputConferente.focus();
+  } catch (e) {
+    msgErro.innerText = 'Erro ao buscar nota.';
+    notaInfo.innerHTML = '';
+  }
+};
+
+btnConfirmar.onclick = async () => {
+  const conferente = inputConferente.value.trim();
+  if (!conferente) {
+    inputConferente.focus();
+    return;
+  }
+  btnConfirmar.disabled = true;
+  btnConfirmar.style.opacity = '0.5';
+  msgErro.innerText = "";
+
+  // Checagem duplicidade em tempo real na collection do Firebase
+  const col = db.collection(NF_COLLECTION);
+  const snap = await col.where("chave_nfe", "==", dadosNota.chave_nfe).get();
+  if (!snap.empty) {
+    msgErro.innerText = "Esta NF já foi lançada! Recarregue a página para buscar outra.";
+    modalConferente.style.display = "none";
+    btnConfirmar.disabled = false;
+    btnConfirmar.style.opacity = '1';
+    notaInfo.innerHTML = '';
+    return;
+  }
+  const agora = new Date();
+  await col.add({
+    ...dadosNota,
+    conferente,
+    dt_entregue: agora.toISOString(),
+    entregue_human: agora.toLocaleString("pt-BR"),
+  });
+  modalConferente.style.display = 'none';
+  notaInfo.innerHTML = '';
+  dadosNota = null;
+  chaveInput.value = '';
+  chaveInput.focus();
+  btnConfirmar.disabled = false;
+  btnConfirmar.style.opacity = '1';
+};
+
+
+inputConferente.addEventListener("keyup", e => { if (e.key === "Enter") btnConfirmar.click(); });
+chaveInput.addEventListener("keyup", e => { if (e.key === "Enter") btnBuscar.click(); });
+
+// --- Pesquisa/Filtra cards em tempo real ---
+inputPesquisa.addEventListener('input', e => renderizarCards(nfsSalvas, inputPesquisa.value));
+
+// --- Render Card ---
+function normalizarStr(s) {
+  if (!s) return '';
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function renderizarCards(lista, termo) {
+  termo = normalizarStr(termo || "");
+  nfCards.innerHTML = "";
+  if (!termo) {
+    lista.forEach(nf => nfCards.appendChild(criarCardNF(nf)));
+    return;
+  }
+  // pesquisa multi-termo
+  const termos = termo.split(' ').filter(t=>t);
+
+  // Para cada NF, concatena dados relevantes e verifica se todos termos estão presentes
+  lista.filter(nf => {
+    // campos pesquisáveis, expanda aqui conforme desejar
+    const searchBase = [
+      nf.razao_social, nf.nota_fiscal, nf.conferente, nf.chave_nfe, nf.cfop, nf.data_emissao, nf.entregue_human,
+      ...(nf.itens ? nf.itens.map(i => (i.descricao_produto||"") + " " + (i.codigo_produto||"")) : [])
+    ].join(" ").replace(/\s+/g, " ");
+    const normal = normalizarStr(searchBase);
+
+    return termos.every(t => normal.includes(t));
+  }).forEach(nf => nfCards.appendChild(criarCardNF(nf)));
+}
+
+
+function criarCardNF(dados) {
+  const liItens = (dados.itens||[]).map(item => `
+    <li>
+      <b>${item.descricao_produto}</b> (${item.codigo_produto})<br>
+      Qtde: ${item.quantidade} | V. Unit: R$ ${item.valor_unitario?.toLocaleString('pt-BR', {minimumFractionDigits:2})}<br>
+      Subtotal: R$ ${item.subtotal?.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+    </li>
+  `).join('');
+
+  const card = document.createElement('div');
+  card.className = 'nf-card';
+  card.innerHTML = `
+    <div class="conferente-label">
+      <svg width="21" height="21" viewBox="0 0 20 20" fill="none" style="margin-right:4px">
+        <circle cx="10" cy="10" r="10" fill="#fff" />
+        <path d="M5.5 10.5L9 14L15 8" stroke="#43a047" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Entregue: ${dados.conferente}
+    </div>
+    <div class="entregado">Data/Hora Entregue: <b>${dados.entregue_human}</b></div>
+    <div style="margin-bottom:8px;"><b>Número NF:</b> ${dados.nota_fiscal || 'N/D'}</div>
+    <div><b>Empresa:</b> ${dados.empresa || 'N/D'}</div>
+    <div><b>Cliente:</b> ${dados.razao_social || 'N/D'}</div>
+    <div><b>Data Emissão:</b> ${dados.data_emissao || 'N/D'}</div>
+    <div><b>Total da Nota:</b> R$ ${dados.total_nota?.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+    <div><b>CFOP:</b> ${dados.cfop || 'N/D'}</div>
+    <div><b>Qtd. Itens:</b> ${dados.total_itens || (dados.itens?dados.itens.length:'N/D')}</div>
+    <div style="margin:8px 0 0 0; font-size:0.97em"><b>Chave NF-e:</b> <span class="chave">${dados.chave_nfe}</span></div>
+    <hr style="margin:12px 0;">
+    <div><b>Itens da NF:</b></div>
+    <ul>${liItens}</ul>
+  `;
+  return card;
+}
+</script>
+</body>
+</html>
