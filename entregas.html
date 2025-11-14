@@ -1,444 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Checagem NF-e - Confirmação Centralizada</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background: #f6f8fb; 
-      padding: 16px; 
-      margin: 0;
-    }
-    .container { 
-      max-width: 600px; 
-      margin: 0 auto; 
-      background: #fff; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08); 
-      padding: 24px; 
-    }
-    .header { 
-      font-size: 1.5em; 
-      margin-bottom: 20px; 
-      color: #1976d2; 
-      font-weight: bold; 
-      text-align: center;
-    }
-    label { 
-      font-weight: 600; 
-      display: block; 
-      margin-bottom: 8px; 
-      font-size: 1em;
-    }
-    input[type=text] { 
-      width: 100%; 
-      padding: 12px; 
-      font-size: 1em; 
-      border-radius: 8px; 
-      border: 1px solid #ccc; 
-      margin-bottom: 14px; 
-    }
-    button { 
-      background: #1976d2; 
-      color: #fff; 
-      border: none; 
-      padding: 12px 20px; 
-      font-size: 1em; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      width: 100%;
-      margin-bottom: 10px;
-      transition: background 0.3s;
-    }
-    button:hover { background: #1565c0; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    
-    #btn-scan { background: #43a047; }
-    #btn-scan:hover { background: #388e3c; }
-    
-    .msg { 
-      margin-top: 14px; 
-      font-size: 1em;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .nf-cards { margin-top: 24px; }
-    .nf-card { 
-      background: #e3f2fd; 
-      border-radius: 12px; 
-      box-shadow: 0 2px 12px rgba(25,118,210,0.15); 
-      padding: 16px; 
-      margin-bottom: 20px; 
-      position: relative;
-    }
-    .conferente-label { 
-      display: inline-flex;
-      align-items: center; 
-      gap: 6px; 
-      background: #43a047; 
-      color: white; 
-      font-weight: 700; 
-      border-radius: 6px; 
-      padding: 6px 12px; 
-      font-size: 0.9em;
-      margin-bottom: 12px;
-    }
-    .conferente-label svg { vertical-align: middle; }
-    .entregado { 
-      font-size: 0.85em; 
-      color: #666; 
-      margin-bottom: 10px; 
-    }
-    .nf-card ul { 
-      max-height: 180px; 
-      overflow: auto; 
-      padding-left: 0; 
-      margin-top: 10px;
-    }
-    .nf-card li { 
-      background: #fff; 
-      padding: 10px; 
-      margin-bottom: 8px; 
-      list-style: none; 
-      border-radius: 8px; 
-      font-size: 0.95em;
-    }
-    .nf-card .chave { 
-      font-size: 0.85em; 
-      word-break: break-all; 
-      display: block;
-      margin-top: 4px;
-    }
-    .pesquisa { 
-      margin: 20px 0 16px 0; 
-    }
-    .pesquisa input { 
-      width: 100%; 
-    }
-    #scanner { 
-      width: 100%; 
-      max-width: 100%; 
-      margin-bottom: 12px; 
-      border-radius: 8px; 
-      overflow: hidden;
-    }
-    
-    /* Modal responsivo */
-    #modal-conferente {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.6);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-    #modal-conferente > div {
-      background: #fff;
-      border-radius: 12px;
-      padding: 24px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    }
-    #modal-conferente h2 {
-      color: #1976d2;
-      margin: 0 0 16px 0;
-      font-size: 1.3em;
-      text-align: center;
-    }
-    #modal-conferente input {
-      width: 100%;
-      padding: 12px;
-      font-size: 1em;
-      border-radius: 8px;
-      border: 1px solid #aaa;
-      margin-bottom: 14px;
-    }
-    #modal-conferente button {
-      background: #43a047;
-      width: 100%;
-    }
-    
-    /* Ajustes mobile */
-    @media (max-width: 600px) {
-      body { padding: 12px; }
-      .container { padding: 18px; }
-      .header { font-size: 1.3em; }
-      button { padding: 11px 16px; font-size: 0.95em; }
-      .nf-card { padding: 14px; }
-      .conferente-label { font-size: 0.85em; padding: 5px 10px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Checagem NF-e - Confirmação Centralizada</title>
+    <style>
+        body {
+            background: #f4f8fb;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(44, 62, 80, 0.12);
+            text-align: center;
+        }
+        .btn-link {
+            background: #2471a3;
+            color: #fff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(44, 130, 201, 0.10);
+        }
+        .btn-link:hover {
+            background: #1a5276;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">Central de Conferência de NF-e</div>
-    
-    <button id="btn-scan" type="button">📷 Escanear com Câmera</button>
-    <div id="scanner" style="display:none;"></div>
-
-    <label for="chave-input">Ou digite a chave de acesso:</label>
-    <input type="text" id="chave-input" placeholder="44 dígitos da NF-e" maxlength="44" autocomplete="off">
-    <button id="btn-buscar">🔍 Buscar Nota</button>
-
-    <div class="pesquisa">
-      <label for="busca-nota">🔎 Pesquisar Notas Entregues:</label>
-      <input type="text" id="busca-nota" placeholder="Nome, NF, cliente, conferente, chave...">
+    <div class="container">
+        <h1>Checagem NF-e</h1>
+        <p>Confirmação Centralizada de Entregas</p>
+        <a href="https://translunar-theodora-indexically.ngrok-free.dev/entregas" class="btn-link" target="_blank">
+            Acessar Checagem NF-e
+        </a>
     </div>
-    
-    <div id="msg-erro" class="msg" style="color:#d32f2f; background:#ffebee;"></div>
-    <div id="nota-info"></div>
-    <div class="nf-cards" id="nf-cards"></div>
-  </div>
-
-  <!-- Modal para nome do conferente -->
-  <div id="modal-conferente">
-    <div>
-      <h2>Informe o nome do conferente</h2>
-      <input type="text" id="input-conferente" placeholder="Nome do conferente..." autocomplete="off">
-      <button id="btn-confirmar">✅ Confirmar</button>
-    </div>
-  </div>
-
-<script>
-/* --- 1. CONFIG FIREBASE --- */
-const firebaseConfig = {
-  apiKey: "AIzaSyDLS8tWx-xFrhIHAOnU4kVQrP4CudDqYB0",
-  authDomain: "entregaslogistica-b1e61.firebaseapp.com",
-  projectId: "entregaslogistica-b1e61",
-  storageBucket: "entregaslogistica-b1e61.firebasestorage.app",
-  messagingSenderId: "674649327150",
-  appId: "1:674649327150:web:0d2410cd38f16386c141bf"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const NF_COLLECTION = "nfs_entregues";
-
-/* --- 2. LÓGICA DO FRONTEND --- */
-const API = 'https://translunar-theodora-indexically.ngrok-free.dev/devo/api/notachave/';
-const chaveInput = document.getElementById('chave-input');
-const btnBuscar = document.getElementById('btn-buscar');
-const msgErro = document.getElementById('msg-erro');
-const notaInfo = document.getElementById('nota-info');
-const nfCards = document.getElementById('nf-cards');
-const inputPesquisa = document.getElementById('busca-nota');
-const modalConferente = document.getElementById('modal-conferente');
-const inputConferente = document.getElementById('input-conferente');
-const btnConfirmar = document.getElementById('btn-confirmar');
-
-let dadosNota = null;
-let nfsSalvas = [];
-let scannerActive = false;
-let html5QrCode = null;  // Declare aqui no escopo global
-
-const scannerDiv = document.getElementById("scanner");
-const btnScan = document.getElementById("btn-scan");
-
-// --- Busca e renderiza em tempo real ---
-db.collection(NF_COLLECTION).orderBy("dt_entregue","desc").onSnapshot((snap) => {
-  nfsSalvas = [];
-  snap.forEach(doc => { nfsSalvas.push({...doc.data(), id:doc.id}) });
-  renderizarCards(nfsSalvas, inputPesquisa.value);
-});
-
-// --- Lançamento ---
-btnBuscar.onclick = async () => {
-  const chave = chaveInput.value.trim();
-  msgErro.innerText = '';
-  msgErro.style.display = 'none';
-  notaInfo.innerHTML = '';
-
-  if (chave.length !== 44 || !/^\d{44}$/.test(chave)) {
-    msgErro.innerText = "❌ Chave de acesso deve conter 44 números.";
-    msgErro.style.display = 'block';
-    return;
-  }
-  if (nfsSalvas.some(nf => nf.chave_nfe === chave)) {
-    msgErro.innerText = "❌ Esta nota já está registrada!";
-    msgErro.style.display = 'block';
-    return;
-  }
-  notaInfo.innerHTML = '<span style="color:#1976d2;">⏳ Buscando nota, aguarde...</span>';
-
-  try {
-    const res = await fetch(API + chave);
-    const dados = await res.json();
-    if (dados.erro) {
-      msgErro.innerText = "❌ " + dados.erro;
-      msgErro.style.display = 'block';
-      notaInfo.innerHTML = '';
-      return;
-    }
-    dadosNota = dados;
-    inputConferente.value = '';
-    modalConferente.style.display = 'flex';
-    inputConferente.focus();
-  } catch (e) {
-    msgErro.innerText = '❌ Erro ao buscar nota. Verifique sua conexão.';
-    msgErro.style.display = 'block';
-    notaInfo.innerHTML = '';
-  }
-};
-
-btnConfirmar.onclick = async () => {
-  const conferente = inputConferente.value.trim();
-  if (!conferente) {
-    inputConferente.focus();
-    return;
-  }
-  btnConfirmar.disabled = true;
-  btnConfirmar.style.opacity = '0.5';
-  msgErro.innerText = "";
-  msgErro.style.display = 'none';
-
-  const col = db.collection(NF_COLLECTION);
-  const snap = await col.where("chave_nfe", "==", dadosNota.chave_nfe).get();
-  if (!snap.empty) {
-    msgErro.innerText = "❌ Esta NF já foi lançada! Recarregue a página.";
-    msgErro.style.display = 'block';
-    modalConferente.style.display = "none";
-    btnConfirmar.disabled = false;
-    btnConfirmar.style.opacity = '1';
-    notaInfo.innerHTML = '';
-    return;
-  }
-  const agora = new Date();
-  await col.add({
-    ...dadosNota,
-    conferente,
-    dt_entregue: agora.toISOString(),
-    entregue_human: agora.toLocaleString("pt-BR"),
-  });
-  modalConferente.style.display = 'none';
-  notaInfo.innerHTML = '';
-  dadosNota = null;
-  chaveInput.value = '';
-  chaveInput.focus();
-  btnConfirmar.disabled = false;
-  btnConfirmar.style.opacity = '1';
-};
-
-inputConferente.addEventListener("keyup", e => { if (e.key === "Enter") btnConfirmar.click(); });
-chaveInput.addEventListener("keyup", e => { if (e.key === "Enter") btnBuscar.click(); });
-inputPesquisa.addEventListener('input', e => renderizarCards(nfsSalvas, inputPesquisa.value));
-
-// --- Funções auxiliares ---
-function normalizarStr(s) {
-  if (!s) return '';
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
-function renderizarCards(lista, termo) {
-  termo = normalizarStr(termo || "");
-  nfCards.innerHTML = "";
-  if (!termo) {
-    lista.forEach(nf => nfCards.appendChild(criarCardNF(nf)));
-    return;
-  }
-  const termos = termo.split(' ').filter(t=>t);
-  lista.filter(nf => {
-    const searchBase = [
-      nf.razao_social, nf.nota_fiscal, nf.conferente, nf.chave_nfe, nf.cfop, nf.data_emissao, nf.entregue_human,
-      ...(nf.itens ? nf.itens.map(i => (i.descricao_produto||"") + " " + (i.codigo_produto||"")) : [])
-    ].join(" ").replace(/\s+/g, " ");
-    const normal = normalizarStr(searchBase);
-    return termos.every(t => normal.includes(t));
-  }).forEach(nf => nfCards.appendChild(criarCardNF(nf)));
-}
-
-function criarCardNF(dados) {
-  const liItens = (dados.itens||[]).map(item => `
-    <li>
-      <b>${item.descricao_produto}</b> (${item.codigo_produto})<br>
-      Qtde: ${item.quantidade} | V. Unit: R$ ${item.valor_unitario?.toLocaleString('pt-BR', {minimumFractionDigits:2})}<br>
-      Subtotal: R$ ${item.subtotal?.toLocaleString('pt-BR', {minimumFractionDigits:2})}
-    </li>
-  `).join('');
-
-  const card = document.createElement('div');
-  card.className = 'nf-card';
-  card.innerHTML = `
-    <div class="conferente-label">
-      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-        <circle cx="10" cy="10" r="10" fill="#fff" />
-        <path d="M5.5 10.5L9 14L15 8" stroke="#43a047" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      ${dados.conferente}
-    </div>
-    <div class="entregado">📅 Entregue em: <b>${dados.entregue_human}</b></div>
-    <div style="margin-bottom:6px;"><b>NF:</b> ${dados.nota_fiscal || 'N/D'}</div>
-    <div><b>Empresa:</b> ${dados.empresa || 'N/D'}</div>
-    <div><b>Cliente:</b> ${dados.razao_social || 'N/D'}</div>
-    <div><b>Data Emissão:</b> ${dados.data_emissao || 'N/D'}</div>
-    <div><b>Total:</b> R$ ${dados.total_nota?.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
-    <div><b>CFOP:</b> ${dados.cfop || 'N/D'}</div>
-    <div><b>Qtd. Itens:</b> ${dados.total_itens || (dados.itens?dados.itens.length:'N/D')}</div>
-    <div style="margin-top:8px;"><b>Chave NFe:</b><span class="chave">${dados.chave_nfe}</span></div>
-    <hr style="margin:12px 0; border:0; border-top:1px solid #ccc;">
-    <div><b>Itens da NF:</b></div>
-    <ul>${liItens}</ul>
-  `;
-  return card;
-}
-
-// --- Scanner ---
-
-btnScan.onclick = function() {
-  if (scannerActive) {
-    html5QrCode.stop().then(() => {
-      scannerDiv.style.display = "none";
-      scannerActive = false;
-      btnScan.innerText = "📷 Escanear com Câmera";
-    });
-    return;
-  }
-
-  scannerDiv.style.display = "block";
-  scannerDiv.innerHTML = "";
-
-  // Inicialize o objeto aqui
-  html5QrCode = new Html5Qrcode("scanner");
-  scannerActive = true;
-  btnScan.innerText = "❌ Fechar Scanner";
-
-  const config = { fps: 20, qrbox: 250, aspectRatio: 1.5 };
-  html5QrCode.start(
-    { facingMode: "environment" },
-    config,
-    (decodedText, decodedResult) => {
-      const chaveLida = decodedText.replace(/\D/g, '');
-      if (chaveLida.length >= 44) {
-        chaveInput.value = chaveLida.substring(0, 44);
-        html5QrCode.stop().then(() => {
-          scannerDiv.style.display = "none";
-          scannerActive = false;
-          btnScan.innerText = "📷 Escanear com Câmera";
-          btnBuscar.click();
-        });
-      }
-    },
-    (errorMessage) => {}
-  ).catch(err => {
-    scannerDiv.innerHTML = "<span style='color:#d32f2f'>❌ Não foi possível acessar a câmera.</span>";
-    scannerActive = false;
-    btnScan.innerText = "📷 Escanear com Câmera";
-  });
-};
-
-</script>
 </body>
 </html>
-
-
